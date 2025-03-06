@@ -10,7 +10,6 @@ def update_syscalls(asm_file, syscall_numbers):
     updated_lines = []
     skip_block = False
     syscall_name = None
-
     for i, line in enumerate(lines):
         proc_match = re.search(r"(Sys\w+)\s+PROC", line)
         if proc_match:
