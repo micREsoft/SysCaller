@@ -1,6 +1,7 @@
 import pefile
 import re
 import capstone
+import os
 
 def read_syscalls(asm_file):
     syscalls = []
@@ -33,7 +34,7 @@ def get_syscalls(dll_path):
             continue
         func_name = export.name.decode()
         func_rva = export.address
-        # only read first 16 bytes
+        # Only read first 16 bytes
         func_bytes = pe.get_data(func_rva, 16)
         for instruction in md.disasm(func_bytes, func_rva):
             if instruction.mnemonic == 'mov' and ('eax' in instruction.op_str or 'rax' in instruction.op_str):
@@ -55,16 +56,16 @@ def validate_syscalls(asm_file, dll_path):
     for syscall in syscalls:
         expected_nt_name = "Nt" + syscall['name'][3:]
         expected_zw_name = "Zw" + syscall['name'][3:]
-        # check for valid syscall and correct offset
+        # Check for valid syscall and correct offset
         if expected_nt_name in syscall_numbers:
-            if syscall['offset'] == syscall_numbers[expected_nt_name]:  # check if the offset matches
+            if syscall['offset'] == syscall_numbers[expected_nt_name]:  # Check if the offset matches
                 valid += 1
                 print(f"{syscall['name']}: Found (Nt) v0x{syscall['offset']:X} f0x{syscall_numbers[expected_nt_name]:X} (MATCH)")
             else:
                 invalid += 1
                 print(f"{syscall['name']}: Found (Nt) i0x{syscall['offset']:X} f0x{syscall_numbers[expected_nt_name]:X} (MISMATCH)")
         elif expected_zw_name in syscall_numbers:
-            if syscall['offset'] == syscall_numbers[expected_zw_name]:  # check if the offset matches
+            if syscall['offset'] == syscall_numbers[expected_zw_name]:  # Check if the offset matches
                 valid += 1
                 print(f"{syscall['name']}: Found (Zw) v0x{syscall['offset']:X} f0x{syscall_numbers[expected_zw_name]:X} (MATCH)")
             else:
@@ -76,6 +77,6 @@ def validate_syscalls(asm_file, dll_path):
     print(f"\nValid: {valid}, Invalid: {invalid}")
 
 if __name__ == "__main__":
-    asm_file = input("Enter path to syscaller.asm: ")
+    asm_file = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'src', 'syscaller.asm')
     dll_path = "C:\\Windows\\System32\\ntdll.dll"
     validate_syscalls(asm_file, dll_path)
