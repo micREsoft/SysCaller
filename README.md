@@ -33,8 +33,9 @@ The SysCaller Library is a powerful and flexible wrapper for Windows NT system c
    - Change the `configuration type` to `"Static Library"` if not already set.
    - Make sure build is set to `x64` and `Release Mode`.
    - run `pip install -r requirements.txt`.
-   - Naviate to the `Check/Validator` dir and run `valid.py `.
-   - Check if it was successful by running `compatibility.py` in `Check/Compatibility`.
+   - Naviate to the `Check` dir and run `syscaller.py `.
+   - Run Option 1. / Validation Check first
+   - Run Option 2. / Compatibility Check to see if it was successful.
    - Build the SysCaller project to generate the `SysCaller.lib` file.
 
 3. Include the library in your project:
