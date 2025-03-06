@@ -7,7 +7,7 @@ The SysCaller Library is a powerful and flexible wrapper for Windows NT system c
 ## Features
 
 - **Comprehensive API**: Access all the NT system calls through a simple and intuitive interface.
-- **Cross Platform Compatibility**: Designed to work seamlessly on Windows 10/11 64 bit systems.
+- **Cross Platform Compatibility**: Designed to work seamlessly on Windows 10/11 64 bit systems. (Tested that Win7 is compatible not recommended!)
 - **Easy Integration**: Simple to include and link in your projects, with minimal setup required.
 - **Extensive Documentation**: Detailed API documentation and usage examples to help you get started quickly.
 
@@ -17,7 +17,7 @@ The SysCaller Library is a powerful and flexible wrapper for Windows NT system c
 
 - Visual Studio 2022 or later (Will make custom Cmake build soon!)
 - C++ 20
-- Windows 10/11 x64 (Windows 7 support soon!)
+- Tested Windows 7+ x64
 - Python 3.8.10+ (For build tools)
 
 ### Installation
