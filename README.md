@@ -90,7 +90,7 @@ Contributions will be welcome soon! If you want to contribute or had plans to pl
 
 ### License
 
-This project is licensed under the MIT License see the [LICENSE](https://raw.githubusercontent.com/WindowsAPI/SysCaller/refs/heads/main/LICENSE?token=GHSAT0AAAAAAC7BFYX2NEYVF5HFO3UD4MIEZ6JIREQ) file for details.
+This project is licensed under the MIT License see the [LICENSE](https://github.com/WindowsAPI/SysCaller/blob/main/LICENSE) file for details.
 
 ## Acknowledgments
 
