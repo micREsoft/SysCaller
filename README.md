@@ -1,4 +1,4 @@
-# SysCaller Library
+![image](https://github.com/user-attachments/assets/2e3cd07e-51c4-46fa-ae6e-907d222bd43d)# SysCaller Library
 
 ## Overview
 
@@ -102,3 +102,13 @@ Thanks to:
 + [Microsoft](https://microsoft.com/)
 
 - The community for their support and feedback.
+
+### Disclaimer
+
+- **Passion Project**: This is an experimental project created for educational purposes.
+- **Learning Tool**: SysCaller is intended to help users learn about Windows NT system calls and low level programming.
+- **No Liability**: I am not responsible or liable for any actions taken using SysCaller.
+- **Usage**: While I have personally used SysCaller for various purposes, including bypassing some AntiCheat systems for fun, I will not provide guidance on such activities.
+- **Potential Applications**: There are many legitimate ways to utilize this library, and I encourage users to explore its capabilities responsibly.
+
+![image](https://github.com/user-attachments/assets/ad00dadd-0f4a-45f8-b668-a269f62431b4)
