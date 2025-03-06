@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/2e3cd07e-51c4-46fa-ae6e-907d222bd43d)# SysCaller Library
+# SysCaller Library
 
 ## Overview
 
