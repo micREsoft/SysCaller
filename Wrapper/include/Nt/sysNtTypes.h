@@ -1,7 +1,13 @@
 #pragma once
+
 #include "../syscaller.h"
 #include "sysNtExternals.h"
+
 #define CM_EXTENDED_PARAMETER_TYPE_BITS 8
+#define SEC_NO_CHANGE 0x00400000
+#define SEC_COMMIT    0x08000000
+#define SECTION_ALL_ACCESS 0x10000000
+#define GENERIC_ALL 0x10000000
 
 // APC Routines
 typedef VOID(NTAPI* PPS_APC_ROUTINE)(
@@ -318,6 +324,73 @@ typedef struct _SE_SET_FILE_CACHE_INFORMATION
     UNICODE_STRING CatalogDirectoryPath;
     SE_FILE_CACHE_CLAIM_INFORMATION OriginClaimInfo;
 } SE_SET_FILE_CACHE_INFORMATION, * PSE_SET_FILE_CACHE_INFORMATION;
+
+// System Thread Information
+typedef struct _SYSTEM_THREAD_INFO
+{
+    LARGE_INTEGER KernelTime;       // Number of 100-nanosecond intervals spent executing kernel code.
+    LARGE_INTEGER UserTime;         // Number of 100-nanosecond intervals spent executing user code.
+    LARGE_INTEGER CreateTime;       // System time when the thread was created.
+    ULONG WaitTime;                 // Time spent in ready queue or waiting (depending on the thread state).
+    PVOID StartAddress;             // Start address of the thread.
+    CLIENT_ID ClientId;             // ID of the thread and the process owning the thread.
+    KPRIORITY Priority;             // Dynamic thread priority.
+    KPRIORITY BasePriority;         // Base thread priority.
+    ULONG ContextSwitches;          // Total context switches.
+    KTHREAD_STATE ThreadState;      // Current thread state.
+    KWAIT_REASON WaitReason;        // The reason the thread is waiting.
+} SYSTEM_THREAD_INFO, *PSYSTEM_THREAD_INFO;
+
+// System Process Information
+typedef struct _SYSTEM_PROCESS_INFO
+{
+    ULONG NextEntryOffset;                  // The address of the previous item plus the value in the NextEntryOffset member. For the last item in the array, NextEntryOffset is 0.
+    ULONG NumberOfThreads;                  // The NumberOfThreads member contains the number of threads in the process.
+    ULONGLONG WorkingSetPrivateSize;        // since VISTA
+    ULONG HardFaultCount;                   // since WIN7
+    ULONG NumberOfThreadsHighWatermark;     // The peak number of threads that were running at any given point in time, indicative of potential performance bottlenecks related to thread management.
+    ULONGLONG CycleTime;                    // The sum of the cycle time of all threads in the process.
+    LARGE_INTEGER CreateTime;               // Number of 100-nanosecond intervals since the creation time of the process. Not updated during system timezone changes resullting in an incorrect value.
+    LARGE_INTEGER UserTime;
+    LARGE_INTEGER KernelTime;
+    UNICODE_STRING ImageName;               // The file name of the executable image.
+    KPRIORITY BasePriority;
+    HANDLE UniqueProcessId;
+    HANDLE InheritedFromUniqueProcessId;
+    ULONG HandleCount;
+    ULONG SessionId;
+    ULONG_PTR UniqueProcessKey;             // since VISTA (requires SystemExtendedProcessInformation)
+    SIZE_T PeakVirtualSize;                 // The peak size, in bytes, of the virtual memory used by the process.
+    SIZE_T VirtualSize;                     // The current size, in bytes, of virtual memory used by the process.
+    ULONG PageFaultCount;                   // The member of page faults for data that is not currently in memory. 
+    SIZE_T PeakWorkingSetSize;              // The peak size, in kilobytes, of the working set of the process.
+    SIZE_T WorkingSetSize;                  // The number of pages visible to the process in physical memory. These pages are resident and available for use without triggering a page fault.
+    SIZE_T QuotaPeakPagedPoolUsage;         // The peak quota charged to the process for pool usage, in bytes.
+    SIZE_T QuotaPagedPoolUsage;             // The quota charged to the process for paged pool usage, in bytes.
+    SIZE_T QuotaPeakNonPagedPoolUsage;      // The peak quota charged to the process for nonpaged pool usage, in bytes.
+    SIZE_T QuotaNonPagedPoolUsage;          // The current quota charged to the process for nonpaged pool usage.
+    SIZE_T PagefileUsage;                   // The PagefileUsage member contains the number of bytes of page file storage in use by the process.
+    SIZE_T PeakPagefileUsage;               // The maximum number of bytes of page-file storage used by the process.
+    SIZE_T PrivatePageCount;                // The number of memory pages allocated for the use by the process.
+    LARGE_INTEGER ReadOperationCount;       // The total number of read operations performed.
+    LARGE_INTEGER WriteOperationCount;      // The total number of write operations performed.
+    LARGE_INTEGER OtherOperationCount;      // The total number of I/O operations performed other than read and write operations.
+    LARGE_INTEGER ReadTransferCount;        // The total number of bytes read during a read operation.
+    LARGE_INTEGER WriteTransferCount;       // The total number of bytes written during a write operation.
+    LARGE_INTEGER OtherTransferCount;       // The total number of bytes transferred during operations other than read and write operations.
+    SYSTEM_THREAD_INFORMATION Threads[1];   // This type is not defined in the structure but was added for convenience.
+} SYSTEM_PROCESS_INFO, *PSYSTEM_PROCESS_INFO;
+
+// Thread Basic Information
+typedef struct _THREAD_BASIC_INFO
+{
+    NTSTATUS ExitStatus;
+    PTEB TebBaseAddress;
+    CLIENT_ID ClientId;
+    KAFFINITY AffinityMask;
+    KPRIORITY Priority;
+    KPRIORITY BasePriority;
+} THREAD_BASIC_INFO, *PTHREAD_BASIC_INFO;
 
 // T2 Set Parameters
 typedef struct _T2_SET_PARAMETERS_V0
