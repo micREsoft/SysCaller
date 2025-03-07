@@ -2,12 +2,7 @@
 
 #include "../syscaller.h"
 #include "sysNtExternals.h"
-
-#define CM_EXTENDED_PARAMETER_TYPE_BITS 8
-#define SEC_NO_CHANGE 0x00400000
-#define SEC_COMMIT    0x08000000
-#define SECTION_ALL_ACCESS 0x10000000
-#define GENERIC_ALL 0x10000000
+#include "sysNtConstants.h"
 
 // APC Routines
 typedef VOID(NTAPI* PPS_APC_ROUTINE)(
