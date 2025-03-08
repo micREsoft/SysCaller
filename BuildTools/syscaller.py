@@ -49,7 +49,7 @@ def display_logo():
 
 def run_validation_check():
     print(f"{Colors.OKBLUE}Running Validation Check...{Colors.ENDC}")
-    result = subprocess.run(['python', 'Validator/valid.py'], capture_output=True, text=True)
+    result = subprocess.run(['python', 'Validator/validator.py'], capture_output=True, text=True)
     print(result.stdout)
     input(f"{Colors.OKBLUE}Press Enter to Continue...{Colors.ENDC}")
 
