@@ -1539,7 +1539,7 @@ extern "C" NTSTATUS SysIsProcessInJob(
 
 extern "C" NTSTATUS SysIsSystemResumeAutomatic(VOID);
 
-extern "C" NTSTATUS SysIsUILanguageCommitted(VOID);
+extern "C" NTSTATUS SysIsUILanguageComitted(VOID);
 
 extern "C" NTSTATUS SysListenPort(
     HANDLE PortHandle,
@@ -2169,6 +2169,11 @@ extern "C" NTSTATUS SysQueryEvent(
     PVOID EventInformation,
     ULONG EventInformationLength,
     PULONG ReturnLength OPTIONAL
+);
+
+extern "C" NTSTATUS SysQueryFullAttributesFile(
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PFILE_NETWORK_OPEN_INFORMATION FileInformation
 );
 
 extern "C" NTSTATUS SysQueryInformationAtom(
@@ -3319,6 +3324,10 @@ extern "C" NTSTATUS SysUnlockVirtualMemory(
     PVOID * BaseAddress,
     PSIZE_T RegionSize,
     ULONG MapType
+);
+
+extern "C" NTSTATUS SysUnsubscribeWnfStateChange(
+    PCWNF_STATE_NAME StateName
 );
 
 extern "C" NTSTATUS SysUnmapViewOfSection(
