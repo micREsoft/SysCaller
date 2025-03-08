@@ -11,26 +11,56 @@ class WorkerThread(QThread):
     output = pyqtSignal(str)
     finished = pyqtSignal()
     
-    def __init__(self, script_path, dll_path):
+    def __init__(self, script_path, dll_path=None, *args):
         super().__init__()
         self.script_path = script_path
         self.dll_path = dll_path
+        self.args = args
+        self.process = None
+        self.complete_output = []
 
     def run(self):
         try:
-            env = os.environ.copy()
-            env['NTDLL_PATH'] = self.dll_path
-            result = subprocess.run(
-                ['python', self.script_path],
-                capture_output=True,
+            cmd = ['python', self.script_path]
+            if self.dll_path:
+                os.environ['NTDLL_PATH'] = self.dll_path
+            if self.args:
+                cmd.extend(self.args)
+            self.process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 text=True,
-                env=env
+                bufsize=1,
+                universal_newlines=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
-            self.output.emit(result.stdout)
+            def read_output():
+                while True:
+                    if self.process.poll() is not None and not self.complete_output:
+                        break
+                    output = self.process.stdout.readline()
+                    if not output and self.process.poll() is not None:
+                        break
+                    if output:
+                        self.complete_output.append(output.rstrip())
+                if self.complete_output:
+                    self.output.emit('\n'.join(self.complete_output))
+                self.process.stdout.close()
+                self.process.wait()
+                self.finished.emit()
+            from threading import Thread
+            output_thread = Thread(target=read_output, daemon=True)
+            output_thread.start()
+            
         except Exception as e:
             self.output.emit(f"Error: {str(e)}")
-        finally:
             self.finished.emit()
+
+    def stop(self):
+        if self.process and self.process.poll() is None:
+            self.process.terminate()
+            self.process.wait()
 
 class SysCallerProgressBar(QProgressBar):
     def __init__(self):
@@ -85,7 +115,7 @@ class SysCallerButton(QPushButton):
             }
         """)
 
-class SysCallerConsole(QTextEdit):
+class SysCallerOutput(QTextEdit):
     def __init__(self):
         super().__init__()
         self.setReadOnly(True)
@@ -129,11 +159,14 @@ class SysCallerConsole(QTextEdit):
             text = text.replace(ansi, html)
         if text.count('<span') > text.count('</span>'):
             text += '</span>' * (text.count('<span') - text.count('</span>'))
-        text = text.replace('\n', '<br>')
+        if text.strip() == '':
+            text = '<br>'
+        else:
+            text = text.replace('\n', '<br>')
         cursor = self.textCursor()
         cursor.movePosition(cursor.End)
         self.setTextCursor(cursor)
-        self.insertHtml(text)
+        self.insertHtml(text + '<br>')
 
 class SysCallerWindow(QMainWindow):
     def __init__(self):
@@ -164,6 +197,7 @@ class SysCallerWindow(QMainWindow):
         right_panel = self.syscaller_right_panel()
         content_layout.addWidget(right_panel, stretch=2)
         self.worker = None
+        self.destroyed.connect(self.cleanup_worker)
 
     def syscaller_title_bar(self):
         title_bar = QFrame()
@@ -303,9 +337,12 @@ class SysCallerWindow(QMainWindow):
         validate_btn = SysCallerButton("Validation Check", "GUI/icons/validate.png")
         validate_btn.clicked.connect(self.run_validation)
         layout.addWidget(validate_btn)
-        compat_btn = SysCallerButton("Compatibility Check", "GUI/icons/compat.png")
-        compat_btn.clicked.connect(self.run_compatibility)
-        layout.addWidget(compat_btn)
+        compatibility_btn = SysCallerButton("Compatibility Check", "GUI/icons/compat.png")
+        compatibility_btn.clicked.connect(self.run_compatibility)
+        layout.addWidget(compatibility_btn)
+        verify_btn = SysCallerButton("Verification Check", "GUI/icons/verify.png")
+        verify_btn.clicked.connect(self.run_verification)
+        layout.addWidget(verify_btn)
         layout.addSpacing(20)
         status_frame = QFrame()
         status_frame.setStyleSheet("""
@@ -335,13 +372,12 @@ class SysCallerWindow(QMainWindow):
                 border-radius: 15px;
             }
         """)
-        
         layout = QVBoxLayout(right_panel)
         layout.setContentsMargins(20, 20, 20, 20)
         header = QLabel("SysCaller Console")
         header.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
         layout.addWidget(header)
-        self.output_text = SysCallerConsole()
+        self.output_text = SysCallerOutput()
         layout.addWidget(self.output_text)
         return right_panel
 
@@ -352,35 +388,49 @@ class SysCallerWindow(QMainWindow):
             self.showMaximized()
 
     def run_validation(self):
-        if self.worker is None:
-            self.status_label.setText("Running validation...")
-            self.progress_bar.setMaximum(0)
-            self.output_text.clear()
-            script_path = os.path.join(os.path.dirname(__file__), '..', 'Validator', 'validator.py')
-            self.worker = WorkerThread(script_path, self.dll_path.text())
-            self.worker.output.connect(self.update_output)
-            self.worker.finished.connect(self.on_worker_finished)
-            self.worker.start()
+        if self.worker is not None and self.worker.isRunning():
+            return
+        self.status_label.setText("Running validation...")
+        self.progress_bar.setMaximum(0)
+        self.output_text.clear()
+        script_path = os.path.join(os.path.dirname(__file__), '..', 'Validator', 'validator.py')
+        self.worker = WorkerThread(script_path, self.dll_path.text())
+        self.worker.output.connect(self.update_output)
+        self.worker.finished.connect(self.on_worker_finished)
+        self.worker.start()
 
     def run_compatibility(self):
-        if self.worker is None:
-            self.status_label.setText("Running compatibility check...")
-            self.progress_bar.setMaximum(0)
-            self.output_text.clear()
-            script_path = os.path.join(os.path.dirname(__file__), '..', 'Compatibility', 'compatibility.py')
-            self.worker = WorkerThread(script_path, self.dll_path.text())
-            self.worker.output.connect(self.update_output)
-            self.worker.finished.connect(self.on_worker_finished)
-            self.worker.start()
+        if self.worker is not None and self.worker.isRunning():
+            return
+        self.status_label.setText("Running compatibility check...")
+        self.progress_bar.setMaximum(0)
+        self.output_text.clear()
+        script_path = os.path.join(os.path.dirname(__file__), '..', 'Compatibility', 'compatibility.py')
+        self.worker = WorkerThread(script_path, self.dll_path.text())
+        self.worker.output.connect(self.update_output)
+        self.worker.finished.connect(self.on_worker_finished)
+        self.worker.start()
+
+    def run_verification(self):
+        if self.worker is not None and self.worker.isRunning():
+            return
+        self.status_label.setText("Running verification...")
+        self.progress_bar.setMaximum(0)
+        self.output_text.clear()
+        script_path = os.path.join(os.path.dirname(__file__), '..', 'Verify', 'sysverify.py')
+        self.worker = WorkerThread(script_path, self.dll_path.text(), '--from-gui')
+        self.worker.output.connect(self.update_output)
+        self.worker.finished.connect(self.on_worker_finished)
+        self.worker.start()
 
     def update_output(self, text):
         self.output_text.append(text)
 
     def on_worker_finished(self):
-        self.progress_bar.setMaximum(100)
-        self.progress_bar.setValue(100)
-        self.status_label.setText("Ready")
+        self.progress_bar.setRange(0, 1)
+        self.progress_bar.setValue(1)
         self.worker = None
+        self.status_label.setText("Ready")
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -438,6 +488,15 @@ class SysCallerWindow(QMainWindow):
         if dll_path:
             self.dll_path.setText(dll_path)
 
+    def cleanup_worker(self):
+        if self.worker:
+            self.worker.stop()
+            self.worker.wait()
+
+    def closeEvent(self, event):
+        self.cleanup_worker()
+        super().closeEvent(event)
+
 def main():
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create('Fusion'))
@@ -453,5 +512,6 @@ def main():
     window = SysCallerWindow()
     window.show()
     sys.exit(app.exec_())
+
 if __name__ == '__main__':
     main() 
