@@ -357,7 +357,7 @@ class SysCallerWindow(QMainWindow):
             self.status_label.setText("Running validation...")
             self.progress_bar.setMaximum(0)
             self.output_text.clear()
-            script_path = os.path.join(os.path.dirname(__file__), '..', 'Validator', 'valid.py')
+            script_path = os.path.join(os.path.dirname(__file__), '..', 'Validator', 'validator.py')
             self.worker = WorkerThread(script_path, self.dll_path.text())
             self.worker.output.connect(self.update_output)
             self.worker.finished.connect(self.on_worker_finished)
