@@ -15,8 +15,8 @@ The SysCaller Library is a powerful and flexible wrapper for Windows NT system c
 
 ### Prerequisites
 
-- Visual Studio 2022 or later (Will make custom Cmake build soon!)
-- C++ 20
+- Visual Studio 2022 (Will make custom Cmake build soon!)
+- C++ 20 (Not sure about other versions
 - Tested Windows 7+ x64
 - Python 3.8.10+ (For build tools)
 
@@ -36,6 +36,7 @@ The SysCaller Library is a powerful and flexible wrapper for Windows NT system c
    - Naviate to the `Check` dir and run `syscaller.py `.
    - Run Option 1. / Validation Check first
    - Run Option 2. / Compatibility Check to see if it was successful.
+   - Run Option 3. Use GUI to use BuildTools
    - Build the SysCaller project to generate the `SysCaller.lib` file.
 
 3. Include the library in your project:
