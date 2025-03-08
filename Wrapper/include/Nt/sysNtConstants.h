@@ -1,6 +1,9 @@
 #pragma once
 #define CM_EXTENDED_PARAMETER_TYPE_BITS 8
 
+#define PAGE_SIZE 0x1000
+#define PAGE_MASK 0xFFF
+#define PAGE_SHIFT 0xC
 #define PAGE_NOACCESS 0x01              // Disables all access to the committed region of pages. An attempt to read from, write to, or execute the committed region results in an access violation.
 #define PAGE_READONLY 0x02              // Enables read-only access to the committed region of pages. An attempt to write or execute the committed region results in an access violation.
 #define PAGE_READWRITE 0x04             // Enables read-only or read/write access to the committed region of pages.
