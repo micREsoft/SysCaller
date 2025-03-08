@@ -1,4 +1,4 @@
-# SysCaller Library
+# SysCaller Library v1.0.0
 
 ## Overview
 
@@ -7,7 +7,7 @@ The SysCaller Library is a powerful and flexible wrapper for Windows NT system c
 ## Features
 
 - **Comprehensive API**: Access all the NT system calls through a simple and intuitive interface.
-- **Cross Platform Compatibility**: Designed to work seamlessly on Windows 10/11 64 bit systems. (Tested that Win7 is compatible not recommended!)
+- **Cross Platform Compatibility**: Designed to work seamlessly on Windows 10/11 64 bit systems. (Tested that Win7+ builds but not recommended!)
 - **Easy Integration**: Simple to include and link in your projects, with minimal setup required.
 - **Extensive Documentation**: Detailed API documentation and usage examples to help you get started quickly.
 
@@ -16,7 +16,7 @@ The SysCaller Library is a powerful and flexible wrapper for Windows NT system c
 ### Prerequisites
 
 - Visual Studio 2022 (Will make custom Cmake build soon!)
-- C++ 20 (Not sure about other versions
+- C++ 20 (Not sure about other versions)
 - Tested Windows 7+ x64
 - Python 3.8.10+ (For build tools)
 
@@ -247,7 +247,7 @@ Thanks to:
 
 ### Disclaimer
 
-- **Passion Project**: This is an experimental project created for educational purposes.
+- **Passion Project**: This is an experimental project created for educational purposes I will update it as I find the time.
 - **Learning Tool**: SysCaller is intended to help users learn about Windows NT system calls and low level programming.
 - **No Liability**: I am not responsible or liable for any actions taken using SysCaller.
 - **Usage**: While I have personally used SysCaller for various purposes, including bypassing some AntiCheat systems for fun, I will not provide guidance on such activities.
