@@ -4,17 +4,31 @@
 #include "sysNtExternals.h"
 #include "sysNtConstants.h"
 
+// #define USE_PISID  // Uncomment this line to use PISID instead of PSID
+#define USE_DYNAMIC_ARRAY  // Uncomment this line to use dynamic array
+#define USE_POINTER_SUBAUTH // Uncomment this line to use pointer to an array for SubAuthority
+
 // APC Routines
-typedef VOID(NTAPI* PPS_APC_ROUTINE)(
+typedef VOID(NTAPI * PPS_APC_ROUTINE)(
     _In_opt_ PVOID ApcArgument1,
     _In_opt_ PVOID ApcArgument2,
     _In_opt_ PVOID ApcArgument3
     );
 
-typedef VOID(NTAPI* TIMER_APC_ROUTINE)(
+typedef VOID(NTAPI * TIMER_APC_ROUTINE)(
     _In_ PVOID TimerContext,
     _In_ ULONG TimerLowValue,
     _In_ LONG TimerHighValue
+    );
+
+typedef VOID(NTAPI * PUSER_THREAD_START_ROUTINE)(
+    _In_ PVOID ThreadParameter
+    );
+
+typedef VOID(NTAPI * IO_APC_ROUTINE)(
+    _In_ PVOID ApcContext,
+    _In_ PIO_STATUS_BLOCK IoStatusBlock,
+    _In_ ULONG Reserved
     );
 
 // User Thread Start Routine
@@ -157,6 +171,18 @@ typedef struct _FILE_IO_COMPLETION_INFORMATION
     PVOID ApcContext;
     IO_STATUS_BLOCK IoStatusBlock;
 } FILE_IO_COMPLETION_INFORMATION, * PFILE_IO_COMPLETION_INFORMATION;
+
+// File Network Open Information
+typedef struct _FILE_NETWORK_OPEN_INFORMATION
+{
+    LARGE_INTEGER CreationTime;
+    LARGE_INTEGER LastAccessTime;
+    LARGE_INTEGER LastWriteTime;
+    LARGE_INTEGER ChangeTime;
+    LARGE_INTEGER AllocationSize;
+    LARGE_INTEGER EndOfFile;
+    ULONG FileAttributes;
+} FILE_NETWORK_OPEN_INFORMATION, * PFILE_NETWORK_OPEN_INFORMATION;
 
 // File Path
 typedef struct _FILE_PATH
@@ -334,7 +360,7 @@ typedef struct _SYSTEM_THREAD_INFO
     ULONG ContextSwitches;          // Total context switches.
     KTHREAD_STATE ThreadState;      // Current thread state.
     KWAIT_REASON WaitReason;        // The reason the thread is waiting.
-} SYSTEM_THREAD_INFO, *PSYSTEM_THREAD_INFO;
+} SYSTEM_THREAD_INFO, * PSYSTEM_THREAD_INFO;
 
 // System Process Information
 typedef struct _SYSTEM_PROCESS_INFO
@@ -374,7 +400,7 @@ typedef struct _SYSTEM_PROCESS_INFO
     LARGE_INTEGER WriteTransferCount;       // The total number of bytes written during a write operation.
     LARGE_INTEGER OtherTransferCount;       // The total number of bytes transferred during operations other than read and write operations.
     SYSTEM_THREAD_INFORMATION Threads[1];   // This type is not defined in the structure but was added for convenience.
-} SYSTEM_PROCESS_INFO, *PSYSTEM_PROCESS_INFO;
+} SYSTEM_PROCESS_INFO, * PSYSTEM_PROCESS_INFO;
 
 // Thread Basic Information
 typedef struct _THREAD_BASIC_INFO
@@ -385,7 +411,7 @@ typedef struct _THREAD_BASIC_INFO
     KAFFINITY AffinityMask;
     KPRIORITY Priority;
     KPRIORITY BasePriority;
-} THREAD_BASIC_INFO, *PTHREAD_BASIC_INFO;
+} THREAD_BASIC_INFO, * PTHREAD_BASIC_INFO;
 
 // T2 Set Parameters
 typedef struct _T2_SET_PARAMETERS_V0
