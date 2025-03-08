@@ -20,7 +20,7 @@ def display_logo():
             =++++****++++===---:::  +%                      
             =++++****+++===----::  -:---               ++=# 
            ==+++****++++===---:::  +:---===+++#=**#***++=:  
-           =++++****+++===---:::  -:---====+++*******+++=-  
+           =++++****+++===---:::  -:---====+++*******+++=:  
           *=+++****++++===---:::  +:---===++++***#***++=:   
           =++++****+++===----::+ -:---====+++*******+++=:   
           =+++****++++===---:::  +:---===++++***#***++=:    
@@ -51,13 +51,18 @@ def run_validation_check():
     print(f"{Colors.OKBLUE}Running Validation Check...{Colors.ENDC}")
     result = subprocess.run(['python', 'Validator/valid.py'], capture_output=True, text=True)
     print(result.stdout)
-    input(f"{Colors.OKGREEN}Press Enter to Continue...{Colors.ENDC}")
+    input(f"{Colors.OKBLUE}Press Enter to Continue...{Colors.ENDC}")
 
 def run_compatibility_check():
     print(f"{Colors.OKBLUE}Running Compatibility Check...{Colors.ENDC}")
     result = subprocess.run(['python', 'Compatibility/compatibility.py'], capture_output=True, text=True)
     print(result.stdout)
-    input(f"{Colors.OKGREEN}Press Enter to Continue...{Colors.ENDC}")
+    input(f"{Colors.OKBLUE}Press Enter to Continue...{Colors.ENDC}")
+
+def launch_gui():
+    print(f"{Colors.OKBLUE}Launching SysCaller GUI...{Colors.ENDC}")
+    subprocess.Popen(['python', 'GUI/sysgui.py'])
+    sys.exit(0)
 
 def main_menu():
     while True:
@@ -66,19 +71,21 @@ def main_menu():
         print(f"{Colors.OKBLUE}=== SysCaller BuildTools CLI ==={Colors.ENDC}")
         print(f"{Colors.OKGREEN}1. Run Validation Check{Colors.ENDC}")
         print(f"{Colors.OKGREEN}2. Run Compatibility Check{Colors.ENDC}")
-        print(f"{Colors.OKGREEN}3. Exit{Colors.ENDC}")
-        choice = input(f"{Colors.BOLD}Select an Option (1-3): {Colors.ENDC}")
+        print(f"{Colors.OKGREEN}3. Launch SysCaller GUI{Colors.ENDC}")
+        print(f"{Colors.OKGREEN}4. Exit{Colors.ENDC}")
+        choice = input(f"{Colors.BOLD}Select an Option (1-4): {Colors.ENDC}")
         if choice == '1':
             run_validation_check()
         elif choice == '2':
             run_compatibility_check()
         elif choice == '3':
+            launch_gui()
+        elif choice == '4':
             print(f"{Colors.FAIL}Exiting...{Colors.ENDC}")
             time.sleep(1)
             break
         else:
             print(f"{Colors.WARNING}Invalid Option. Please try Again.{Colors.ENDC}")
             time.sleep(1)
-
 if __name__ == "__main__":
     main_menu()
