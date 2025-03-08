@@ -4,8 +4,8 @@ import capstone
 import os
 
 def update_syscalls(asm_file, syscall_numbers):
-    asm_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'src', 'syscaller.asm')  # Update this line
-    with open(asm_file_path, 'r') as file:  # Open the file for reading
+    asm_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'src', 'syscaller.asm')
+    with open(asm_file_path, 'r') as file:
         lines = file.readlines()
     updated_lines = []
     skip_block = False
@@ -65,6 +65,6 @@ def get_syscalls(dll_path):
 
 if __name__ == "__main__":
     asm_file = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'src', 'syscaller.asm')
-    dll_path = "C:\\Windows\\System32\\ntdll.dll"
+    dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
     syscall_numbers = get_syscalls(dll_path)
     update_syscalls(asm_file, syscall_numbers)
