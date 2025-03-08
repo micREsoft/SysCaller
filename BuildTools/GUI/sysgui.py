@@ -2,11 +2,10 @@ import sys
 import os
 import subprocess
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
-                            QWidget, QTextEdit, QLabel, QFrame, QSplitter, 
-                            QHBoxLayout, QProgressBar, QStyleFactory, QGraphicsDropShadowEffect,
-                            QStackedWidget, QToolButton, QScrollArea, QLineEdit, QFileDialog)
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QPropertyAnimation, QEasingCurve, QSize
-from PyQt5.QtGui import QFont, QPalette, QColor, QIcon, QPainter, QPainterPath, QLinearGradient
+                            QWidget, QTextEdit, QLabel, QFrame, QHBoxLayout, QProgressBar, 
+                            QStyleFactory, QGraphicsDropShadowEffect, QToolButton, QLineEdit, QFileDialog)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
+from PyQt5.QtGui import QFont, QColor, QIcon
 
 class WorkerThread(QThread):
     output = pyqtSignal(str)
