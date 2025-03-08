@@ -32,7 +32,6 @@ def read_syscalls(asm_file):
             else:
                 syscall['duplicate_name'] = False
                 unique_names[syscall['name']] = syscall['name']
-        
         offset_match = re.search(r"mov\s+(eax|rax),\s*(0x[0-9A-Fa-f]+|[0-9A-Fa-f]+)h?", line)
         if syscall and offset_match:
             syscall['offset'] = int(offset_match.group(2), 16)
@@ -114,7 +113,6 @@ def validate_syscalls(asm_file, dll_path):
                 dup_with = f"with {syscall['duplicate_name_with']}"
             # Determine if its a valid offset despite being duplicate
             prefix = 'v' if syscall['offset'] == actual_offset else 'i'
-            
             print(f"{Colors.WARNING}{syscall['name']}: {dup_type} {prefix}0x{syscall['offset']:X} f0x{actual_offset:X} (DUP) {dup_with}{Colors.ENDC}")
             continue
         expected_nt_name = "Nt" + syscall['name'][3:]
@@ -141,5 +139,5 @@ def validate_syscalls(asm_file, dll_path):
 
 if __name__ == "__main__":
     asm_file = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'src', 'syscaller.asm')
-    dll_path = "C:\\Windows\\System32\\ntdll.dll"
+    dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
     validate_syscalls(asm_file, dll_path)
