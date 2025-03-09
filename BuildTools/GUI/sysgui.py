@@ -3,9 +3,9 @@ import os
 import subprocess
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, 
                             QWidget, QTextEdit, QLabel, QFrame, QHBoxLayout, QProgressBar, 
-                            QStyleFactory, QGraphicsDropShadowEffect, QToolButton, QLineEdit, QFileDialog)
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize
-from PyQt5.QtGui import QFont, QColor, QIcon
+                            QStyleFactory, QGraphicsDropShadowEffect, QToolButton, QLineEdit, QFileDialog, QGraphicsOpacityEffect)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize, QTimer, QPropertyAnimation
+from PyQt5.QtGui import QFont, QColor, QIcon, QFontDatabase
 
 class WorkerThread(QThread):
     output = pyqtSignal(str)
@@ -35,6 +35,7 @@ class WorkerThread(QThread):
                 universal_newlines=True,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
+        
             def read_output():
                 while True:
                     if self.process.poll() is not None and not self.complete_output:
@@ -52,7 +53,6 @@ class WorkerThread(QThread):
             from threading import Thread
             output_thread = Thread(target=read_output, daemon=True)
             output_thread.start()
-            
         except Exception as e:
             self.output.emit(f"Error: {str(e)}")
             self.finished.emit()
@@ -75,20 +75,32 @@ class SysCallerProgressBar(QProgressBar):
             }
             QProgressBar::chunk {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #5890b8, stop:1 #67abdb);
+                    stop:0 #0b5394, stop:1 #67abdb);
                 border-radius: 2px;
             }
         """)
 
 class SysCallerButton(QPushButton):
-    def __init__(self, text, icon_path=None):
+    def __init__(self, text, icon_path=None, tooltip=None, tooltip_detail=None):
         super().__init__(text)
-        self.setFont(QFont("Segoe UI", 10))
+        self.setFont(QFont(None, 10))
         self.setMinimumHeight(60)
         self.setCursor(Qt.PointingHandCursor)
+        if tooltip and tooltip_detail:
+            self.setToolTip(f"""
+                <div style='background-color: #1E1E1E; padding: 10px; border-radius: 5px;'>
+                    <b style='color: #67abdb; font-size: 13px;'>{tooltip}</b>
+                    <hr style='border: 1px solid #333333; margin: 5px 0;'/>
+                    <p style='color: #E0E0E0; font-size: 12px;'>{tooltip_detail}</p>
+                </div>
+            """)
         if icon_path:
             self.setIcon(QIcon(icon_path))
             self.setIconSize(QSize(24, 24))
+            self.icon_animation = QTimer()
+            self.icon_animation.timeout.connect(self.update_icon_size)
+            self.icon_size_growing = True
+            self.current_icon_size = 24
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(15)
         shadow.setOffset(0, 0)
@@ -97,16 +109,18 @@ class SysCallerButton(QPushButton):
         self.setStyleSheet("""
             QPushButton {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #5890b8, stop:1 #67abdb);
+                    stop:0 #0b5394, stop:1 #67abdb);
                 border: none;
                 border-radius: 10px;
                 padding: 15px 25px;
                 color: white;
                 font-weight: 500;
+                transition: all 0.3s;
             }
             QPushButton:hover {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #67abdb, stop:1 #5890b8);
+                    stop:0 #67abdb, stop:1 #0b5394);
+                transform: translateY(-2px);
             }
             QPushButton:pressed {
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
@@ -114,6 +128,29 @@ class SysCallerButton(QPushButton):
                 padding: 16px 24px 14px 26px;
             }
         """)
+
+    def enterEvent(self, event):
+        if hasattr(self, 'icon_animation'):
+            self.icon_animation.start(50)
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        if hasattr(self, 'icon_animation'):
+            self.icon_animation.stop()
+            self.setIconSize(QSize(24, 24))
+            self.current_icon_size = 24
+        super().leaveEvent(event)
+
+    def update_icon_size(self):
+        if self.icon_size_growing:
+            self.current_icon_size += 1
+            if self.current_icon_size >= 28:
+                self.icon_size_growing = False
+        else:
+            self.current_icon_size -= 1
+            if self.current_icon_size <= 24:
+                self.icon_size_growing = True
+        self.setIconSize(QSize(self.current_icon_size, self.current_icon_size))
 
 class SysCallerOutput(QTextEdit):
     def __init__(self):
@@ -126,7 +163,6 @@ class SysCallerOutput(QTextEdit):
                 border: none;
                 border-radius: 10px;
                 padding: 15px;
-                font-family: 'Consolas';
                 font-size: 13px;
                 selection-background-color: #264F78;
             }
@@ -267,9 +303,20 @@ class SysCallerWindow(QMainWindow):
         layout = QVBoxLayout(left_panel)
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(15)
+        logo_image = QLabel()
+        logo_pixmap = QIcon("GUI/icons/syscaller.png").pixmap(QSize(64, 64))
+        logo_image.setPixmap(logo_pixmap)
+        logo_image.setAlignment(Qt.AlignCenter)
+        layout.addWidget(logo_image)
+        layout.addSpacing(10)
         logo_label = QLabel("SysCaller BuildTools")
-        logo_label.setFont(QFont("Segoe UI", 24, QFont.Bold))
-        logo_label.setStyleSheet("color: #4880a8;")
+        logo_label.setFont(QFont(None, 16, QFont.Bold))
+        logo_label.setStyleSheet("""
+            color: #0077d4;
+            padding: 10px;
+            background: rgba(72, 128, 168, 0.2);
+            border-radius: 10px;
+        """)
         logo_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo_label)
         version_label = QLabel("v1.0.0")
@@ -287,7 +334,7 @@ class SysCallerWindow(QMainWindow):
         """)
         dll_layout = QVBoxLayout(dll_frame)
         dll_layout.setContentsMargins(15, 15, 15, 15)
-        dll_header = QLabel("NTDLL Path")
+        dll_header = QLabel("NTDLL PATH")
         dll_header.setStyleSheet("color: #888888; font-size: 12px; font-weight: bold;")
         dll_layout.addWidget(dll_header)
         dll_path_layout = QHBoxLayout()
@@ -299,7 +346,7 @@ class SysCallerWindow(QMainWindow):
                 border-radius: 5px;
                 padding: 8px;
                 color: #FFFFFF;
-                font-family: 'Consolas';
+                font-family: 'IBM Plex Mono';
                 font-size: 12px;
             }
             QLineEdit:hover {
@@ -334,13 +381,38 @@ class SysCallerWindow(QMainWindow):
         dll_layout.addLayout(dll_path_layout)
         layout.addWidget(dll_frame)
         layout.addSpacing(20)
-        validate_btn = SysCallerButton("Validation Check", "GUI/icons/validate.png")
+        validate_btn = SysCallerButton(
+            "Validation Check", 
+            "GUI/icons/validate.png",
+            "Syscall Validation",
+            "Analyzes and updates syscall offsets in syscaller.asm by comparing against ntdll.dll. <br><br>"
+            "• Disassembles ntdll.dll exports to extract syscall IDs and ensures correct mapping <br>"
+            "• Updates or removes syscalls based on their presence in the current systems ntdll.dll"
+        )
         validate_btn.clicked.connect(self.run_validation)
         layout.addWidget(validate_btn)
-        compatibility_btn = SysCallerButton("Compatibility Check", "GUI/icons/compat.png")
+        compatibility_btn = SysCallerButton(
+            "Compatibility Check", 
+            "GUI/icons/compat.png",
+            "Syscall Compatibility",
+            "Performs compatibility analysis of syscalls against ntdll.dll: <br><br>"
+            "• Detects duplicate syscall names and offsets <br>"
+            "• Validates both Nt and Zw syscall variants <br>"
+            "• Verifies offset matches between implementation and DLL <br>"
+            "• Reports valid, invalid, and duplicate syscalls with detailed status"
+        )
         compatibility_btn.clicked.connect(self.run_compatibility)
         layout.addWidget(compatibility_btn)
-        verify_btn = SysCallerButton("Verification Check", "GUI/icons/verify.png")
+        verify_btn = SysCallerButton(
+            "Verification Check", 
+            "GUI/icons/verify.png",
+            "Syscall Verification",
+            "Performs comprehensive syscall verification: <br><br>"
+            "• Validates return types (NTSTATUS, BOOL, HANDLE, etc.) <br>"
+            "• Verifies parameter types against system headers <br>"
+            "• Checks offset ranges (0x0000-0x0200) <br>"
+            "• Traces type definitions in header files"
+        )
         verify_btn.clicked.connect(self.run_verification)
         layout.addWidget(verify_btn)
         layout.addSpacing(20)
@@ -357,7 +429,15 @@ class SysCallerWindow(QMainWindow):
         self.progress_bar = SysCallerProgressBar()
         status_layout.addWidget(self.progress_bar)
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("color: #666666; font-size: 12px;")
+        self.status_label.setStyleSheet("""
+            QLabel {
+                color: #666666;
+                font-size: 12px;
+                padding: 5px;
+                border-radius: 5px;
+                background: rgba(102, 102, 102, 0.1);
+            }
+        """)
         self.status_label.setAlignment(Qt.AlignCenter)
         status_layout.addWidget(self.status_label)
         layout.addWidget(status_frame)
@@ -375,7 +455,14 @@ class SysCallerWindow(QMainWindow):
         layout = QVBoxLayout(right_panel)
         layout.setContentsMargins(20, 20, 20, 20)
         header = QLabel("SysCaller Console")
-        header.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
+        header.setStyleSheet("""
+            color: #0077d4;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 10px;
+            background: rgba(72, 128, 168, 0.2);
+            border-radius: 8px;
+        """)
         layout.addWidget(header)
         self.output_text = SysCallerOutput()
         layout.addWidget(self.output_text)
@@ -497,21 +584,39 @@ class SysCallerWindow(QMainWindow):
         self.cleanup_worker()
         super().closeEvent(event)
 
+    def update_status(self, text):
+        self.status_label.setText(text)
+        effect = QGraphicsOpacityEffect(self.status_label)
+        self.status_label.setGraphicsEffect(effect)
+        anim = QPropertyAnimation(effect, b"opacity")
+        anim.setDuration(200)
+        anim.setStartValue(0)
+        anim.setEndValue(1)
+        anim.start()
+
 def main():
+    os.environ['QT_LOGGING_RULES'] = '*.debug=false;qt.qpa.*=false'
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create('Fusion'))
+    font_id = QFontDatabase.addApplicationFont("GUI/fonts/ibmplexmono.ttf")
+    if font_id != -1:
+        font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
+        app.setFont(QFont(font_family, 10))
     app.setStyleSheet("""
+        * {
+            font-family: 'IBM Plex Mono';
+        }
         QToolTip {
             background-color: #1E1E1E;
             color: white;
             border: 1px solid #2196F3;
             border-radius: 4px;
             padding: 5px;
+            font-family: 'IBM Plex Mono';
         }
     """)
     window = SysCallerWindow()
     window.show()
     sys.exit(app.exec_())
-
 if __name__ == '__main__':
     main() 
