@@ -35,7 +35,7 @@ class WorkerThread(QThread):
                 universal_newlines=True,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
-        
+            
             def read_output():
                 while True:
                     if self.process.poll() is not None and not self.complete_output:
@@ -204,6 +204,60 @@ class SysCallerOutput(QTextEdit):
         self.setTextCursor(cursor)
         self.insertHtml(text + '<br>')
 
+class StatusBar(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setMaximumHeight(40)
+        self.setStyleSheet("""
+            QFrame {
+                background: #252525;
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+            }
+        """)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(20, 0, 20, 0)
+        self.status_icon = QLabel("⏺")
+        self.status_icon.setStyleSheet("color: #666666; font-size: 16px;")
+        layout.addWidget(self.status_icon)
+        self.status_msg = QLabel("Ready")
+        self.status_msg.setStyleSheet("color: #666666; font-size: 12px;")
+        layout.addWidget(self.status_msg)
+        layout.addStretch()
+        self.result_label = QLabel()
+        self.result_label.setStyleSheet("""
+            QLabel {
+                color: #666666;
+                font-size: 12px;
+                padding: 5px 10px;
+                border-radius: 5px;
+                background: rgba(37, 37, 37, 0.5);
+            }
+        """)
+        layout.addWidget(self.result_label)
+
+    def update_status(self, message, status_type="info"):
+        color_map = {
+            "success": ("#00CA4E", "✓"),
+            "error": ("#FF605C", "✕"),
+            "info": ("#666666", "⏺"),
+            "working": ("#FFB900", "⟳")
+        }
+        color, icon = color_map.get(status_type, color_map["info"])
+        self.status_icon.setStyleSheet(f"color: {color}; font-size: 16px;")
+        self.status_icon.setText(icon)
+        self.status_msg.setText(message)
+
+    def set_result(self, valid, invalid, duplicates):
+        if invalid == 0 and duplicates == 0:
+            status = "success"
+            result = f"Last Check: Passed ✅ ({valid} valid syscalls)"
+        else:
+            status = "error"
+            result = f"Last Check: Issues Found ❌ ({invalid} invalid, {duplicates} duplicates)"
+        self.result_label.setText(result)
+        self.update_status("Ready", status)
+
 class SysCallerWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -232,6 +286,8 @@ class SysCallerWindow(QMainWindow):
         content_layout.addWidget(left_panel)
         right_panel = self.syscaller_right_panel()
         content_layout.addWidget(right_panel, stretch=2)
+        self.status_bar = StatusBar()
+        main_layout.addWidget(self.status_bar)
         self.worker = None
         self.destroyed.connect(self.cleanup_worker)
 
@@ -477,7 +533,7 @@ class SysCallerWindow(QMainWindow):
     def run_validation(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_label.setText("Running validation...")
+        self.status_bar.update_status("Running validation...", "working")
         self.progress_bar.setMaximum(0)
         self.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Validator', 'validator.py')
@@ -489,7 +545,7 @@ class SysCallerWindow(QMainWindow):
     def run_compatibility(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_label.setText("Running compatibility check...")
+        self.status_bar.update_status("Running compatibility check...", "working")
         self.progress_bar.setMaximum(0)
         self.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Compatibility', 'compatibility.py')
@@ -501,7 +557,7 @@ class SysCallerWindow(QMainWindow):
     def run_verification(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_label.setText("Running verification...")
+        self.status_bar.update_status("Running verification...", "working")
         self.progress_bar.setMaximum(0)
         self.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Verify', 'sysverify.py')
@@ -512,12 +568,22 @@ class SysCallerWindow(QMainWindow):
 
     def update_output(self, text):
         self.output_text.append(text)
+        if "Valid:" in text and "Invalid:" in text:
+            try:
+                parts = text.split(",")
+                valid = int(parts[0].split(":")[1].strip())
+                invalid = int(parts[1].split(":")[1].strip())
+                duplicates = int(parts[2].split(":")[1].strip())
+                self.status_bar.set_result(valid, invalid, duplicates)
+            except:
+                pass
 
     def on_worker_finished(self):
         self.progress_bar.setRange(0, 1)
         self.progress_bar.setValue(1)
         self.worker = None
-        self.status_label.setText("Ready")
+        if not self.status_bar.result_label.text():
+            self.status_bar.update_status("Operation completed", "success")
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
