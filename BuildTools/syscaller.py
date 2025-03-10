@@ -64,6 +64,12 @@ def run_syscall_verification():
     result = subprocess.run(['python', 'Verify/sysverify.py'])
     input(f"\n{Colors.OKBLUE}Press Enter to Continue...{Colors.ENDC}")
 
+def run_syscall_obfuscation():
+    print(f"{Colors.OKBLUE}Running Syscall Obfuscation...{Colors.ENDC}")
+    result = subprocess.run(['python', 'Protection/sysobfuscate.py'], capture_output=True, text=True)
+    print(result.stdout)
+    input(f"{Colors.OKBLUE}Press Enter to Continue...{Colors.ENDC}")
+
 def launch_gui():
     print(f"{Colors.OKBLUE}Launching SysCaller GUI...{Colors.ENDC}")
     subprocess.Popen(['python', 'GUI/sysgui.py'])
@@ -77,9 +83,10 @@ def main_menu():
         print(f"{Colors.OKGREEN}1. Run Validation Check{Colors.ENDC}")
         print(f"{Colors.OKGREEN}2. Run Compatibility Check{Colors.ENDC}")
         print(f"{Colors.OKGREEN}3. Run Syscall Verification{Colors.ENDC}")
-        print(f"{Colors.OKGREEN}4. Launch SysCaller GUI{Colors.ENDC}")
-        print(f"{Colors.OKGREEN}5. Exit{Colors.ENDC}")
-        choice = input(f"{Colors.BOLD}Select an Option (1-5): {Colors.ENDC}")
+        print(f"{Colors.OKGREEN}4. Run Syscall Obfuscation{Colors.ENDC}")
+        print(f"{Colors.OKGREEN}5. Launch SysCaller GUI{Colors.ENDC}")
+        print(f"{Colors.OKGREEN}6. Exit{Colors.ENDC}")
+        choice = input(f"{Colors.BOLD}Select an Option (1-6): {Colors.ENDC}")
         if choice == '1':
             run_validation_check()
         elif choice == '2':
@@ -87,13 +94,16 @@ def main_menu():
         elif choice == '3':
             run_syscall_verification()
         elif choice == '4':
-            launch_gui()
+            run_syscall_obfuscation()
         elif choice == '5':
+            launch_gui()
+        elif choice == '6':
             print(f"{Colors.FAIL}Exiting...{Colors.ENDC}")
             time.sleep(1)
             break
         else:
             print(f"{Colors.WARNING}Invalid Option. Please try Again.{Colors.ENDC}")
             time.sleep(1)
+
 if __name__ == "__main__":
     main_menu()
