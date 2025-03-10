@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout
                             QStyleFactory, QGraphicsDropShadowEffect, QToolButton, QLineEdit, QFileDialog, QGraphicsOpacityEffect)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize, QTimer, QPropertyAnimation
 from PyQt5.QtGui import QFont, QColor, QIcon, QFontDatabase
+from syssettings import SysCallerSettings
 
 class WorkerThread(QThread):
     output = pyqtSignal(str)
@@ -35,7 +36,7 @@ class WorkerThread(QThread):
                 universal_newlines=True,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
-            
+          
             def read_output():
                 while True:
                     if self.process.poll() is not None and not self.complete_output:
@@ -84,7 +85,7 @@ class SysCallerButton(QPushButton):
     def __init__(self, text, icon_path=None, tooltip=None, tooltip_detail=None):
         super().__init__(text)
         self.setFont(QFont(None, 10))
-        self.setMinimumHeight(60)
+        self.setMinimumHeight(45)
         self.setCursor(Qt.PointingHandCursor)
         if tooltip and tooltip_detail:
             self.setToolTip(f"""
@@ -150,6 +151,7 @@ class SysCallerButton(QPushButton):
             self.current_icon_size -= 1
             if self.current_icon_size <= 24:
                 self.icon_size_growing = True
+        
         self.setIconSize(QSize(self.current_icon_size, self.current_icon_size))
 
 class SysCallerOutput(QTextEdit):
@@ -358,7 +360,7 @@ class SysCallerWindow(QMainWindow):
         """)
         layout = QVBoxLayout(left_panel)
         layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSpacing(15)
+        layout.setSpacing(10)
         logo_image = QLabel()
         logo_pixmap = QIcon("GUI/icons/syscaller.png").pixmap(QSize(64, 64))
         logo_image.setPixmap(logo_pixmap)
@@ -436,7 +438,7 @@ class SysCallerWindow(QMainWindow):
         dll_path_layout.addWidget(browse_btn)
         dll_layout.addLayout(dll_path_layout)
         layout.addWidget(dll_frame)
-        layout.addSpacing(20)
+        layout.addSpacing(10)
         validate_btn = SysCallerButton(
             "Validation Check", 
             "GUI/icons/validate.png",
@@ -471,7 +473,27 @@ class SysCallerWindow(QMainWindow):
         )
         verify_btn.clicked.connect(self.run_verification)
         layout.addWidget(verify_btn)
-        layout.addSpacing(20)
+        obfuscate_btn = SysCallerButton(
+            "Syscall Obfuscation", 
+            "GUI/icons/obfuscate.png",
+            "Syscall Obfuscation",
+            "Obfuscates syscalls to enhance protection: <br><br>"
+            "• Randomizes syscall names and offsets <br>"
+            "• Adds junk instructions for anti-pattern <br>"
+            "• Maintains compatibility with existing code <br>"
+            "• Preserves original syscall functionality"
+        )
+        obfuscate_btn.clicked.connect(self.run_obfuscation)
+        layout.addWidget(obfuscate_btn)
+        settings_btn = SysCallerButton(
+            "Settings",
+            "GUI/icons/settings.png",
+            "SysCaller Settings",
+            "Configure build and obfuscation settings"
+        )
+        settings_btn.clicked.connect(self.show_settings)
+        layout.addWidget(settings_btn)
+        layout.addSpacing(10)
         status_frame = QFrame()
         status_frame.setStyleSheet("""
             QFrame {
@@ -562,6 +584,18 @@ class SysCallerWindow(QMainWindow):
         self.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Verify', 'sysverify.py')
         self.worker = WorkerThread(script_path, self.dll_path.text(), '--from-gui')
+        self.worker.output.connect(self.update_output)
+        self.worker.finished.connect(self.on_worker_finished)
+        self.worker.start()
+
+    def run_obfuscation(self):
+        if self.worker is not None and self.worker.isRunning():
+            return
+        self.status_bar.update_status("Running syscall obfuscation...", "working")
+        self.progress_bar.setMaximum(0)
+        self.output_text.clear()
+        script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'sysobfuscate.py')
+        self.worker = WorkerThread(script_path, self.dll_path.text())
         self.worker.output.connect(self.update_output)
         self.worker.finished.connect(self.on_worker_finished)
         self.worker.start()
@@ -660,6 +694,10 @@ class SysCallerWindow(QMainWindow):
         anim.setEndValue(1)
         anim.start()
 
+    def show_settings(self):
+        settings_dialog = SysCallerSettings(self)
+        settings_dialog.exec_()
+
 def main():
     os.environ['QT_LOGGING_RULES'] = '*.debug=false;qt.qpa.*=false'
     app = QApplication(sys.argv)
@@ -684,5 +722,6 @@ def main():
     window = SysCallerWindow()
     window.show()
     sys.exit(app.exec_())
+
 if __name__ == '__main__':
     main() 
