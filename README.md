@@ -1,53 +1,84 @@
-# SysCaller Library v1.0.0
+# SysCaller Library
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ad00dadd-0f4a-45f8-b668-a269f62431b4" alt="SysCaller Logo" width="400"/>
+</p>
 
 ## Overview
 
-The SysCaller Library is a powerful and flexible wrapper for Windows NT system calls, designed to simplify the process of interacting with low level system functions. This library provides a set of functions that allow developers to perform various system level operations, such as process management, memory management, and security checks.
+SysCaller is a robust wrapper for Windows NT system calls (syscalls) that provides direct access to the Windows NT API with added security and obfuscation benefits. By using direct syscalls instead of the standard Windows API functions, applications can bypass certain security monitoring tools and anticheat systems that hook into user mode API calls.
 
 ## Features
 
-- **Comprehensive API**: Access all the NT system calls through a simple and intuitive interface.
-- **Cross Platform Compatibility**: Designed to work seamlessly on Windows 10/11 64 bit systems. (Tested that Win7+ builds but not recommended!)
-- **Easy Integration**: Simple to include and link in your projects, with minimal setup required.
-- **Extensive Documentation**: Detailed API documentation and usage examples to help you get started quickly.
+- **Direct Syscall Access**: Bypasses user mode API hooks by directly invoking syscalls
+- **Comprehensive Coverage**: Includes wrappers for hundreds of NT system calls
+- **Obfuscation Layer**: Hides syscall IDs and provides protection against static analysis
+- **Cross Compatibility**: Works across different Windows versions (tested on Windows 10+ x64)
+- **Easy Integration**: Simple to include in your projects with minimal dependencies
+- **GUI/Build Tools**: Includes validation, compatibility checking, and GUI tools
 
 ## Getting Started
 
 ### Prerequisites
 
-- Visual Studio 2022 (Will make custom Cmake build soon!)
-- C++ 20 (Not sure about other versions)
-- Tested Windows 7+ x64
-- Python 3.8.10+ (For build tools)
+- **Windows 10+ (x64)**: The library is designed for 64 bit Windows systems (may work > Windows 10 )
+- **Visual Studio** with MASM support (any recent version should work)
+- **Python 3.8+**: Required for build tools (only during development)
 
-### Installation
+### Building the Library
 
-1. Clone the repository:
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/WindowsAPI/SysCaller.git
    cd SysCaller
    ```
 
-2. Build the library:
-   - Open the project in `Visual Studio`.
-   - Change the `configuration type` to `"Static Library"` if not already set.
-   - Make sure build is set to `x64` and `Release Mode`.
-   - run `pip install -r requirements.txt`.
-   - Naviate to the `Check` dir and run `syscaller.py `.
-   - Run Option 1. / Validation Check first
-   - Run Option 2. / Compatibility Check to see if it was successful.
-   - Run Option 3. Use GUI to use BuildTools
-   - Build the SysCaller project to generate the `SysCaller.lib` file.
+2. **Configure the Project**:
+   - Open the solution in Visual Studio
+   - Make sure the build is set to `release` & `x64` configuration
+   - Ensure MASM is enabled for assembly file compilation
 
-3. Include the library in your project:
-   - Add the SysCaller `include` path to `C/C++ -> General -> Additional Include Directories`.
-   - Add the dir that has `SysCaller.lib` to in `Linker -> General -> Additional Library Directories`.
-   - Add `SysCaller.lib` to `Linker -> Input -> Additional Dependencies` .
-   - Now you can `#include "syscaller.h"` in your project and start using SysCaller.
+3. **Run the BuildTools**:
+   ```bash
+   cd BuildTools
+   pip install -r requirements.txt
+   python syscaller.py
+   ```
+   - Use Option 1 to run validation checks
+   - Use Option 2 to verify compatibility with your system
+   - Use Option 3 to verify/xref func definitions
+   - Use Option 4 to obfuscate your syscaller build
+   - Use Option 5 to launch the GUI version of BuildTools (recommended)
 
-### Usage Example
+4. **Build the Library**:
+   - Build the solution to generate `SysCaller.lib`
 
-Heres a simple example of how to use the SysCaller Library:
+### Integration
+
+To use SysCaller in your project:
+
+1. **Include the Library in your Project Settings**:
+   - Add the SysCaller `Wrapper/include` directory to your project's include paths
+   - Add the directory containing `SysCaller.lib` to your linker's library paths
+   - Add `SysCaller.lib` to your linker's input dependencies
+
+2. **Include the Header in your code**:
+   ```cpp
+   #include "syscaller.h"
+   ```
+
+3. **Use the `Sys` prefixed functions instead of Nt/Zw functions**:
+   ```cpp
+   // Instead of NtAllocateVirtualMemory
+   SysAllocateVirtualMemory(processHandle, &baseAddress, 0, &regionSize, MEM_COMMIT, PAGE_READWRITE);
+   
+   // Instead of NtWriteVirtualMemory
+   SysWriteVirtualMemory(processHandle, baseAddress, buffer, bufferSize, &bytesWritten);
+   ```
+
+## Usage Example
+
+Here's a simple example demonstrating how to use SysCaller for DLL Injection using LoadLibA (check examples dir for entire code):
 
 ```cpp
 #include "bypass.h"
@@ -222,35 +253,35 @@ bool Bypass::LoadLibraryInj(const std::wstring& dllPath) {
 }
 ```
 
-### API Documentation
+## Documentation
 
-For detailed API documentation, please refer to the [API Documentation](#). (Coming soon until then refer to [NtDoc](https://ntdoc.m417z.com/) or check `sysNtFunctions.cpp` !)
+For detailed API documentation, please refer to the wrapper header files in the `Wrapper/include/Nt` directory. Each function is based on the Windows NT native API, and further information can be found at:
 
-### Contributing
+- [Windows Syscall Documentation](https://ntdoc.m417z.com/)
+- Any file in the  `Nt` directory
 
-Contributions will be welcome soon! If you want to contribute or had plans to please be on the lookout for more information!
+## Contributing
 
-### License
+Contributions are welcome! While this is primarily a passion project, I'm open to improvements and bug fixes.
 
-This project is licensed under the MIT License see the [LICENSE](https://github.com/WindowsAPI/SysCaller/blob/main/LICENSE) file for details.
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-Thanks to:
-+ [NtDoc](https://ntdoc.m417z.com/)
+- [NtDoc](https://ntdoc.m417z.com/) for the comprehensive Windows NT API documentation
+- [Microsoft](https://microsoft.com/) for the Windows operating system
 
-+ [Pekora](https://pekora.zip/)
+## Disclaimer
 
-+ [Microsoft](https://microsoft.com/)
+- **Educational Purpose**: SysCaller is created for educational and research purposes.
+- **Legitimate Use**: While the library can be used to bypass certain security mechanisms, it is intended for legitimate security research, penetration testing, and software development.
+- **No Liability**: The author is not responsible for any misuse of this library or any actions taken with it.
+- **Legal Compliance**: Users must ensure they comply with all applicable laws and regulations when using this software.
 
-- The community for their support and feedback.
+---
 
-### Disclaimer
-
-- **Passion Project**: This is an experimental project created for educational purposes I will update it as I find the time.
-- **Learning Tool**: SysCaller is intended to help users learn about Windows NT system calls and low level programming.
-- **No Liability**: I am not responsible or liable for any actions taken using SysCaller.
-- **Usage**: While I have personally used SysCaller for various purposes, including bypassing some AntiCheat systems for fun, I will not provide guidance on such activities.
-- **Potential Applications**: There are many legitimate ways to utilize this library, and I encourage users to explore its capabilities responsibly.
-
-![image](https://github.com/user-attachments/assets/ad00dadd-0f4a-45f8-b668-a269f62431b4)
+<p align="center">
+  <i>SysCaller - Bridging the gap between user mode and kernel mode</i>
+</p> 
