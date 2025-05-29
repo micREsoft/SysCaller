@@ -1,14 +1,21 @@
 from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, 
                             QSpinBox, QFrame, QPushButton, QTabWidget,
-                            QWidget, QCheckBox, QGroupBox, QFormLayout)
+                            QWidget, QCheckBox, QGroupBox, QFormLayout,
+                            QScrollArea, QListWidget, QListWidgetItem, QLineEdit,
+                            QMessageBox)
 from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QIcon, QFont
+import os
+import re
+import pefile
+import shutil
 
 class SysCallerSettings(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("SysCaller Settings")
+        self.setWindowTitle("SysCaller v1.1.0")
         self.setMinimumWidth(500)
+        self.setMinimumHeight(600)
         self.setStyleSheet("""
             QDialog {
                 background: #252525;
@@ -64,13 +71,50 @@ class SysCallerSettings(QDialog):
             QLabel {
                 color: white;
             }
+            QListWidget {
+                background: #333333;
+                color: white;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QLineEdit {
+                background: #333333;
+                border: 1px solid #444444;
+                border-radius: 5px;
+                padding: 8px;
+                color: white;
+            }
+            QScrollArea {
+                border: none;
+                background: transparent;
+            }
         """)
+        
         self.settings = QSettings('SysCaller', 'BuildTools')
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout(self)
         tabs = QTabWidget()
+        general_tab = QWidget()
+        general_layout = QVBoxLayout(general_tab)
+        reset_group = QGroupBox("Reset to Default")
+        reset_layout = QVBoxLayout()
+        description = QLabel("Reset Syscaller to it's default state. This will revert any changes made by obfuscation or manual editing.")
+        description.setWordWrap(True)
+        reset_layout.addWidget(description)
+        default_btn = QPushButton("Restore Default Files")
+        default_btn.setMinimumHeight(40)
+        default_btn.setIcon(QIcon("GUI/icons/reset.png"))
+        default_btn.clicked.connect(self.restore_default_files)
+        reset_layout.addWidget(default_btn)
+        self.create_backup = QCheckBox("Create Backup")
+        self.create_backup.setChecked(self.settings.value('general/create_backup', True, bool))
+        self.create_backup.setToolTip("If checked, will create backup files in the Backups directory before restoring defaults")
+        reset_layout.addWidget(self.create_backup)
+        reset_group.setLayout(reset_layout)
+        general_layout.addWidget(reset_group)
+        general_layout.addStretch()
         obfuscation_tab = QWidget()
         obfuscation_layout = QVBoxLayout(obfuscation_tab)
         junk_group = QGroupBox("Junk Instructions")
@@ -83,7 +127,7 @@ class SysCallerSettings(QDialog):
         self.max_instructions.setValue(self.settings.value('obfuscation/max_instructions', 8, int))
         junk_layout.addRow("Minimum Instructions:", self.min_instructions)
         junk_layout.addRow("Maximum Instructions:", self.max_instructions)
-        self.use_advanced_junk = QCheckBox("(WIP IGNORE)")
+        self.use_advanced_junk = QCheckBox("Advanced Junk Instructions")
         self.use_advanced_junk.setChecked(self.settings.value('obfuscation/use_advanced_junk', False, bool))
         junk_layout.addRow(self.use_advanced_junk)
         junk_group.setLayout(junk_layout)
@@ -147,7 +191,35 @@ class SysCallerSettings(QDialog):
         interleaved_group.setLayout(interleaved_layout)
         obfuscation_layout.addWidget(interleaved_group)
         obfuscation_layout.addStretch()
+        integrity_tab = QWidget()
+        integrity_layout = QVBoxLayout(integrity_tab)
+        syscall_group = QGroupBox("Syscall Selection")
+        syscall_group.setToolTip("Select which syscalls to include in the final build")
+        syscall_layout = QVBoxLayout()
+        description = QLabel("Select the syscalls to include in the final build. Only selected syscalls will be processed during integrity checks and included in the final build!")
+        description.setWordWrap(True)
+        syscall_layout.addWidget(description)
+        select_layout = QHBoxLayout()
+        select_all_btn = QPushButton("Select All")
+        select_all_btn.clicked.connect(self.select_all_syscalls)
+        select_none_btn = QPushButton("Select None")
+        select_none_btn.clicked.connect(self.select_no_syscalls)
+        self.syscall_filter = QLineEdit()
+        self.syscall_filter.setPlaceholderText("Filter syscalls...")
+        self.syscall_filter.textChanged.connect(self.filter_syscalls)
+        select_layout.addWidget(select_all_btn)
+        select_layout.addWidget(select_none_btn)
+        select_layout.addWidget(self.syscall_filter)
+        syscall_layout.addLayout(select_layout)
+        self.syscall_list = QListWidget()
+        self.syscall_list.setSelectionMode(QListWidget.NoSelection)
+        self.load_syscalls()
+        syscall_layout.addWidget(self.syscall_list)
+        syscall_group.setLayout(syscall_layout)
+        integrity_layout.addWidget(syscall_group)
+        tabs.addTab(general_tab, "General")
         tabs.addTab(obfuscation_tab, "Obfuscation")
+        tabs.addTab(integrity_tab, "Integrity")
         layout.addWidget(tabs)
         button_layout = QHBoxLayout()
         save_btn = QPushButton("Save")
@@ -159,7 +231,104 @@ class SysCallerSettings(QDialog):
         button_layout.addWidget(cancel_btn)
         layout.addLayout(button_layout)
 
+    def restore_default_files(self):
+        reply = QMessageBox.question(self, "SysCaller v1.1.0", 
+                                    "Are you sure you want to restore default files?\nThis will overwrite your current syscaller.asm and sysNtFunctions.h files.",
+                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.No:
+            return
+        try:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            project_root = os.path.dirname(os.path.dirname(script_dir))
+            default_asm_path = os.path.join(project_root, 'BuildTools', 'Default', 'syscaller.asm')
+            default_header_path = os.path.join(project_root, 'BuildTools', 'Default', 'sysNtFunctions.h')
+            asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
+            header_path = os.path.join(project_root, 'Wrapper', 'include', 'Nt', 'sysNtFunctions.h')
+            if not os.path.exists(default_asm_path) or not os.path.exists(default_header_path):
+                QMessageBox.warning(self, "Missing Default Files", 
+                                   "Default files not found in BuildTools/Default directory.")
+                return
+            if self.create_backup.isChecked():
+                self.settings.setValue('general/create_backup', True)
+                backups_dir = os.path.join(project_root, 'Backups')
+                if not os.path.exists(backups_dir):
+                    os.makedirs(backups_dir)
+                from datetime import datetime
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                backup_asm_path = os.path.join(backups_dir, f'syscaller_{timestamp}.asm')
+                backup_header_path = os.path.join(backups_dir, f'sysNtFunctions_{timestamp}.h')
+                try:
+                    shutil.copy2(asm_path, backup_asm_path)
+                    shutil.copy2(header_path, backup_header_path)
+                    print(f"Backup created at: {backups_dir}")
+                except Exception as e:
+                    print(f"Warning: Could not create backup: {e}")
+                    QMessageBox.warning(self, "Backup Failed", 
+                                      f"Could not create backup files: {str(e)}\nContinuing with restore...")
+            else:
+                self.settings.setValue('general/create_backup', False)
+            shutil.copy2(default_asm_path, asm_path)
+            shutil.copy2(default_header_path, header_path)
+            QMessageBox.information(self, "SysCaller v1.1.0", 
+                                   "Default files have been restored successfully!")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred while restoring default files: {str(e)}")
+
+    def load_syscalls(self):
+        self.syscalls = []
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.dirname(os.path.dirname(script_dir))
+        header_path = os.path.join(project_root, 'Wrapper', 'include', 'Nt', 'sysNtFunctions.h')
+        if os.path.exists(header_path):
+            with open(header_path, 'r') as f:
+                for line in f:
+                    match = re.search(r'extern "C" NTSTATUS (Sys\w+)\(', line)
+                    if match:
+                        self.syscalls.append(match.group(1))
+        self.syscalls.sort()
+        selected_syscalls = self.settings.value('integrity/selected_syscalls', [], type=list)
+        if not selected_syscalls:
+            selected_syscalls = self.syscalls
+        for syscall in self.syscalls:
+            item = QListWidgetItem(syscall)
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            if syscall in selected_syscalls:
+                item.setCheckState(Qt.Checked)
+            else:
+                item.setCheckState(Qt.Unchecked)
+            self.syscall_list.addItem(item)
+    
+    def select_all_syscalls(self):
+        for i in range(self.syscall_list.count()):
+            item = self.syscall_list.item(i)
+            if not item.isHidden():
+                item.setCheckState(Qt.Checked)
+    
+    def select_no_syscalls(self):
+        for i in range(self.syscall_list.count()):
+            item = self.syscall_list.item(i)
+            if not item.isHidden():
+                item.setCheckState(Qt.Unchecked)
+    
+    def filter_syscalls(self, text):
+        for i in range(self.syscall_list.count()):
+            item = self.syscall_list.item(i)
+            if text.lower() in item.text().lower():
+                item.setHidden(False)
+            else:
+                item.setHidden(True)
+
     def save_settings(self):
+        self.settings.setValue('general/create_backup', self.create_backup.isChecked())
+        if self.create_backup.isChecked():
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            project_root = os.path.dirname(os.path.dirname(script_dir))
+            backups_dir = os.path.join(project_root, 'Backups')
+            if not os.path.exists(backups_dir):
+                try:
+                    os.makedirs(backups_dir)
+                except Exception as e:
+                    print(f"Warning: Could not create Backups directory: {e}")
         self.settings.setValue('obfuscation/min_instructions', self.min_instructions.value())
         self.settings.setValue('obfuscation/max_instructions', self.max_instructions.value())
         self.settings.setValue('obfuscation/use_advanced_junk', self.use_advanced_junk.isChecked())
@@ -170,4 +339,10 @@ class SysCallerSettings(QDialog):
         self.settings.setValue('obfuscation/enable_encryption', self.enable_encryption.isChecked())
         self.settings.setValue('obfuscation/enable_chunking', self.enable_chunking.isChecked())
         self.settings.setValue('obfuscation/enable_interleaved', self.enable_interleaved.isChecked())
+        selected_syscalls = []
+        for i in range(self.syscall_list.count()):
+            item = self.syscall_list.item(i)
+            if item.checkState() == Qt.Checked:
+                selected_syscalls.append(item.text())
+        self.settings.setValue('integrity/selected_syscalls', selected_syscalls)
         self.accept() 
