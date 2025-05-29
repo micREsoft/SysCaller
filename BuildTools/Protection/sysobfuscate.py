@@ -1,6 +1,7 @@
 import random
 import string
 import os
+import re
 try:
     from PyQt5.QtCore import QSettings
 except ImportError:
@@ -17,7 +18,6 @@ def generate_random_name(used_names):
     settings = QSettings('SysCaller', 'BuildTools')
     prefix_length = settings.value('obfuscation/syscall_prefix_length', 8, type=int)
     number_length = settings.value('obfuscation/syscall_number_length', 6, type=int)
-    
     while True:
         prefix = generate_random_string(prefix_length)
         number = str(random.randint(10**(number_length-1), (10**number_length)-1))
@@ -134,8 +134,45 @@ def generate_junk_instructions():
         "    mov r15, r15\n",
     ]
     if use_advanced:
-        advanced_junk = [ # (STILL WIP DO NOT USE)
-            "    test r8, r8\n",
+        advanced_junk = [
+            "    pause\n",
+            "    fnop\n",
+            "    cld\n",
+            "    std\n    cld\n",
+            "    clc\n",
+            "    stc\n    clc\n",
+            "    cmc\n    cmc\n",
+            "    xor r8d, 0\n",
+            "    xor r9d, 0\n",
+            "    and r10d, -1\n",
+            "    and r11d, -1\n",
+            "    or r12d, 0\n",
+            "    or r13d, 0\n",
+            "    add r14d, 0\n",
+            "    add r15d, 0\n",
+            "    sub rax, 0\n",
+            "    sub rbx, 0\n",
+            "    db 66h\n    nop\n",
+            "    db 0Fh, 1Fh, 00h\n",
+            "    db 0Fh, 1Fh, 40h, 00h\n",
+            "    db 0Fh, 1Fh, 44h, 00h, 00h\n",
+            "    db 66h, 0Fh, 1Fh, 44h, 00h, 00h\n",
+            "    shl r8, 0\n",
+            "    shr r9, 0\n",
+            "    ror r10, 0\n",
+            "    rol r11, 0\n",
+            "    bswap rax\n    bswap rax\n",
+            "    not r12\n    not r12\n",
+            "    neg r13\n    neg r13\n",
+            "    inc r14\n    dec r14\n",
+            "    dec r15\n    inc r15\n",
+            "    lahf\n    sahf\n",
+            "    prefetchnta [rsp]\n",
+            "    lfence\n",
+            "    sfence\n",
+            "    mfence\n",
+            "    movq xmm0, xmm0\n",
+            "    movq xmm1, xmm1\n",
         ]
         junk_instructions.extend(random.choices(advanced_junk, k=random.randint(2, 8)))
     return ''.join(random.choices(junk_instructions, k=random.randint(min_inst, max_inst)))
@@ -197,13 +234,17 @@ def generate_exports():
     project_root = os.path.dirname(os.path.dirname(script_dir))
     asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
     header_path = os.path.join(project_root, 'Wrapper', 'include', 'Nt', 'sysNtFunctions.h')
+    settings = QSettings('SysCaller', 'BuildTools')
+    selected_syscalls = settings.value('integrity/selected_syscalls', [], type=list)
+    use_all_syscalls = len(selected_syscalls) == 0
     used_names = set()
     used_offsets = set()
     used_offset_names = set()
-    offset_name_map = {}
-    syscall_map = {}
-    syscall_offsets = {}
-    real_to_fake_offset = {}
+    offset_name_map = {}  # Maps fake offset to random name
+    # Read syscall names and generate mapping
+    syscall_map = {}  # Maps original syscall to random name
+    syscall_offsets = {}  # Maps original syscall to its offset
+    real_to_fake_offset = {}  # Maps real offset to fake offset
     syscall_stubs = []
     current_stub = []
     with open(asm_path, 'r') as f:
@@ -215,8 +256,9 @@ def generate_exports():
                 current_syscall = line.split()[0]
                 in_stub = True
                 current_stub = [line]
-                if current_syscall not in syscall_map:
-                    syscall_map[current_syscall] = generate_random_name(used_names)
+                if use_all_syscalls or current_syscall in selected_syscalls:
+                    if current_syscall not in syscall_map:
+                        syscall_map[current_syscall] = generate_random_name(used_names)
             elif in_stub:
                 current_stub.append(line)
                 if 'mov eax,' in line and current_syscall:
@@ -229,7 +271,8 @@ def generate_exports():
                         print(f"Error parsing offset for {current_syscall}: {e}")
                 elif ' ENDP' in line:
                     in_stub = False
-                    syscall_stubs.append((current_syscall, current_stub))
+                    if use_all_syscalls or current_syscall in selected_syscalls:
+                        syscall_stubs.append((current_syscall, current_stub))
     settings = QSettings('SysCaller', 'BuildTools')
     shuffle_sequence = settings.value('obfuscation/shuffle_sequence', True, bool)
     if shuffle_sequence:
@@ -285,22 +328,86 @@ def generate_exports():
             break
     with open(asm_path, 'w') as f:
         f.writelines(new_content)
+    all_syscalls = []
+    all_header_lines = []
+    current_block = []
+    in_block = False
+    current_syscall = None
     with open(header_path, 'r') as f:
         header_content = f.readlines()
     new_header_content = []
-    for line in header_content:
+    skip_block = False
+    ending_lines = []
+    for i in range(len(header_content)-1, -1, -1):
+        line = header_content[i].strip()
+        if line == "#endif" or line.startswith("#endif "):
+            ending_lines.insert(0, header_content[i])
+            j = i - 1
+            while j >= 0 and (header_content[j].strip() == "" or header_content[j].strip().startswith("//")):
+                ending_lines.insert(0, header_content[j])
+                j -= 1
+            break
+    header_part_ended = False
+    for i, line in enumerate(header_content):
+        if any(line == end_line for end_line in ending_lines):
+            continue
+        if not header_part_ended and 'extern "C" NTSTATUS Sys' in line:
+            header_part_ended = True
+        if not header_part_ended:
+            if "_WIN64" in line and "#ifdef" in line:
+                new_header_content.append(line)
+                new_header_content.append("\n")
+                continue
+            new_header_content.append(line)
+            continue
         if line.startswith('extern "C" NTSTATUS Sys'):
-            syscall = line.split('NTSTATUS ')[1].split('(')[0].strip()
-            if syscall in syscall_map:
-                line = line.replace(syscall, syscall_map[syscall])
-        new_header_content.append(line)
+            match = re.search(r'extern "C" NTSTATUS (Sys\w+)\(', line)
+            if match:
+                current_syscall = match.group(1)
+                if use_all_syscalls or current_syscall in selected_syscalls:
+                    skip_block = False
+                    if current_syscall in syscall_map:
+                        line = line.replace(current_syscall, syscall_map[current_syscall])
+                    new_header_content.append(line)
+                else:
+                    skip_block = True
+                continue
+        if not skip_block:
+            new_header_content.append(line)
+        elif line.strip() == ");":
+            skip_block = False
     new_header_content.append("\n// Syscall name mappings\n")
     for original, random_name in syscall_map.items():
         new_header_content.append(f"#define {original} {random_name}\n")
+    cleaned_header_content = []
+    prev_empty = False
+    for line in new_header_content:
+        if line.strip() == "":
+            if not prev_empty:
+                cleaned_header_content.append(line)
+                prev_empty = True
+        else:
+            cleaned_header_content.append(line)
+            prev_empty = False
+    if ending_lines:
+        if cleaned_header_content and cleaned_header_content[-1].strip() != "":
+            cleaned_header_content.append("\n")
+        non_empty_ending_found = False
+        filtered_ending_lines = []
+        for line in ending_lines:
+            if line.strip() != "" or non_empty_ending_found:
+                filtered_ending_lines.append(line)
+                non_empty_ending_found = True
+            else:
+                continue
+        cleaned_header_content.extend(filtered_ending_lines)
+    if cleaned_header_content and not cleaned_header_content[-1].endswith('\n'):
+        cleaned_header_content[-1] += '\n'
     with open(header_path, 'w') as f:
-        f.writelines(new_header_content)
+        f.writelines(cleaned_header_content)
     print(f"Generated {len(syscall_map)} unique syscalls with obfuscated names, offsets, and junk instructions")
     if shuffle_sequence:
         print("Syscall sequence has been randomized")
+
 if __name__ == "__main__":
     generate_exports()
