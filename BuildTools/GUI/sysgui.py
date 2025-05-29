@@ -151,7 +151,6 @@ class SysCallerButton(QPushButton):
             self.current_icon_size -= 1
             if self.current_icon_size <= 24:
                 self.icon_size_growing = True
-        
         self.setIconSize(QSize(self.current_icon_size, self.current_icon_size))
 
 class SysCallerOutput(QTextEdit):
@@ -305,7 +304,7 @@ class SysCallerWindow(QMainWindow):
         """)
         layout = QHBoxLayout(title_bar)
         layout.setContentsMargins(20, 0, 20, 0)
-        title = QLabel("1.0.0")
+        title = QLabel("1.1.0")
         title.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
         layout.addWidget(title)
         controls_layout = QHBoxLayout()
@@ -343,6 +342,7 @@ class SysCallerWindow(QMainWindow):
             QToolButton:hover { background: #FF8078; }
         """)
         close_btn.clicked.connect(self.close)
+        
         controls_layout.addWidget(minimize_btn)
         controls_layout.addWidget(maximize_btn)
         controls_layout.addWidget(close_btn)
@@ -377,7 +377,7 @@ class SysCallerWindow(QMainWindow):
         """)
         logo_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo_label)
-        version_label = QLabel("v1.0.0")
+        version_label = QLabel("v1.1.0")
         version_label.setStyleSheet("color: #666666; font-size: 12px;")
         version_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(version_label)
@@ -489,7 +489,7 @@ class SysCallerWindow(QMainWindow):
             "Settings",
             "GUI/icons/settings.png",
             "SysCaller Settings",
-            "Configure build and obfuscation settings"
+            "Configure SysCaller settings"
         )
         settings_btn.clicked.connect(self.show_settings)
         layout.addWidget(settings_btn)
