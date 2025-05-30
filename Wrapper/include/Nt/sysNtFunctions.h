@@ -1429,7 +1429,7 @@ extern "C" NTSTATUS SysGetContextThread(
     PCONTEXT ThreadContext
 );
 
-extern "C" ULONG SysGetCurrentProcessorNumber(VOID);
+extern "C" NTSTATUS SysGetCurrentProcessorNumber(VOID);
 
 extern "C" NTSTATUS SysGetCurrentProcessorNumberEx(
     PPROCESSOR_NUMBER ProcessorNumber OPTIONAL
