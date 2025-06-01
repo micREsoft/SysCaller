@@ -21,13 +21,21 @@ def update_syscalls(asm_file, syscall_numbers):
     settings = QSettings('SysCaller', 'BuildTools')
     selected_syscalls = settings.value('integrity/selected_syscalls', [], type=list)
     use_all_syscalls = len(selected_syscalls) == 0
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
     for i, line in enumerate(lines):
-        proc_match = re.search(r"(Sys\w+)\s+PROC", line)
+        proc_match = re.search(r"(SC\w+)\s+PROC", line)
         if proc_match:
-            syscall_name = proc_match.group(1)
-            expected_nt_name = "Nt" + syscall_name[3:]
-            expected_zw_name = "Zw" + syscall_name[3:]
-            syscall_id = syscall_numbers.get(expected_nt_name, syscall_numbers.get(expected_zw_name, None))
+            original_name = proc_match.group(1)
+            syscall_name = syscall_prefix + original_name[2:]
+            base_name = original_name[2:]
+            if syscall_mode == "Nt":
+                expected_dll_name = "Nt" + base_name
+                expected_alt_name = "Zw" + base_name
+            else:
+                expected_dll_name = "Zw" + base_name
+                expected_alt_name = "Nt" + base_name
+            syscall_id = syscall_numbers.get(expected_dll_name, syscall_numbers.get(expected_alt_name, None))
             if (not use_all_syscalls and syscall_name not in selected_syscalls) or syscall_id is None:
                 if syscall_id is None:
                     print(f"Removing {syscall_name} (not found in ntdll.dll)")
@@ -36,15 +44,26 @@ def update_syscalls(asm_file, syscall_numbers):
                 skip_block = True
             else:
                 print(f"Updating {syscall_name} with syscall ID: 0x{syscall_id:X}")
-                updated_lines.append(line)
+                updated_line = line.replace(original_name, syscall_name)
+                updated_lines.append(updated_line)
                 skip_block = False
             continue
         if skip_block:
             if "ENDP" in line:
                 skip_block = False
             continue
-        if "<syscall_id>" in line and syscall_name:
-            syscall_id = syscall_numbers.get("Nt" + syscall_name[3:], syscall_numbers.get("Zw" + syscall_name[3:], None))
+        if "SC" in line and not skip_block:
+            updated_line = re.sub(r'\bSC(\w+)\b', fr'{syscall_prefix}\1', line)
+            updated_lines.append(updated_line)
+        elif "<syscall_id>" in line and syscall_name:
+            base_name = syscall_name[len(syscall_prefix):]
+            if syscall_mode == "Nt":
+                expected_dll_name = "Nt" + base_name
+                expected_alt_name = "Zw" + base_name
+            else:
+                expected_dll_name = "Zw" + base_name
+                expected_alt_name = "Nt" + base_name
+            syscall_id = syscall_numbers.get(expected_dll_name, syscall_numbers.get(expected_alt_name, None))
             if syscall_id is not None:
                 updated_lines.append(line.replace("<syscall_id>", f"0{syscall_id:X}"))
             else:
@@ -71,13 +90,16 @@ def update_syscalls(asm_file, syscall_numbers):
     print(f"Updated syscalls written to {asm_file}")
 
 def update_header_file(selected_syscalls, use_all_syscalls):
-    header_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'include', 'Nt', 'sysNtFunctions.h')
+    header_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
     with open(header_file_path, 'r') as file:
         lines = file.readlines()
     updated_lines = []
     skip_block = False
     header_part_ended = False
     ending_lines = []
+    settings = QSettings('SysCaller', 'BuildTools')
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
     for i in range(len(lines)-1, -1, -1):
         line = lines[i].strip()
         if line == "#endif" or line.startswith("#endif "):
@@ -90,7 +112,7 @@ def update_header_file(selected_syscalls, use_all_syscalls):
     for i, line in enumerate(lines):
         if any(line == end_line for end_line in ending_lines):
             continue
-        if not header_part_ended and 'extern "C" NTSTATUS Sys' in line:
+        if not header_part_ended and 'extern "C" NTSTATUS SC' in line:
             header_part_ended = True
         if not header_part_ended:
             if "_WIN64" in line and "#ifdef" in line:
@@ -99,18 +121,25 @@ def update_header_file(selected_syscalls, use_all_syscalls):
                 continue
             updated_lines.append(line)
             continue
-        if 'extern "C" NTSTATUS Sys' in line:
-            match = re.search(r'extern "C" NTSTATUS (Sys\w+)\(', line)
+        if 'extern "C" NTSTATUS SC' in line:
+            match = re.search(r'extern "C" NTSTATUS (SC\w+)\(', line)
             if match:
-                syscall_name = match.group(1)
+                original_name = match.group(1)
+                syscall_name = syscall_prefix + original_name[2:] 
+                
                 if use_all_syscalls or syscall_name in selected_syscalls:
                     skip_block = False
-                    updated_lines.append(line)
+                    updated_line = line.replace(original_name, syscall_name)
+                    updated_lines.append(updated_line)
                 else:
                     skip_block = True
                 continue
         if not skip_block:
-            updated_lines.append(line)
+            if "SC" in line:
+                updated_line = re.sub(r'\bSC(\w+)\b', fr'{syscall_prefix}\1', line)
+                updated_lines.append(updated_line)
+            else:
+                updated_lines.append(line)
         elif line.strip() == ");":
             skip_block = False
     cleaned_lines = []
