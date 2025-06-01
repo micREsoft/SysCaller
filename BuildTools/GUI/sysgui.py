@@ -342,7 +342,6 @@ class SysCallerWindow(QMainWindow):
             QToolButton:hover { background: #FF8078; }
         """)
         close_btn.clicked.connect(self.close)
-        
         controls_layout.addWidget(minimize_btn)
         controls_layout.addWidget(maximize_btn)
         controls_layout.addWidget(close_btn)
@@ -396,7 +395,7 @@ class SysCallerWindow(QMainWindow):
         dll_header.setStyleSheet("color: #888888; font-size: 12px; font-weight: bold;")
         dll_layout.addWidget(dll_header)
         dll_path_layout = QHBoxLayout()
-        self.dll_path = QLineEdit("C:\\Windows\\System32\\ntdll.dll")
+        self.dll_path = DllPathLineEdit("C:\\Windows\\System32\\ntdll.dll")
         self.dll_path.setStyleSheet("""
             QLineEdit {
                 background: #252525;
@@ -698,6 +697,29 @@ class SysCallerWindow(QMainWindow):
         settings_dialog = SysCallerSettings(self)
         settings_dialog.exec_()
 
+class DllPathLineEdit(QLineEdit):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            for url in event.mimeData().urls():
+                if url.toLocalFile().lower().endswith('.dll'):
+                    event.acceptProposedAction()
+                    return
+        event.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            for url in event.mimeData().urls():
+                file_path = url.toLocalFile()
+                if file_path.lower().endswith('.dll'):
+                    self.setText(file_path)
+                    event.acceptProposedAction()
+                    return
+        event.ignore()
+
 def main():
     os.environ['QT_LOGGING_RULES'] = '*.debug=false;qt.qpa.*=false'
     app = QApplication(sys.argv)
@@ -722,6 +744,6 @@ def main():
     window = SysCallerWindow()
     window.show()
     sys.exit(app.exec_())
-
+  
 if __name__ == '__main__':
     main() 
