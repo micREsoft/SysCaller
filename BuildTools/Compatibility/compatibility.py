@@ -42,13 +42,20 @@ def read_syscalls(asm_file):
                 unique_names[syscall['name']] = syscall['name']
         offset_match = re.search(r"mov\s+(eax|rax),\s*(0x[0-9A-Fa-f]+|[0-9A-Fa-f]+)h?", line)
         if syscall and offset_match:
-            syscall['offset'] = int(offset_match.group(2), 16)
-            if syscall['offset'] in unique_offsets:
-                syscall['duplicate_offset'] = True
-                syscall['duplicate_offset_with'] = unique_offsets[syscall['offset']]
-            else:
-                syscall['duplicate_offset'] = False
-                unique_offsets[syscall['offset']] = syscall['name']
+            try:
+                offset_value = offset_match.group(2)
+                if offset_value.startswith("0x"):
+                    syscall['offset'] = int(offset_value, 16)
+                else:
+                    syscall['offset'] = int(offset_value.rstrip("h"), 16)
+                if syscall['offset'] in unique_offsets:
+                    syscall['duplicate_offset'] = True
+                    syscall['duplicate_offset_with'] = unique_offsets[syscall['offset']]
+                else:
+                    syscall['duplicate_offset'] = False
+                    unique_offsets[syscall['offset']] = syscall['name']
+            except ValueError:
+                print(f"Warning: Could not parse offset value: {offset_match.group(2)}")
         
         if syscall and "ENDP" in line and syscall not in syscalls:
             syscalls.append(syscall)
