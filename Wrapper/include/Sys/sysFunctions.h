@@ -2,9 +2,10 @@
 #include "../syscaller.h"
 #include "sysTypes.h"
 #include "sysExternals.h"
+
 #ifdef _WIN64 // Only compile on 64bit systems.
 
-extern "C" NTSTATUS SysAcceptConnectPort(
+extern "C" NTSTATUS SCAcceptConnectPort(
     PHANDLE PortHandle,
     PVOID PortContext OPTIONAL,
     PPORT_MESSAGE ConnectionRequest,
@@ -12,7 +13,8 @@ extern "C" NTSTATUS SysAcceptConnectPort(
     PPORT_VIEW ServerView OPTIONAL,
     PREMOTE_PORT_VIEW ClientView OPTIONAL
 );
-extern "C" NTSTATUS SysAccessCheck(
+
+extern "C" NTSTATUS SCAccessCheck(
     PSECURITY_DESCRIPTOR SecurityDescriptor,
     HANDLE ClientToken,
     ACCESS_MASK DesiredAccess,
@@ -22,7 +24,8 @@ extern "C" NTSTATUS SysAccessCheck(
     PACCESS_MASK GrantedAccess,
     PNTSTATUS AccessStatus
 );
-extern "C" NTSTATUS SysAccessCheckAndAuditAlarm(
+
+extern "C" NTSTATUS SCAccessCheckAndAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     PUNICODE_STRING ObjectTypeName,
@@ -35,7 +38,8 @@ extern "C" NTSTATUS SysAccessCheckAndAuditAlarm(
     PNTSTATUS AccessStatus,
     PBOOLEAN GenerateOnClose
 );
-extern "C" NTSTATUS SysAccessCheckByType(
+
+extern "C" NTSTATUS SCAccessCheckByType(
     PSECURITY_DESCRIPTOR SecurityDescriptor,
     PSID PrincipalSelfSid OPTIONAL,
     HANDLE ClientToken,
@@ -48,7 +52,8 @@ extern "C" NTSTATUS SysAccessCheckByType(
     PACCESS_MASK GrantedAccess,
     PNTSTATUS AccessStatus
 );
-extern "C" NTSTATUS SysAccessCheckByTypeAndAuditAlarm(
+
+extern "C" NTSTATUS SCAccessCheckByTypeAndAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     PUNICODE_STRING ObjectTypeName,
@@ -66,7 +71,8 @@ extern "C" NTSTATUS SysAccessCheckByTypeAndAuditAlarm(
     PNTSTATUS AccessStatus,
     PBOOLEAN GenerateOnClose
 );
-extern "C" NTSTATUS SysAccessCheckByTypeResultList(
+
+extern "C" NTSTATUS SCAccessCheckByTypeResultList(
     PSECURITY_DESCRIPTOR SecurityDescriptor,
     PSID PrincipalSelfSid OPTIONAL,
     HANDLE ClientToken,
@@ -79,7 +85,8 @@ extern "C" NTSTATUS SysAccessCheckByTypeResultList(
     PACCESS_MASK GrantedAccess,
     PNTSTATUS AccessStatus
 );
-extern "C" NTSTATUS SysAccessCheckByTypeResultListAndAuditAlarm(
+
+extern "C" NTSTATUS SCAccessCheckByTypeResultListAndAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     PUNICODE_STRING ObjectTypeName,
@@ -97,7 +104,8 @@ extern "C" NTSTATUS SysAccessCheckByTypeResultListAndAuditAlarm(
     PNTSTATUS AccessStatus,
     PBOOLEAN GenerateOnClose
 );
-extern "C" NTSTATUS SysAccessCheckByTypeResultListAndAuditAlarmByHandle(
+
+extern "C" NTSTATUS SCAccessCheckByTypeResultListAndAuditAlarmByHandle(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     PUNICODE_STRING ObjectTypeName,
@@ -115,35 +123,42 @@ extern "C" NTSTATUS SysAccessCheckByTypeResultListAndAuditAlarmByHandle(
     PBOOLEAN GenerateOnClose,
     AUDIT_EVENT_HANDLE AuditHandle OPTIONAL
 );
-extern "C" NTSTATUS SysAcquireCrossVmMutant(
+
+extern "C" NTSTATUS SCAcquireCrossVmMutant(
     HANDLE CrossVmMutant,
     PLARGE_INTEGER Timeout
 );
-extern "C" NTSTATUS SysAcquireProcessActivityReference(
+
+extern "C" NTSTATUS SCAcquireProcessActivityReference(
     PHANDLE ActivityReferenceHandle,
     HANDLE ParentProcessHandle,
     PROCESS_ACTIVITY_TYPE Reserved
 );
-extern "C" NTSTATUS SysAddAtom(
+
+extern "C" NTSTATUS SCAddAtom(
     PCWSTR AtomName OPTIONAL,
     ULONG Length,
     PRTL_ATOM Atom OPTIONAL
 );
-extern "C" NTSTATUS SysAddAtomEx(
+
+extern "C" NTSTATUS SCAddAtomEx(
     PCWSTR AtomName OPTIONAL,
     ULONG Length,
     PRTL_ATOM Atom OPTIONAL,
     ULONG Flags
 );
-extern "C" NTSTATUS SysAddBootEntry(
+
+extern "C" NTSTATUS SCAddBootEntry(
     PBOOT_ENTRY BootEntry,
     PULONG Id OPTIONAL
 );
-extern "C" NTSTATUS SysAddDriverEntry(
+
+extern "C" NTSTATUS SCAddDriverEntry(
     PEFI_DRIVER_ENTRY DriverEntry,
     PULONG Id OPTIONAL
 );
-extern "C" NTSTATUS SysAdjustGroupsToken(
+
+extern "C" NTSTATUS SCAdjustGroupsToken(
     HANDLE TokenHandle,
     BOOLEAN ResetToDefault,
     PTOKEN_GROUPS NewState OPTIONAL,
@@ -151,7 +166,8 @@ extern "C" NTSTATUS SysAdjustGroupsToken(
     PTOKEN_GROUPS PreviousState OPTIONAL,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysAdjustPrivilegesToken(
+
+extern "C" NTSTATUS SCAdjustPrivilegesToken(
     HANDLE TokenHandle,
     BOOLEAN DisableAllPrivileges,
     PTOKEN_PRIVILEGES NewState OPTIONAL,
@@ -159,7 +175,8 @@ extern "C" NTSTATUS SysAdjustPrivilegesToken(
     PTOKEN_PRIVILEGES PreviousState OPTIONAL,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysAdjustTokenClaimsAndDeviceGroups(
+
+extern "C" NTSTATUS SCAdjustTokenClaimsAndDeviceGroups(
     HANDLE TokenHandle,
     BOOLEAN UserResetToDefault,
     BOOLEAN DeviceResetToDefault,
@@ -177,43 +194,52 @@ extern "C" NTSTATUS SysAdjustTokenClaimsAndDeviceGroups(
     PULONG DeviceReturnLength OPTIONAL,
     PULONG DeviceGroupsReturnBufferLength OPTIONAL
 );
-extern "C" NTSTATUS SysAlertResumeThread(
+
+extern "C" NTSTATUS SCAlertResumeThread(
     HANDLE ThreadHandle,
     PULONG PreviousSuspendCount OPTIONAL
 );
-extern "C" NTSTATUS SysAlertThread(
+
+extern "C" NTSTATUS SCAlertThread(
     HANDLE ThreadHandle
 );
-extern "C" NTSTATUS SysAlertThreadByThreadId(
+
+extern "C" NTSTATUS SCAlertThreadByThreadId(
     HANDLE ThreadId
 );
-extern "C" NTSTATUS SysAllocateLocallyUniqueId(
+
+extern "C" NTSTATUS SCAllocateLocallyUniqueId(
     PLUID Luid
 );
-extern "C" NTSTATUS SysAllocateReserveObject(
+
+extern "C" NTSTATUS SCAllocateReserveObject(
     PHANDLE MemoryReserveHandle,
     PCOBJECT_ATTRIBUTES ObjectAttributes,
     MEMORY_RESERVE_TYPE Type
 );
-extern "C" NTSTATUS SysAllocateUserPhysicalPages(
+
+extern "C" NTSTATUS SCAllocateUserPhysicalPages(
     HANDLE ProcessHandle,
     PSIZE_T NumberOfPages,
     PULONG_PTR UserPfnArray
 );
-extern "C" NTSTATUS SysAllocateUserPhysicalPagesEx(
+
+extern "C" NTSTATUS SCAllocateUserPhysicalPagesEx(
     HANDLE ProcessHandle,
     PULONG_PTR NumberOfPages,
     PULONG_PTR UserPfnArray,
     PMEM_EXTENDED_PARAMETER ExtendedParameters OPTIONAL,
     ULONG ExtendedParameterCount
 );
-extern "C" NTSTATUS SysAllocateUuids(
+
+extern "C" NTSTATUS SCAllocateUuids(
     PULARGE_INTEGER Time,
     PULONG Range,
     PULONG Sequence,
     PCHAR Seed
 );
-extern "C" NTSTATUS SysAllocateVirtualMemory(
+
+extern "C" NTSTATUS SCAllocateVirtualMemory(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     ULONG_PTR ZeroBits,
@@ -221,7 +247,8 @@ extern "C" NTSTATUS SysAllocateVirtualMemory(
     ULONG AllocationType,
     ULONG PageProtection
 );
-extern "C" NTSTATUS SysAllocateVirtualMemoryEx(
+
+extern "C" NTSTATUS SCAllocateVirtualMemoryEx(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     PSIZE_T RegionSize,
@@ -230,7 +257,8 @@ extern "C" NTSTATUS SysAllocateVirtualMemoryEx(
     PMEM_EXTENDED_PARAMETER ExtendedParameters OPTIONAL,
     ULONG ExtendedParameterCount
 );
-extern "C" NTSTATUS SysAlpcAcceptConnectPort(
+
+extern "C" NTSTATUS SCAlpcAcceptConnectPort(
     PHANDLE PortHandle,
     HANDLE ConnectionPortHandle,
     ULONG Flags,
@@ -241,12 +269,14 @@ extern "C" NTSTATUS SysAlpcAcceptConnectPort(
     PALPC_MESSAGE_ATTRIBUTES ConnectionMessageAttributes OPTIONAL,
     BOOLEAN AcceptConnection
 );
-extern "C" NTSTATUS SysAlpcCancelMessage(
+
+extern "C" NTSTATUS SCAlpcCancelMessage(
     HANDLE PortHandle,
     ULONG Flags,
     PALPC_CONTEXT_ATTR MessageContext
 );
-extern "C" NTSTATUS SysAlpcConnectPort(
+
+extern "C" NTSTATUS SCAlpcConnectPort(
     PHANDLE PortHandle,
     PUNICODE_STRING PortName,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -259,7 +289,8 @@ extern "C" NTSTATUS SysAlpcConnectPort(
     PALPC_MESSAGE_ATTRIBUTES InMessageAttributes OPTIONAL,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysAlpcConnectPortEx(
+
+extern "C" NTSTATUS SCAlpcConnectPortEx(
     PHANDLE PortHandle,
     POBJECT_ATTRIBUTES ConnectionPortObjectAttributes,
     POBJECT_ATTRIBUTES ClientPortObjectAttributes OPTIONAL,
@@ -272,12 +303,14 @@ extern "C" NTSTATUS SysAlpcConnectPortEx(
     PALPC_MESSAGE_ATTRIBUTES InMessageAttributes OPTIONAL,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysAlpcCreatePort(
+
+extern "C" NTSTATUS SCAlpcCreatePort(
     PHANDLE PortHandle,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     PALPC_PORT_ATTRIBUTES PortAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysAlpcCreatePortSection(
+
+extern "C" NTSTATUS SCAlpcCreatePortSection(
     HANDLE PortHandle,
     ULONG Flags,
     HANDLE SectionHandle OPTIONAL,
@@ -285,57 +318,68 @@ extern "C" NTSTATUS SysAlpcCreatePortSection(
     PALPC_HANDLE AlpcSectionHandle,
     PSIZE_T ActualSectionSize
 );
-extern "C" NTSTATUS SysAlpcCreateResourceReserve(
+
+extern "C" NTSTATUS SCAlpcCreateResourceReserve(
     HANDLE PortHandle,
     ULONG Flags,
     SIZE_T MessageSize,
     PALPC_HANDLE ResourceId
 );
-extern "C" NTSTATUS SysAlpcCreateSectionView(
+
+extern "C" NTSTATUS SCAlpcCreateSectionView(
     HANDLE PortHandle,
     ULONG Flags,
     PALPC_DATA_VIEW_ATTR ViewAttributes
 );
-extern "C" NTSTATUS SysAlpcCreateSecurityContext(
+
+extern "C" NTSTATUS SCAlpcCreateSecurityContext(
     HANDLE PortHandle,
     ULONG Flags,
     PALPC_SECURITY_ATTR SecurityAttribute
 );
-extern "C" NTSTATUS SysAlpcDeletePortSection(
+
+extern "C" NTSTATUS SCAlpcDeletePortSection(
     HANDLE PortHandle,
     ULONG Flags,
     ALPC_HANDLE SectionHandle
 );
-extern "C" NTSTATUS SysAlpcDeleteResourceReserve(
+
+extern "C" NTSTATUS SCAlpcDeleteResourceReserve(
     HANDLE PortHandle,
     ULONG Flags,
     ALPC_HANDLE ResourceId
 );
-extern "C" NTSTATUS SysAlpcDeleteSectionView(
+
+extern "C" NTSTATUS SCAlpcDeleteSectionView(
     HANDLE PortHandle,
     ULONG Flags,
     PVOID ViewBase
 );
-extern "C" NTSTATUS SysAlpcDeleteSecurityContext(
+
+extern "C" NTSTATUS SCAlpcDeleteSecurityContext(
     HANDLE PortHandle,
     ULONG Flags,
     ALPC_HANDLE ContextHandle
 );
-extern "C" NTSTATUS SysAlpcDisconnectPort(
+
+extern "C" NTSTATUS SCAlpcDisconnectPort(
     HANDLE PortHandle,
     ULONG Flags
 );
-extern "C" NTSTATUS SysAlpcImpersonateClientContainerOfPort(
+
+extern "C" NTSTATUS SCAlpcImpersonateClientContainerOfPort(
     HANDLE PortHandle,
     PPORT_MESSAGE Message,
     ULONG Flags
 );
-extern "C" NTSTATUS SysAlpcImpersonateClientOfPort(
+
+extern "C" NTSTATUS SCAlpcImpersonateClientOfPort(
     HANDLE PortHandle,
     PPORT_MESSAGE Message,
     PVOID Flags
 );
-extern "C" NTSTATUS SysAlpcOpenSenderProcess(
+
+extern "C" NTSTATUS SCAlpcOpenSenderProcess(
     PHANDLE ProcessHandle,
     HANDLE PortHandle,
     PPORT_MESSAGE PortMessage,
@@ -343,7 +387,8 @@ extern "C" NTSTATUS SysAlpcOpenSenderProcess(
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysAlpcOpenSenderThread(
+
+extern "C" NTSTATUS SCAlpcOpenSenderThread(
     PHANDLE ThreadHandle,
     HANDLE PortHandle,
     PPORT_MESSAGE PortMessage,
@@ -351,14 +396,16 @@ extern "C" NTSTATUS SysAlpcOpenSenderThread(
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysAlpcQueryInformation(
+
+extern "C" NTSTATUS SCAlpcQueryInformation(
     HANDLE PortHandle OPTIONAL,
     ALPC_PORT_INFORMATION_CLASS PortInformationClass,
     PVOID PortInformation,
     ULONG Length,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysAlpcQueryInformationMessage(
+
+extern "C" NTSTATUS SCAlpcQueryInformationMessage(
     HANDLE PortHandle,
     PPORT_MESSAGE PortMessage,
     ALPC_MESSAGE_INFORMATION_CLASS MessageInformationClass,
@@ -366,12 +413,14 @@ extern "C" NTSTATUS SysAlpcQueryInformationMessage(
     ULONG Length,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysAlpcRevokeSecurityContext(
+
+extern "C" NTSTATUS SCAlpcRevokeSecurityContext(
     HANDLE PortHandle,
     ULONG Flags,
     ALPC_HANDLE ContextHandle
 );
-extern "C" NTSTATUS SysAlpcSendWaitReceivePort(
+
+extern "C" NTSTATUS SCAlpcSendWaitReceivePort(
     HANDLE PortHandle,
     ULONG Flags,
     PPORT_MESSAGE SendMessage OPTIONAL,
@@ -381,26 +430,31 @@ extern "C" NTSTATUS SysAlpcSendWaitReceivePort(
     PALPC_MESSAGE_ATTRIBUTES ReceiveMessageAttributes OPTIONAL,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysAlpcSetInformation(
+
+extern "C" NTSTATUS SCAlpcSetInformation(
     HANDLE PortHandle,
     ALPC_PORT_INFORMATION_CLASS PortInformationClass,
     PVOID PortInformation OPTIONAL,
     ULONG Length
 );
-extern "C" NTSTATUS SysApphelpCacheControl(
+
+extern "C" NTSTATUS SCApphelpCacheControl(
     ULONG Command,
     PVOID Buffer OPTIONAL,
     ULONG BufferSize
 );
-extern "C" NTSTATUS SysAreMappedFilesTheSame(
+
+extern "C" NTSTATUS SCAreMappedFilesTheSame(
     PVOID File1MappedAsAnImage,
     PVOID File2MappedAsFile
 );
-extern "C" NTSTATUS SysAssignProcessToJobObject(
+
+extern "C" NTSTATUS SCAssignProcessToJobObject(
     HANDLE JobHandle,
     HANDLE ProcessHandle
 );
-extern "C" NTSTATUS SysAssociateWaitCompletionPacket(
+
+extern "C" NTSTATUS SCAssociateWaitCompletionPacket(
     HANDLE WaitCompletionPacketHandle,
     HANDLE IoCompletionHandle,
     HANDLE TargetObjectHandle,
@@ -410,44 +464,53 @@ extern "C" NTSTATUS SysAssociateWaitCompletionPacket(
     ULONG_PTR IoStatusInformation,
     PBOOLEAN AlreadySignaled OPTIONAL
 );
-extern "C" NTSTATUS SysCallEnclave(
+
+extern "C" NTSTATUS SCCallEnclave(
     PENCLAVE_ROUTINE Routine,
     PVOID Reserved,
     ULONG Flags,
     PVOID * RoutineParamReturn
 );
-extern "C" NTSTATUS SysCallbackReturn(
+
+extern "C" NTSTATUS SCCallbackReturn(
     PVOID OutputBuffer OPTIONAL,
     ULONG OutputLength,
     NTSTATUS Status
 );
-extern "C" NTSTATUS SysCancelIoFile(
+
+extern "C" NTSTATUS SCCancelIoFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock
 );
-extern "C" NTSTATUS SysCancelIoFileEx(
+
+extern "C" NTSTATUS SCCancelIoFileEx(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoRequestToCancel OPTIONAL,
     PIO_STATUS_BLOCK IoStatusBlock
 );
-extern "C" NTSTATUS SysCancelSynchronousIoFile(
+
+extern "C" NTSTATUS SCCancelSynchronousIoFile(
     HANDLE ThreadHandle,
     PIO_STATUS_BLOCK IoRequestToCancel OPTIONAL,
     PIO_STATUS_BLOCK IoStatusBlock
 );
-extern "C" NTSTATUS SysCancelTimer(
+
+extern "C" NTSTATUS SCCancelTimer(
     HANDLE TimerHandle,
     PBOOLEAN CurrentState OPTIONAL
 );
-extern "C" NTSTATUS SysCancelTimer2(
+
+extern "C" NTSTATUS SCCancelTimer2(
     HANDLE TimerHandle,
     PT2_CANCEL_PARAMETERS Parameters
 );
-extern "C" NTSTATUS SysCancelWaitCompletionPacket(
+
+extern "C" NTSTATUS SCCancelWaitCompletionPacket(
     HANDLE WaitCompletionPacketHandle,
     BOOLEAN RemoveSignaledPacket
 );
-extern "C" NTSTATUS SysChangeProcessState(
+
+extern "C" NTSTATUS SCChangeProcessState(
     HANDLE ProcessStateChangeHandle,
     HANDLE ProcessHandle,
     PROCESS_STATE_CHANGE_TYPE StateChangeType,
@@ -455,7 +518,8 @@ extern "C" NTSTATUS SysChangeProcessState(
     SIZE_T ExtendedInformationLength OPTIONAL,
     ULONG64 Reserved OPTIONAL
 );
-extern "C" NTSTATUS SysChangeThreadState(
+
+extern "C" NTSTATUS SCChangeThreadState(
     HANDLE ThreadStateChangeHandle,
     HANDLE ThreadHandle,
     THREAD_STATE_CHANGE_TYPE StateChangeType,
@@ -463,57 +527,71 @@ extern "C" NTSTATUS SysChangeThreadState(
     SIZE_T ExtendedInformationLength OPTIONAL,
     ULONG64 Reserved OPTIONAL
 );
-extern "C" NTSTATUS SysClearEvent(
+
+extern "C" NTSTATUS SCClearEvent(
     HANDLE EventHandle
 );
-extern "C" NTSTATUS SysClose(
+
+extern "C" NTSTATUS SCClose(
     HANDLE Handle
 );
-extern "C" NTSTATUS SysCloseObjectAuditAlarm(
+
+extern "C" NTSTATUS SCCloseObjectAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     BOOLEAN GenerateOnClose
 );
-extern "C" NTSTATUS SysCommitComplete(
+
+extern "C" NTSTATUS SCCommitComplete(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysCommitEnlistment(
+
+extern "C" NTSTATUS SCCommitEnlistment(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysCommitRegistryTransaction(
+
+extern "C" NTSTATUS SCCommitRegistryTransaction(
     HANDLE RegistryTransactionHandle,
     ULONG Flags // Reserved
 );
-extern "C" NTSTATUS SysCommitTransaction(
+
+extern "C" NTSTATUS SCCommitTransaction(
     HANDLE TransactionHandle,
     BOOLEAN Wait
 );
-extern "C" NTSTATUS SysCompactKeys(
+
+extern "C" NTSTATUS SCCompactKeys(
     ULONG Count,
     HANDLE KeyArray[]
 );
-extern "C" NTSTATUS SysCompareObjects(
+
+extern "C" NTSTATUS SCCompareObjects(
     HANDLE FirstObjectHandle,
     HANDLE SecondObjectHandle
 );
-extern "C" NTSTATUS SysCompareSigningLevels(
+
+extern "C" NTSTATUS SCCompareSigningLevels(
     SE_SIGNING_LEVEL FirstSigningLevel,
     SE_SIGNING_LEVEL SecondSigningLevel
 );
-extern "C" NTSTATUS SysCompareTokens(
+
+extern "C" NTSTATUS SCCompareTokens(
     HANDLE FirstTokenHandle,
     HANDLE SecondTokenHandle,
     PBOOLEAN Equal
 );
-extern "C" NTSTATUS SysCompleteConnectPort(
+
+extern "C" NTSTATUS SCCompleteConnectPort(
     HANDLE PortHandle
 );
-extern "C" NTSTATUS SysCompressKey(
+
+extern "C" NTSTATUS SCCompressKey(
     HANDLE KeyHandle
 );
-extern "C" NTSTATUS SysConnectPort(
+
+extern "C" NTSTATUS SCConnectPort(
     PHANDLE PortHandle,
     PUNICODE_STRING PortName,
     PSECURITY_QUALITY_OF_SERVICE SecurityQos,
@@ -523,21 +601,25 @@ extern "C" NTSTATUS SysConnectPort(
     PVOID ConnectionInformation OPTIONAL,
     PULONG ConnectionInformationLength OPTIONAL
 );
-extern "C" NTSTATUS SysContinue(
+
+extern "C" NTSTATUS SCContinue(
     PCONTEXT ContextRecord,
     BOOLEAN TestAlert
 );
-extern "C" NTSTATUS SysContinueEx(
+
+extern "C" NTSTATUS SCContinueEx(
     PCONTEXT ContextRecord,
     PVOID ContinueArgument // Can be PKCONTINUE_ARGUMENT or BOOLEAN
 );
-extern "C" NTSTATUS SysConvertBetweenAuxiliaryCounterAndPerformanceCounter(
+
+extern "C" NTSTATUS SCConvertBetweenAuxiliaryCounterAndPerformanceCounter(
     BOOLEAN ConvertAuxiliaryToPerformanceCounter,
     PULONG64 PerformanceOrAuxiliaryCounterValue,
     PULONG64 ConvertedValue,
     PULONG64 ConversionError OPTIONAL
 );
-extern "C" NTSTATUS SysCopyFileChunk(
+
+extern "C" NTSTATUS SCCopyFileChunk(
     HANDLE SourceHandle,
     HANDLE DestinationHandle,
     HANDLE EventHandle OPTIONAL,
@@ -549,12 +631,14 @@ extern "C" NTSTATUS SysCopyFileChunk(
     PULONG DestKey OPTIONAL,
     ULONG Flags
 );
-extern "C" NTSTATUS SysCreateCpuPartition(
+
+extern "C" NTSTATUS SCCreateCpuPartition(
     PHANDLE CpuPartitionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysCreateCrossVmEvent(
+
+extern "C" NTSTATUS SCCreateCrossVmEvent(
     PHANDLE CrossVmEvent,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -562,7 +646,8 @@ extern "C" NTSTATUS SysCreateCrossVmEvent(
     LPCGUID VMID,
     LPCGUID ServiceID
 );
-extern "C" NTSTATUS SysCreateCrossVmMutant(
+
+extern "C" NTSTATUS SCCreateCrossVmMutant(
     PHANDLE EventHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -570,25 +655,29 @@ extern "C" NTSTATUS SysCreateCrossVmMutant(
     LPCGUID VMID,
     LPCGUID ServiceID
 );
-extern "C" NTSTATUS SysCreateDebugObject(
+
+extern "C" NTSTATUS SCCreateDebugObject(
     PHANDLE DebugObjectHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG Flags
 );
-extern "C" NTSTATUS SysCreateDirectoryObject(
+
+extern "C" NTSTATUS SCCreateDirectoryObject(
     PHANDLE DirectoryHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysCreateDirectoryObjectEx(
+
+extern "C" NTSTATUS SCCreateDirectoryObjectEx(
     PHANDLE DirectoryHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
     HANDLE ShadowDirectoryHandle,
     ULONG Flags
 );
-extern "C" NTSTATUS SysCreateEnclave(
+
+extern "C" NTSTATUS SCCreateEnclave(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     ULONG_PTR ZeroBits,
@@ -599,7 +688,8 @@ extern "C" NTSTATUS SysCreateEnclave(
     ULONG EnclaveInformationLength,
     PULONG EnclaveError OPTIONAL
 );
-extern "C" NTSTATUS SysCreateEnlistment(
+
+extern "C" NTSTATUS SCCreateEnlistment(
     PHANDLE EnlistmentHandle,
     ACCESS_MASK DesiredAccess,
     HANDLE ResourceManagerHandle,
@@ -609,19 +699,22 @@ extern "C" NTSTATUS SysCreateEnlistment(
     NOTIFICATION_MASK NotificationMask,
     PVOID EnlistmentKey OPTIONAL
 );
-extern "C" NTSTATUS SysCreateEvent(
+
+extern "C" NTSTATUS SCCreateEvent(
     PHANDLE EventHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     EVENT_TYPE EventType,
     BOOLEAN InitialState
 );
-extern "C" NTSTATUS SysCreateEventPair(
+
+extern "C" NTSTATUS SCCreateEventPair(
     PHANDLE EventPairHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysCreateFile(
+
+extern "C" NTSTATUS SCCreateFile(
     PHANDLE FileHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -634,35 +727,41 @@ extern "C" NTSTATUS SysCreateFile(
     PVOID EaBuffer OPTIONAL,
     ULONG EaLength
 );
-extern "C" NTSTATUS SysCreateIRTimer(
+
+extern "C" NTSTATUS SCCreateIRTimer(
     PHANDLE TimerHandle,
     PVOID Reserved,
     ACCESS_MASK DesiredAccess
 );
-extern "C" NTSTATUS SysCreateIoCompletion(
+
+extern "C" NTSTATUS SCCreateIoCompletion(
     PHANDLE IoCompletionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG NumberOfConcurrentThreads OPTIONAL
 );
-extern "C" NTSTATUS SysCreateIoRing(
+
+extern "C" NTSTATUS SCCreateIoRing(
     PHANDLE IoRingHandle,
     ULONG CreateParametersLength,
     PVOID CreateParameters,
     ULONG OutputParametersLength,
     PVOID OutputParameters
 );
-extern "C" NTSTATUS SysCreateJobObject(
+
+extern "C" NTSTATUS SCCreateJobObject(
     PHANDLE JobHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysCreateJobSet(
+
+extern "C" NTSTATUS SCCreateJobSet(
     ULONG NumJob,
     PJOB_SET_ARRAY UserJobSet,
     ULONG Flags
 );
-extern "C" NTSTATUS SysCreateKey(
+
+extern "C" NTSTATUS SCCreateKey(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -671,7 +770,8 @@ extern "C" NTSTATUS SysCreateKey(
     ULONG CreateOptions,
     PULONG Disposition OPTIONAL
 );
-extern "C" NTSTATUS SysCreateKeyTransacted(
+
+extern "C" NTSTATUS SCCreateKeyTransacted(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -681,13 +781,15 @@ extern "C" NTSTATUS SysCreateKeyTransacted(
     HANDLE TransactionHandle,
     PULONG Disposition OPTIONAL
 );
-extern "C" NTSTATUS SysCreateKeyedEvent(
+
+extern "C" NTSTATUS SCCreateKeyedEvent(
     PHANDLE KeyedEventHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG Flags
 );
-extern "C" NTSTATUS SysCreateLowBoxToken(
+
+extern "C" NTSTATUS SCCreateLowBoxToken(
     PHANDLE TokenHandle,
     HANDLE ExistingTokenHandle,
     ACCESS_MASK DesiredAccess,
@@ -698,7 +800,8 @@ extern "C" NTSTATUS SysCreateLowBoxToken(
     ULONG HandleCount,
     HANDLE * Handles OPTIONAL
 );
-extern "C" NTSTATUS SysCreateMailslotFile(
+
+extern "C" NTSTATUS SCCreateMailslotFile(
     PHANDLE FileHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -708,13 +811,15 @@ extern "C" NTSTATUS SysCreateMailslotFile(
     ULONG MaximumMessageSize,
     PLARGE_INTEGER ReadTimeout
 );
-extern "C" NTSTATUS SysCreateMutant(
+
+extern "C" NTSTATUS SCCreateMutant(
     PHANDLE MutantHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     BOOLEAN InitialOwner
 );
-extern "C" NTSTATUS SysCreateNamedPipeFile(
+
+extern "C" NTSTATUS SCCreateNamedPipeFile(
     PHANDLE FileHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -730,33 +835,38 @@ extern "C" NTSTATUS SysCreateNamedPipeFile(
     ULONG OutboundQuota,
     PLARGE_INTEGER DefaultTimeout
 );
-extern "C" NTSTATUS SysCreatePagingFile(
+
+extern "C" NTSTATUS SCCreatePagingFile(
     PUNICODE_STRING PageFileName,
     PLARGE_INTEGER MinimumSize,
     PLARGE_INTEGER MaximumSize,
     ULONG Priority
 );
-extern "C" NTSTATUS SysCreatePartition(
+
+extern "C" NTSTATUS SCCreatePartition(
     HANDLE ParentPartitionHandle OPTIONAL,
     PHANDLE PartitionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG PreferredNode
 );
-extern "C" NTSTATUS SysCreatePort(
+
+extern "C" NTSTATUS SCCreatePort(
     PHANDLE PortHandle,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG MaxConnectionInfoLength,
     ULONG MaxMessageLength,
     ULONG MaxPoolUsage OPTIONAL
 );
-extern "C" NTSTATUS SysCreatePrivateNamespace(
+
+extern "C" NTSTATUS SCCreatePrivateNamespace(
     PHANDLE NamespaceHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     POBJECT_BOUNDARY_DESCRIPTOR BoundaryDescriptor
 );
-extern "C" NTSTATUS SysCreateProcess(
+
+extern "C" NTSTATUS SCCreateProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -766,7 +876,8 @@ extern "C" NTSTATUS SysCreateProcess(
     HANDLE DebugPort OPTIONAL,
     HANDLE TokenHandle OPTIONAL
 );
-extern "C" NTSTATUS SysCreateProcessEx(
+
+extern "C" NTSTATUS SCCreateProcessEx(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -777,14 +888,16 @@ extern "C" NTSTATUS SysCreateProcessEx(
     HANDLE TokenHandle OPTIONAL,
     ULONG Reserved
 );
-extern "C" NTSTATUS SysCreateProcessStateChange(
+
+extern "C" NTSTATUS SCCreateProcessStateChange(
     PHANDLE ProcessStateChangeHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     HANDLE ProcessHandle,
     ULONG64 Reserved OPTIONAL
 );
-extern "C" NTSTATUS SysCreateProfile(
+
+extern "C" NTSTATUS SCCreateProfile(
     PHANDLE ProfileHandle,
     HANDLE Process OPTIONAL,
     PVOID ProfileBase,
@@ -795,7 +908,8 @@ extern "C" NTSTATUS SysCreateProfile(
     KPROFILE_SOURCE ProfileSource,
     KAFFINITY Affinity
 );
-extern "C" NTSTATUS SysCreateProfileEx(
+
+extern "C" NTSTATUS SCCreateProfileEx(
     PHANDLE ProfileHandle,
     HANDLE Process OPTIONAL,
     PVOID ProfileBase,
@@ -807,13 +921,15 @@ extern "C" NTSTATUS SysCreateProfileEx(
     USHORT GroupCount,
     PGROUP_AFFINITY GroupAffinity
 );
-extern "C" NTSTATUS SysCreateRegistryTransaction(
+
+extern "C" NTSTATUS SCCreateRegistryTransaction(
     PHANDLE RegistryTransactionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG CreateOptions
 );
-extern "C" NTSTATUS SysCreateResourceManager(
+
+extern "C" NTSTATUS SCCreateResourceManager(
     PHANDLE ResourceManagerHandle,
     ACCESS_MASK DesiredAccess,
     HANDLE TmHandle,
@@ -822,7 +938,8 @@ extern "C" NTSTATUS SysCreateResourceManager(
     ULONG CreateOptions OPTIONAL,
     PUNICODE_STRING Description OPTIONAL
 );
-extern "C" NTSTATUS SysCreateSection(
+
+extern "C" NTSTATUS SCCreateSection(
     PHANDLE SectionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -831,7 +948,8 @@ extern "C" NTSTATUS SysCreateSection(
     ULONG AllocationAttributes,
     HANDLE FileHandle
 );
-extern "C" NTSTATUS SysCreateSectionEx(
+
+extern "C" NTSTATUS SCCreateSectionEx(
     PHANDLE SectionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -842,20 +960,23 @@ extern "C" NTSTATUS SysCreateSectionEx(
     PMEM_EXTENDED_PARAMETER ExtendedParameters OPTIONAL,
     ULONG ExtendedParameterCount
 );
-extern "C" NTSTATUS SysCreateSemaphore(
+
+extern "C" NTSTATUS SCCreateSemaphore(
     PHANDLE SemaphoreHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     LONG InitialCount,
     LONG MaximumCount
 );
-extern "C" NTSTATUS SysCreateSymbolicLinkObject(
+
+extern "C" NTSTATUS SCCreateSymbolicLinkObject(
     PHANDLE LinkHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
     PUNICODE_STRING LinkTarget
 );
-extern "C" NTSTATUS SysCreateThread(
+
+extern "C" NTSTATUS SCCreateThread(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -865,7 +986,8 @@ extern "C" NTSTATUS SysCreateThread(
     PINITIAL_TEB InitialTeb,
     BOOLEAN CreateSuspended
 );
-extern "C" NTSTATUS SysCreateThreadEx(
+
+extern "C" NTSTATUS SCCreateThreadEx(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -878,27 +1000,31 @@ extern "C" NTSTATUS SysCreateThreadEx(
     SIZE_T MaximumStackSize,
     PPS_ATTRIBUTE_LIST AttributeList OPTIONAL
 );
-extern "C" NTSTATUS SysCreateThreadStateChange(
+
+extern "C" NTSTATUS SCCreateThreadStateChange(
     PHANDLE ThreadStateChangeHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     HANDLE ThreadHandle,
     ULONG64 Reserved OPTIONAL
 );
-extern "C" NTSTATUS SysCreateTimer(
+
+extern "C" NTSTATUS SCCreateTimer(
     PHANDLE TimerHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     TIMER_TYPE TimerType
 );
-extern "C" NTSTATUS SysCreateTimer2(
+
+extern "C" NTSTATUS SCCreateTimer2(
     PHANDLE TimerHandle,
     PVOID Reserved1 OPTIONAL,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG Attributes,
     ACCESS_MASK DesiredAccess
 );
-extern "C" NTSTATUS SysCreateToken(
+
+extern "C" NTSTATUS SCCreateToken(
     PHANDLE TokenHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -913,7 +1039,8 @@ extern "C" NTSTATUS SysCreateToken(
     PTOKEN_DEFAULT_DACL DefaultDacl OPTIONAL,
     PTOKEN_SOURCE Source
 );
-extern "C" NTSTATUS SysCreateTokenEx(
+
+extern "C" NTSTATUS SCCreateTokenEx(
     PHANDLE TokenHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -932,7 +1059,8 @@ extern "C" NTSTATUS SysCreateTokenEx(
     PTOKEN_DEFAULT_DACL DefaultDacl OPTIONAL,
     PTOKEN_SOURCE Source
 );
-extern "C" NTSTATUS SysCreateTransaction(
+
+extern "C" NTSTATUS SCCreateTransaction(
     PHANDLE TransactionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -944,7 +1072,8 @@ extern "C" NTSTATUS SysCreateTransaction(
     PLARGE_INTEGER Timeout OPTIONAL,
     PUNICODE_STRING Description OPTIONAL
 );
-extern "C" NTSTATUS SysCreateTransactionManager(
+
+extern "C" NTSTATUS SCCreateTransactionManager(
     PHANDLE TmHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -952,7 +1081,8 @@ extern "C" NTSTATUS SysCreateTransactionManager(
     ULONG CreateOptions OPTIONAL,
     ULONG CommitStrength OPTIONAL
 );
-extern "C" NTSTATUS SysCreateUserProcess(
+
+extern "C" NTSTATUS SCCreateUserProcess(
     PHANDLE ProcessHandle,
     PHANDLE ThreadHandle,
     ACCESS_MASK ProcessDesiredAccess,
@@ -965,19 +1095,22 @@ extern "C" NTSTATUS SysCreateUserProcess(
     PPS_CREATE_INFO CreateInfo,
     PPS_ATTRIBUTE_LIST AttributeList OPTIONAL
 );
-extern "C" NTSTATUS SysCreateWaitCompletionPacket(
+
+extern "C" NTSTATUS SCCreateWaitCompletionPacket(
     PHANDLE WaitCompletionPacketHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysCreateWaitablePort(
+
+extern "C" NTSTATUS SCCreateWaitablePort(
     PHANDLE PortHandle,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     ULONG MaxConnectionInfoLength,
     ULONG MaxMessageLength,
     ULONG MaxPoolUsage OPTIONAL
 );
-extern "C" NTSTATUS SysCreateWnfStateName(
+
+extern "C" NTSTATUS SCCreateWnfStateName(
     PWNF_STATE_NAME StateName,
     WNF_STATE_NAME_LIFETIME NameLifetime,
     WNF_DATA_SCOPE DataScope,
@@ -986,7 +1119,8 @@ extern "C" NTSTATUS SysCreateWnfStateName(
     ULONG MaximumStateSize,
     PSECURITY_DESCRIPTOR SecurityDescriptor
 );
-extern "C" NTSTATUS SysCreateWorkerFactory(
+
+extern "C" NTSTATUS SCCreateWorkerFactory(
     PHANDLE WorkerFactoryHandleReturn,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -998,54 +1132,68 @@ extern "C" NTSTATUS SysCreateWorkerFactory(
     SIZE_T StackReserve OPTIONAL,
     SIZE_T StackCommit OPTIONAL
 );
-extern "C" NTSTATUS SysDebugActiveProcess(
+
+extern "C" NTSTATUS SCDebugActiveProcess(
     HANDLE ProcessHandle,
     HANDLE DebugObjectHandle
 );
-extern "C" NTSTATUS SysDebugContinue(
+
+extern "C" NTSTATUS SCDebugContinue(
     HANDLE DebugObjectHandle,
     CLIENT_ID * ClientId,
     NTSTATUS ContinueStatus
 );
-extern "C" NTSTATUS SysDelayExecution(
+
+extern "C" NTSTATUS SCDelayExecution(
     BOOLEAN Alertable,
     PLARGE_INTEGER DelayInterval
 );
-extern "C" NTSTATUS SysDeleteAtom(
+
+extern "C" NTSTATUS SCDeleteAtom(
     PRTL_ATOM Atom
 );
-extern "C" NTSTATUS SysDeleteBootEntry(
+
+extern "C" NTSTATUS SCDeleteBootEntry(
     ULONG Id
 );
-extern "C" NTSTATUS SysDeleteDriverEntry(
+
+extern "C" NTSTATUS SCDeleteDriverEntry(
     ULONG Id
 );
-extern "C" NTSTATUS SysDeleteFile(
+
+extern "C" NTSTATUS SCDeleteFile(
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysDeleteKey(
+
+extern "C" NTSTATUS SCDeleteKey(
     HANDLE KeyHandle
 );
-extern "C" NTSTATUS SysDeleteObjectAuditAlarm(
+
+extern "C" NTSTATUS SCDeleteObjectAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     BOOLEAN GenerateOnClose
 );
-extern "C" NTSTATUS SysDeletePrivateNamespace(
+
+extern "C" NTSTATUS SCDeletePrivateNamespace(
     HANDLE NamespaceHandle
 );
-extern "C" NTSTATUS SysDeleteValueKey(
+
+extern "C" NTSTATUS SCDeleteValueKey(
     HANDLE KeyHandle,
     PUNICODE_STRING ValueName
 );
-extern "C" NTSTATUS SysDeleteWnfStateData(
+
+extern "C" NTSTATUS SCDeleteWnfStateData(
     PCWNF_STATE_NAME StateName,
     const VOID * ExplicitScope OPTIONAL
 );
-extern "C" NTSTATUS SysDeleteWnfStateName(
+
+extern "C" NTSTATUS SCDeleteWnfStateName(
     PCWNF_STATE_NAME StateName
 );
-extern "C" NTSTATUS SysDeviceIoControlFile(
+
+extern "C" NTSTATUS SCDeviceIoControlFile(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1057,21 +1205,26 @@ extern "C" NTSTATUS SysDeviceIoControlFile(
     PVOID OutputBuffer OPTIONAL,
     ULONG OutputBufferLength
 );
-extern "C" NTSTATUS SysDirectGraphicsCall(
+
+extern "C" NTSTATUS SCDirectGraphicsCall(
     ULONG InputBufferLength,
     PVOID InputBuffer OPTIONAL,
     ULONG OutputBufferLength,
     PVOID OutputBuffer OPTIONAL,
     PULONG ReturnLength
 );
-extern "C" NTSTATUS SysDisableLastKnownGood(VOID);
-extern "C" NTSTATUS SysDisplayString(
+
+extern "C" NTSTATUS SCDisableLastKnownGood(VOID);
+
+extern "C" NTSTATUS SCDisplayString(
     PUNICODE_STRING String
 );
-extern "C" NTSTATUS SysDrawText(
+
+extern "C" NTSTATUS SCDrawText(
     PUNICODE_STRING Text
 );
-extern "C" NTSTATUS SysDuplicateObject(
+
+extern "C" NTSTATUS SCDuplicateObject(
     HANDLE SourceProcessHandle,
     HANDLE SourceHandle,
     HANDLE TargetProcessHandle OPTIONAL,
@@ -1080,7 +1233,8 @@ extern "C" NTSTATUS SysDuplicateObject(
     ULONG HandleAttributes,
     ULONG Options
 );
-extern "C" NTSTATUS SysDuplicateToken(
+
+extern "C" NTSTATUS SCDuplicateToken(
     HANDLE ExistingTokenHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -1088,16 +1242,20 @@ extern "C" NTSTATUS SysDuplicateToken(
     TOKEN_TYPE Type,
     PHANDLE NewTokenHandle
 );
-extern "C" NTSTATUS SysEnableLastKnownGood(VOID);
-extern "C" NTSTATUS SysEnumerateBootEntries(
+
+extern "C" NTSTATUS SCEnableLastKnownGood(VOID);
+
+extern "C" NTSTATUS SCEnumerateBootEntries(
     PVOID Buffer OPTIONAL,
     PULONG BufferLength
 );
-extern "C" NTSTATUS SysEnumerateDriverEntries(
+
+extern "C" NTSTATUS SCEnumerateDriverEntries(
     PVOID Buffer OPTIONAL,
     PULONG BufferLength
 );
-extern "C" NTSTATUS SysEnumerateKey(
+
+extern "C" NTSTATUS SCEnumerateKey(
     HANDLE KeyHandle,
     ULONG Index,
     KEY_INFORMATION_CLASS KeyInformationClass,
@@ -1105,19 +1263,22 @@ extern "C" NTSTATUS SysEnumerateKey(
     ULONG Length,
     PULONG ResultLength
 );
-extern "C" NTSTATUS SysEnumerateSystemEnvironmentValuesEx(
+
+extern "C" NTSTATUS SCEnumerateSystemEnvironmentValuesEx(
     ULONG InformationClass,
     PVOID Buffer,
     PULONG BufferLength
 );
-extern "C" NTSTATUS SysEnumerateTransactionObject(
+
+extern "C" NTSTATUS SCEnumerateTransactionObject(
     HANDLE RootObjectHandle OPTIONAL,
     KTMOBJECT_TYPE QueryType,
     PKTMOBJECT_CURSOR ObjectCursor,
     ULONG ObjectCursorLength,
     PULONG ReturnLength
 );
-extern "C" NTSTATUS SysEnumerateValueKey(
+
+extern "C" NTSTATUS SCEnumerateValueKey(
     HANDLE KeyHandle,
     ULONG Index,
     KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
@@ -1125,18 +1286,21 @@ extern "C" NTSTATUS SysEnumerateValueKey(
     ULONG Length,
     PULONG ResultLength
 );
-extern "C" NTSTATUS SysExtendSection(
+
+extern "C" NTSTATUS SCExtendSection(
     HANDLE SectionHandle,
     PLARGE_INTEGER NewSectionSize
 );
-extern "C" NTSTATUS SysFilterBootOption(
+
+extern "C" NTSTATUS SCFilterBootOption(
     FILTER_BOOT_OPTION_OPERATION FilterOperation,
     ULONG ObjectType,
     ULONG ElementType,
     PVOID Data OPTIONAL,
     ULONG DataSize
 );
-extern "C" NTSTATUS SysFilterToken(
+
+extern "C" NTSTATUS SCFilterToken(
     HANDLE ExistingTokenHandle,
     ULONG Flags,
     PTOKEN_GROUPS SidsToDisable OPTIONAL,
@@ -1144,7 +1308,8 @@ extern "C" NTSTATUS SysFilterToken(
     PTOKEN_GROUPS RestrictedSids OPTIONAL,
     PHANDLE NewTokenHandle
 );
-extern "C" NTSTATUS SysFilterTokenEx(
+
+extern "C" NTSTATUS SCFilterTokenEx(
     HANDLE ExistingTokenHandle,
     ULONG Flags,
     PTOKEN_GROUPS SidsToDisable OPTIONAL,
@@ -1160,61 +1325,75 @@ extern "C" NTSTATUS SysFilterTokenEx(
     PTOKEN_GROUPS RestrictedDeviceGroups OPTIONAL,
     PHANDLE NewTokenHandle
 );
-extern "C" NTSTATUS SysFindAtom(
+
+extern "C" NTSTATUS SCFindAtom(
     PCWSTR AtomName OPTIONAL,
     ULONG Length,
     PRTL_ATOM Atom OPTIONAL
 );
-extern "C" NTSTATUS SysFlushBuffersFile(
+
+extern "C" NTSTATUS SCFlushBuffersFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock
 );
-extern "C" NTSTATUS SysFlushBuffersFileEx(
+
+extern "C" NTSTATUS SCFlushBuffersFileEx(
     HANDLE FileHandle,
     ULONG Flags,
     PVOID Parameters,
     ULONG ParametersSize,
     PIO_STATUS_BLOCK IoStatusBlock
 );
-extern "C" NTSTATUS SysFlushInstallUILanguage(
+
+extern "C" NTSTATUS SCFlushInstallUILanguage(
     LANGID InstallUILanguage,
     ULONG SetCommittedFlag
 );
-extern "C" NTSTATUS SysFlushInstructionCache(
+
+extern "C" NTSTATUS SCFlushInstructionCache(
     HANDLE ProcessHandle,
     PVOID BaseAddress OPTIONAL,
     SIZE_T Length
 );
-extern "C" NTSTATUS SysFlushKey(
+
+extern "C" NTSTATUS SCFlushKey(
     HANDLE KeyHandle
 );
-extern "C" NTSTATUS SysFlushProcessWriteBuffers(VOID);
-extern "C" NTSTATUS SysFlushVirtualMemory(
+
+extern "C" NTSTATUS SCFlushProcessWriteBuffers(VOID);
+
+extern "C" NTSTATUS SCFlushVirtualMemory(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     PSIZE_T RegionSize,
     PIO_STATUS_BLOCK IoStatus
 );
-extern "C" NTSTATUS SysFlushWriteBuffer(VOID);
-extern "C" NTSTATUS SysFreeUserPhysicalPages(
+
+extern "C" NTSTATUS SCFlushWriteBuffer(VOID);
+
+extern "C" NTSTATUS SCFreeUserPhysicalPages(
     HANDLE ProcessHandle,
     PULONG_PTR NumberOfPages,
     PULONG_PTR UserPfnArray
 );
-extern "C" NTSTATUS SysFreeVirtualMemory(
+
+extern "C" NTSTATUS SCFreeVirtualMemory(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     PSIZE_T RegionSize,
     ULONG FreeType
 );
-extern "C" NTSTATUS SysFreezeRegistry(
+
+extern "C" NTSTATUS SCFreezeRegistry(
     ULONG TimeOutInSeconds
 );
-extern "C" NTSTATUS SysFreezeTransactions(
+
+extern "C" NTSTATUS SCFreezeTransactions(
     PLARGE_INTEGER FreezeTimeout,
     PLARGE_INTEGER ThawTimeout
 );
-extern "C" NTSTATUS SysFsControlFile(
+
+extern "C" NTSTATUS SCFsControlFile(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1226,7 +1405,8 @@ extern "C" NTSTATUS SysFsControlFile(
     PVOID OutputBuffer OPTIONAL,
     ULONG OutputBufferLength
 );
-extern "C" NTSTATUS SysGetCachedSigningLevel(
+
+extern "C" NTSTATUS SCGetCachedSigningLevel(
     HANDLE File,
     PULONG Flags,
     PSE_SIGNING_LEVEL SigningLevel,
@@ -1234,7 +1414,8 @@ extern "C" NTSTATUS SysGetCachedSigningLevel(
     PULONG ThumbprintSize OPTIONAL,
     PULONG ThumbprintAlgorithm OPTIONAL
 );
-extern "C" NTSTATUS SysGetCompleteWnfStateSubscription(
+
+extern "C" NTSTATUS SCGetCompleteWnfStateSubscription(
     PWNF_STATE_NAME OldDescriptorStateName OPTIONAL,
     ULONG64 * OldSubscriptionId OPTIONAL,
     ULONG OldDescriptorEventMask,
@@ -1242,31 +1423,38 @@ extern "C" NTSTATUS SysGetCompleteWnfStateSubscription(
     PWNF_DELIVERY_DESCRIPTOR NewDeliveryDescriptor,
     ULONG DescriptorSize
 );
-extern "C" NTSTATUS SysGetContextThread(
+
+extern "C" NTSTATUS SCGetContextThread(
     HANDLE ThreadHandle,
     PCONTEXT ThreadContext
 );
-extern "C" NTSTATUS SysGetCurrentProcessorNumber(VOID);
-extern "C" NTSTATUS SysGetCurrentProcessorNumberEx(
+
+extern "C" ULONG SCGetCurrentProcessorNumber(VOID);
+
+extern "C" ULONG SCGetCurrentProcessorNumberEx(
     PPROCESSOR_NUMBER ProcessorNumber OPTIONAL
 );
-extern "C" NTSTATUS SysGetDevicePowerState(
+
+extern "C" NTSTATUS SCGetDevicePowerState(
     HANDLE Device,
     PDEVICE_POWER_STATE State
 );
-extern "C" NTSTATUS SysGetMUIRegistryInfo(
+
+extern "C" NTSTATUS SCGetMUIRegistryInfo(
     ULONG Flags,
     PULONG DataSize,
     PVOID Data
 );
-extern "C" NTSTATUS SysGetNextProcess(
+
+extern "C" NTSTATUS SCGetNextProcess(
     HANDLE ProcessHandle OPTIONAL,
     ACCESS_MASK DesiredAccess,
     ULONG HandleAttributes,
     ULONG Flags,
     PHANDLE NewProcessHandle
 );
-extern "C" NTSTATUS SysGetNextThread(
+
+extern "C" NTSTATUS SCGetNextThread(
     HANDLE ProcessHandle,
     HANDLE ThreadHandle OPTIONAL,
     ACCESS_MASK DesiredAccess,
@@ -1274,14 +1462,16 @@ extern "C" NTSTATUS SysGetNextThread(
     ULONG Flags,
     PHANDLE NewThreadHandle
 );
-extern "C" NTSTATUS SysGetNlsSectionPtr(
+
+extern "C" NTSTATUS SCGetNlsSectionPtr(
     ULONG SectionType,
     ULONG SectionData,
     PVOID ContextData,
     PVOID * SectionPointer,
     PULONG SectionSize
 );
-extern "C" NTSTATUS SysGetNotificationResourceManager(
+
+extern "C" NTSTATUS SCGetNotificationResourceManager(
     HANDLE ResourceManagerHandle,
     PTRANSACTION_NOTIFICATION TransactionNotification,
     ULONG NotificationLength,
@@ -1290,7 +1480,8 @@ extern "C" NTSTATUS SysGetNotificationResourceManager(
     ULONG Asynchronous,
     ULONG_PTR AsynchronousContext OPTIONAL
 );
-extern "C" NTSTATUS SysGetWriteWatch(
+
+extern "C" NTSTATUS SCGetWriteWatch(
     HANDLE ProcessHandle,
     ULONG Flags,
     PVOID BaseAddress,
@@ -1299,54 +1490,67 @@ extern "C" NTSTATUS SysGetWriteWatch(
     PULONG_PTR EntriesInUserAddressArray,
     PULONG Granularity
 );
-extern "C" NTSTATUS SysImpersonateAnonymousToken(
+
+extern "C" NTSTATUS SCImpersonateAnonymousToken(
     HANDLE ThreadHandle
 );
-extern "C" NTSTATUS SysImpersonateClientOfPort(
+
+extern "C" NTSTATUS SCImpersonateClientOfPort(
     HANDLE PortHandle,
     PPORT_MESSAGE Message
 );
-extern "C" NTSTATUS SysImpersonateThread(
+
+extern "C" NTSTATUS SCImpersonateThread(
     HANDLE ServerThreadHandle,
     HANDLE ClientThreadHandle,
     PSECURITY_QUALITY_OF_SERVICE SecurityQos
 );
-extern "C" NTSTATUS SysInitializeEnclave(
+
+extern "C" NTSTATUS SCInitializeEnclave(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
     PVOID EnclaveInformation,
     ULONG EnclaveInformationLength,
     PULONG EnclaveError OPTIONAL
 );
-extern "C" NTSTATUS SysInitializeNlsFiles(
+
+extern "C" NTSTATUS SCInitializeNlsFiles(
     PVOID * BaseAddress,
     PLCID DefaultLocaleId,
     PLARGE_INTEGER DefaultCasingTableSize,
     PULONG CurrentNLSVersion OPTIONAL
 );
-extern "C" NTSTATUS SysInitializeRegistry(
+
+extern "C" NTSTATUS SCInitializeRegistry(
     USHORT BootCondition
 );
-extern "C" NTSTATUS SysInitiatePowerAction(
+
+extern "C" NTSTATUS SCInitiatePowerAction(
     POWER_ACTION SystemAction,
     SYSTEM_POWER_STATE LightestSystemState,
     ULONG Flags,
     BOOLEAN Asynchronous
 );
-extern "C" NTSTATUS SysIsProcessInJob(
+
+extern "C" NTSTATUS SCIsProcessInJob(
     HANDLE ProcessHandle,
     HANDLE JobHandle OPTIONAL
 );
-extern "C" NTSTATUS SysIsSystemResumeAutomatic(VOID);
-extern "C" NTSTATUS SysIsUILanguageComitted(VOID);
-extern "C" NTSTATUS SysListenPort(
+
+extern "C" NTSTATUS SCIsSystemResumeAutomatic(VOID);
+
+extern "C" NTSTATUS SCIsUILanguageComitted(VOID);
+
+extern "C" NTSTATUS SCListenPort(
     HANDLE PortHandle,
     PPORT_MESSAGE ConnectionRequest
 );
-extern "C" NTSTATUS SysLoadDriver(
+
+extern "C" NTSTATUS SCLoadDriver(
     PUNICODE_STRING DriverServiceName
 );
-extern "C" NTSTATUS SysLoadEnclaveData(
+
+extern "C" NTSTATUS SCLoadEnclaveData(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
     PVOID Buffer,
@@ -1357,16 +1561,19 @@ extern "C" NTSTATUS SysLoadEnclaveData(
     PSIZE_T NumberOfBytesWritten OPTIONAL,
     PULONG EnclaveError OPTIONAL
 );
-extern "C" NTSTATUS SysLoadKey(
+
+extern "C" NTSTATUS SCLoadKey(
     POBJECT_ATTRIBUTES TargetKey,
     POBJECT_ATTRIBUTES SourceFile
 );
-extern "C" NTSTATUS SysLoadKey2(
+
+extern "C" NTSTATUS SCLoadKey2(
     POBJECT_ATTRIBUTES TargetKey,
     POBJECT_ATTRIBUTES SourceFile,
     ULONG Flags
 );
-extern "C" NTSTATUS SysLoadKey3(
+
+extern "C" NTSTATUS SCLoadKey3(
     POBJECT_ATTRIBUTES TargetKey,
     POBJECT_ATTRIBUTES SourceFile,
     ULONG Flags,
@@ -1376,7 +1583,8 @@ extern "C" NTSTATUS SysLoadKey3(
     PHANDLE RootHandle OPTIONAL,
     PVOID Reserved OPTIONAL
 );
-extern "C" NTSTATUS SysLoadKeyEx(
+
+extern "C" NTSTATUS SCLoadKeyEx(
     POBJECT_ATTRIBUTES TargetKey,
     POBJECT_ATTRIBUTES SourceFile,
     ULONG Flags,
@@ -1386,7 +1594,8 @@ extern "C" NTSTATUS SysLoadKeyEx(
     PHANDLE RootHandle OPTIONAL,
     PVOID Reserved OPTIONAL // previously PIO_STATUS_BLOCK
 );
-extern "C" NTSTATUS SysLockFile(
+
+extern "C" NTSTATUS SCLockFile(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1398,26 +1607,32 @@ extern "C" NTSTATUS SysLockFile(
     BOOLEAN FailImmediately,
     BOOLEAN ExclusiveLock
 );
-extern "C" NTSTATUS SysLockProductActivationKeys(
+
+extern "C" NTSTATUS SCLockProductActivationKeys(
     ULONG * pPrivateVer OPTIONAL,
     ULONG * pSafeMode OPTIONAL
 );
-extern "C" NTSTATUS SysLockRegistryKey(
+
+extern "C" NTSTATUS SCLockRegistryKey(
     HANDLE KeyHandle
 );
-extern "C" NTSTATUS SysLockVirtualMemory(
+
+extern "C" NTSTATUS SCLockVirtualMemory(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     PSIZE_T RegionSize,
     ULONG MapType
 );
-extern "C" NTSTATUS SysMakePermanentObject(
+
+extern "C" NTSTATUS SCMakePermanentObject(
     HANDLE Handle
 );
-extern "C" NTSTATUS SysMakeTemporaryObject(
+
+extern "C" NTSTATUS SCMakeTemporaryObject(
     HANDLE Handle
 );
-extern "C" NTSTATUS SysManageHotPatch(
+
+extern "C" NTSTATUS SCManageHotPatch(
     HANDLE ProcessHandle,
     ULONG Operation,
     PVOID InputBuffer OPTIONAL,
@@ -1425,14 +1640,16 @@ extern "C" NTSTATUS SysManageHotPatch(
     PVOID OutputBuffer OPTIONAL,
     ULONG OutputBufferLength
 );
-extern "C" NTSTATUS SysManagePartition(
+
+extern "C" NTSTATUS SCManagePartition(
     HANDLE TargetHandle,
     HANDLE SourceHandle OPTIONAL,
     PARTITION_INFORMATION_CLASS PartitionInformationClass,
     PVOID PartitionInformation,
     ULONG PartitionInformationLength
 );
-extern "C" NTSTATUS SysMapCMFModule(
+
+extern "C" NTSTATUS SCMapCMFModule(
     ULONG What,
     ULONG Index,
     PULONG CacheIndexOut OPTIONAL,
@@ -1440,17 +1657,20 @@ extern "C" NTSTATUS SysMapCMFModule(
     PULONG ViewSizeOut OPTIONAL,
     PVOID * BaseAddress OPTIONAL
 );
-extern "C" NTSTATUS SysMapUserPhysicalPages(
+
+extern "C" NTSTATUS SCMapUserPhysicalPages(
     PVOID VirtualAddress,
     SIZE_T NumberOfPages,
     PULONG_PTR UserPfnArray OPTIONAL
 );
-extern "C" NTSTATUS SysMapUserPhysicalPagesScatter(
+
+extern "C" NTSTATUS SCMapUserPhysicalPagesScatter(
     PVOID * VirtualAddresses,
     SIZE_T NumberOfPages,
     PULONG_PTR UserPfnArray OPTIONAL
 );
-extern "C" NTSTATUS SysMapViewOfSection(
+
+extern "C" NTSTATUS SCMapViewOfSection(
     HANDLE SectionHandle,
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
@@ -1462,7 +1682,8 @@ extern "C" NTSTATUS SysMapViewOfSection(
     ULONG AllocationType,
     ULONG Win32Protect
 );
-extern "C" NTSTATUS SysMapViewOfSectionEx(
+
+extern "C" NTSTATUS SCMapViewOfSectionEx(
     HANDLE SectionHandle,
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
@@ -1473,13 +1694,16 @@ extern "C" NTSTATUS SysMapViewOfSectionEx(
     PMEM_EXTENDED_PARAMETER ExtendedParameters OPTIONAL,
     ULONG ExtendedParameterCount
 );
-extern "C" NTSTATUS SysModifyBootEntry(
+
+extern "C" NTSTATUS SCModifyBootEntry(
     PBOOT_ENTRY BootEntry
 );
-extern "C" NTSTATUS SysModifyDriverEntry(
+
+extern "C" NTSTATUS SCModifyDriverEntry(
     PEFI_DRIVER_ENTRY DriverEntry
 );
-extern "C" NTSTATUS SysNotifyChangeDirectoryFile(
+
+extern "C" NTSTATUS SCNotifyChangeDirectoryFile(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1490,7 +1714,8 @@ extern "C" NTSTATUS SysNotifyChangeDirectoryFile(
     ULONG CompletionFilter,
     BOOLEAN WatchTree
 );
-extern "C" NTSTATUS SysNotifyChangeDirectoryFileEx(
+
+extern "C" NTSTATUS SCNotifyChangeDirectoryFileEx(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1502,7 +1727,8 @@ extern "C" NTSTATUS SysNotifyChangeDirectoryFileEx(
     BOOLEAN WatchTree,
     DIRECTORY_NOTIFY_INFORMATION_CLASS DirectoryNotifyInformationClass
 );
-extern "C" NTSTATUS SysNotifyChangeKey(
+
+extern "C" NTSTATUS SCNotifyChangeKey(
     HANDLE KeyHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1514,7 +1740,8 @@ extern "C" NTSTATUS SysNotifyChangeKey(
     ULONG BufferSize,
     BOOLEAN Asynchronous
 );
-extern "C" NTSTATUS SysNotifyChangeMultipleKeys(
+
+extern "C" NTSTATUS SCNotifyChangeMultipleKeys(
     HANDLE MasterKeyHandle,
     ULONG Count OPTIONAL,
     OBJECT_ATTRIBUTES SubordinateObjects[],
@@ -1528,7 +1755,8 @@ extern "C" NTSTATUS SysNotifyChangeMultipleKeys(
     ULONG BufferSize,
     BOOLEAN Asynchronous
 );
-extern "C" NTSTATUS SysNotifyChangeSession(
+
+extern "C" NTSTATUS SCNotifyChangeSession(
     HANDLE SessionHandle,
     ULONG ChangeSequenceNumber,
     PLARGE_INTEGER ChangeTimeStamp,
@@ -1538,29 +1766,34 @@ extern "C" NTSTATUS SysNotifyChangeSession(
     PVOID Payload OPTIONAL,
     ULONG PayloadSize
 );
-extern "C" NTSTATUS SysOpenCpuPartition(
+
+extern "C" NTSTATUS SCOpenCpuPartition(
     PHANDLE CpuPartitionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysOpenEnlistment(
+
+extern "C" NTSTATUS SCOpenEnlistment(
     PHANDLE EnlistmentHandle,
     ACCESS_MASK DesiredAccess,
     HANDLE ResourceManagerHandle,
     LPGUID EnlistmentGuid,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysOpenEvent(
+
+extern "C" NTSTATUS SCOpenEvent(
     PHANDLE EventHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenEventPair(
+
+extern "C" NTSTATUS SCOpenEventPair(
     PHANDLE EventPairHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenFile(
+
+extern "C" NTSTATUS SCOpenFile(
     PHANDLE FileHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
@@ -1568,51 +1801,60 @@ extern "C" NTSTATUS SysOpenFile(
     ULONG ShareAccess,
     ULONG OpenOptions
 );
-extern "C" NTSTATUS SysOpenIoCompletion(
+
+extern "C" NTSTATUS SCOpenIoCompletion(
     PHANDLE IoCompletionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenJobObject(
+
+extern "C" NTSTATUS SCOpenJobObject(
     PHANDLE JobHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenKey(
+
+extern "C" NTSTATUS SCOpenKey(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenKeyEx(
+
+extern "C" NTSTATUS SCOpenKeyEx(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
     ULONG OpenOptions
 );
-extern "C" NTSTATUS SysOpenKeyTransacted(
+
+extern "C" NTSTATUS SCOpenKeyTransacted(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
     HANDLE TransactionHandle
 );
-extern "C" NTSTATUS SysOpenKeyTransactedEx(
+
+extern "C" NTSTATUS SCOpenKeyTransactedEx(
     PHANDLE KeyHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
     ULONG OpenOptions,
     HANDLE TransactionHandle
 );
-extern "C" NTSTATUS SysOpenKeyedEvent(
+
+extern "C" NTSTATUS SCOpenKeyedEvent(
     PHANDLE KeyedEventHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenMutant(
+
+extern "C" NTSTATUS SCOpenMutant(
     PHANDLE MutantHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenObjectAuditAlarm(
+
+extern "C" NTSTATUS SCOpenObjectAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     PUNICODE_STRING ObjectTypeName,
@@ -1626,98 +1868,115 @@ extern "C" NTSTATUS SysOpenObjectAuditAlarm(
     BOOLEAN AccessGranted,
     PBOOLEAN GenerateOnClose
 );
-extern "C" NTSTATUS SysOpenPartition(
+
+extern "C" NTSTATUS SCOpenPartition(
     PHANDLE PartitionHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenPrivateNamespace(
+
+extern "C" NTSTATUS SCOpenPrivateNamespace(
     PHANDLE NamespaceHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     POBJECT_BOUNDARY_DESCRIPTOR BoundaryDescriptor
 );
-extern "C" NTSTATUS SysOpenProcess(
+
+extern "C" NTSTATUS SCOpenProcess(
     PHANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes,
     CLIENT_ID * ClientId OPTIONAL
 );
-extern "C" NTSTATUS SysOpenProcessToken(
+
+extern "C" NTSTATUS SCOpenProcessToken(
     HANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
     PHANDLE TokenHandle
 );
-extern "C" NTSTATUS SysOpenProcessTokenEx(
+
+extern "C" NTSTATUS SCOpenProcessTokenEx(
     HANDLE ProcessHandle,
     ACCESS_MASK DesiredAccess,
     ULONG HandleAttributes,
     PHANDLE TokenHandle
 );
-extern "C" NTSTATUS SysOpenRegistryTransaction(
+
+extern "C" NTSTATUS SCOpenRegistryTransaction(
     HANDLE * RegistryTransactionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjAttributes
 );
-extern "C" NTSTATUS SysOpenResourceManager(
+
+extern "C" NTSTATUS SCOpenResourceManager(
     PHANDLE ResourceManagerHandle,
     ACCESS_MASK DesiredAccess,
     HANDLE TmHandle,
     LPGUID ResourceManagerGuid OPTIONAL,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL
 );
-extern "C" NTSTATUS SysOpenSection(
+
+extern "C" NTSTATUS SCOpenSection(
     PHANDLE SectionHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenSemaphore(
+
+extern "C" NTSTATUS SCOpenSemaphore(
     PHANDLE SemaphoreHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenSession(
+
+extern "C" NTSTATUS SCOpenSession(
     PHANDLE SessionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenSymbolicLinkObject(
+
+extern "C" NTSTATUS SCOpenSymbolicLinkObject(
     PHANDLE LinkHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenThread(
+
+extern "C" NTSTATUS SCOpenThread(
     PHANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes,
     CLIENT_ID * ClientId OPTIONAL
 );
-extern "C" NTSTATUS SysOpenThreadToken(
+
+extern "C" NTSTATUS SCOpenThreadToken(
     HANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
     BOOLEAN OpenAsSelf,
     PHANDLE TokenHandle
 );
-extern "C" NTSTATUS SysOpenThreadTokenEx(
+
+extern "C" NTSTATUS SCOpenThreadTokenEx(
     HANDLE ThreadHandle,
     ACCESS_MASK DesiredAccess,
     BOOLEAN OpenAsSelf,
     ULONG HandleAttributes,
     PHANDLE TokenHandle
 );
-extern "C" NTSTATUS SysOpenTimer(
+
+extern "C" NTSTATUS SCOpenTimer(
     PHANDLE TimerHandle,
     ACCESS_MASK DesiredAccess,
     PCOBJECT_ATTRIBUTES ObjectAttributes
 );
-extern "C" NTSTATUS SysOpenTransaction(
+
+extern "C" NTSTATUS SCOpenTransaction(
     PHANDLE TransactionHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
     LPGUID Uow,
     HANDLE TmHandle OPTIONAL
 );
-extern "C" NTSTATUS SysOpenTransactionManager(
+
+extern "C" NTSTATUS SCOpenTransactionManager(
     PHANDLE TmHandle,
     ACCESS_MASK DesiredAccess,
     POBJECT_ATTRIBUTES ObjectAttributes OPTIONAL,
@@ -1725,40 +1984,48 @@ extern "C" NTSTATUS SysOpenTransactionManager(
     LPGUID TmIdentity OPTIONAL,
     ULONG OpenOptions OPTIONAL
 );
-extern "C" NTSTATUS SysPlugPlayControl(
+
+extern "C" NTSTATUS SCPlugPlayControl(
     PLUGPLAY_CONTROL_CLASS PnPControlClass,
     PVOID PnPControlData OPTIONAL,
     ULONG PnPControlDataLength
 );
-extern "C" NTSTATUS SysPowerInformation(
+
+extern "C" NTSTATUS SCPowerInformation(
     POWER_INFORMATION_LEVEL InformationLevel,
     PVOID InputBuffer OPTIONAL,
     ULONG InputBufferLength,
     PVOID OutputBuffer OPTIONAL,
     ULONG OutputBufferLength
 );
-extern "C" NTSTATUS SysPrePrepareComplete(
+
+extern "C" NTSTATUS SCPrePrepareComplete(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysPrePrepareEnlistment(
+
+extern "C" NTSTATUS SCPrePrepareEnlistment(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysPrepareComplete(
+
+extern "C" NTSTATUS SCPrepareComplete(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysPrepareEnlistment(
+
+extern "C" NTSTATUS SCPrepareEnlistment(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysPrivilegeCheck(
+
+extern "C" NTSTATUS SCPrivilegeCheck(
     HANDLE ClientToken,
     PPRIVILEGE_SET RequiredPrivileges,
     PBOOLEAN Result
 );
-extern "C" NTSTATUS SysPrivilegeObjectAuditAlarm(
+
+extern "C" NTSTATUS SCPrivilegeObjectAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PVOID HandleId OPTIONAL,
     HANDLE ClientToken,
@@ -1766,69 +2033,83 @@ extern "C" NTSTATUS SysPrivilegeObjectAuditAlarm(
     PPRIVILEGE_SET Privileges,
     BOOLEAN AccessGranted
 );
-extern "C" NTSTATUS SysPrivilegedServiceAuditAlarm(
+
+extern "C" NTSTATUS SCPrivilegedServiceAuditAlarm(
     PUNICODE_STRING SubsystemName,
     PUNICODE_STRING ServiceName,
     HANDLE ClientToken,
     PPRIVILEGE_SET Privileges,
     BOOLEAN AccessGranted
 );
-extern "C" NTSTATUS SysPropagationComplete(
+
+extern "C" NTSTATUS SCPropagationComplete(
     HANDLE ResourceManagerHandle,
     ULONG RequestCookie,
     ULONG BufferLength,
     PVOID Buffer
 );
-extern "C" NTSTATUS SysPropagationFailed(
+
+extern "C" NTSTATUS SCPropagationFailed(
     HANDLE ResourceManagerHandle,
     ULONG RequestCookie,
     NTSTATUS PropStatus
 );
-extern "C" NTSTATUS SysProtectVirtualMemory(
+
+extern "C" NTSTATUS SCProtectVirtualMemory(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     PSIZE_T RegionSize,
     ULONG NewProtection,
     PULONG OldProtection
 );
-extern "C" NTSTATUS SysPssCaptureVaSpaceBulk(
+
+extern "C" NTSTATUS SCPssCaptureVaSpaceBulk(
     HANDLE ProcessHandle,
     PVOID BaseAddress OPTIONAL,
     PNTPSS_MEMORY_BULK_INFORMATION BulkInformation,
     SIZE_T BulkInformationLength,
     PSIZE_T ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysPulseEvent(
+
+extern "C" NTSTATUS SCPulseEvent(
     HANDLE EventHandle,
     PLONG PreviousState OPTIONAL
 );
-extern "C" NTSTATUS SysQueryAttributesFile(
+
+extern "C" NTSTATUS SCQueryAttributesFile(
     POBJECT_ATTRIBUTES ObjectAttributes,
     PFILE_BASIC_INFORMATION FileInformation
 );
-extern "C" NTSTATUS SysQueryAuxiliaryCounterFrequency(
+
+extern "C" NTSTATUS SCQueryAuxiliaryCounterFrequency(
     PULONG64 AuxiliaryCounterFrequency
 );
-extern "C" NTSTATUS SysQueryBootEntryOrder(
+
+extern "C" NTSTATUS SCQueryBootEntryOrder(
     PULONG Ids OPTIONAL,
     PULONG Count
 );
-extern "C" NTSTATUS SysQueryBootOptions(
+
+extern "C" NTSTATUS SCQueryBootOptions(
     PBOOT_OPTIONS BootOptions OPTIONAL,
     PULONG BootOptionsLength
 );
-extern "C" NTSTATUS SysQueryDebugFilterState(
+
+extern "C" NTSTATUS SCQueryDebugFilterState(
     ULONG ComponentId,
     ULONG Level
 );
-extern "C" NTSTATUS SysQueryDefaultLocale(
+
+extern "C" NTSTATUS SCQueryDefaultLocale(
     BOOLEAN UserProfile,
     PLCID DefaultLocaleId
 );
-extern "C" NTSTATUS SysQueryDefaultUILanguage(
+
+extern "C" NTSTATUS SCQueryDefaultUILanguage(
     LANGID * DefaultUILanguageId
 );
-extern "C" NTSTATUS SysQueryDirectoryFile(
+
+extern "C" NTSTATUS SCQueryDirectoryFile(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1841,7 +2122,8 @@ extern "C" NTSTATUS SysQueryDirectoryFile(
     PUNICODE_STRING FileName OPTIONAL,
     BOOLEAN RestartScan
 );
-extern "C" NTSTATUS SysQueryDirectoryFileEx(
+
+extern "C" NTSTATUS SCQueryDirectoryFileEx(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -1853,7 +2135,8 @@ extern "C" NTSTATUS SysQueryDirectoryFileEx(
     ULONG QueryFlags,
     PUNICODE_STRING FileName OPTIONAL
 );
-extern "C" NTSTATUS SysQueryDirectoryObject(
+
+extern "C" NTSTATUS SCQueryDirectoryObject(
     HANDLE DirectoryHandle,
     PVOID Buffer OPTIONAL,
     ULONG Length,
@@ -1862,11 +2145,13 @@ extern "C" NTSTATUS SysQueryDirectoryObject(
     PULONG Context,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryDriverEntryOrder(
+
+extern "C" NTSTATUS SCQueryDriverEntryOrder(
     PULONG Ids OPTIONAL,
     PULONG Count
 );
-extern "C" NTSTATUS SysQueryEaFile(
+
+extern "C" NTSTATUS SCQueryEaFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID Buffer,
@@ -1877,148 +2162,171 @@ extern "C" NTSTATUS SysQueryEaFile(
     PULONG EaIndex OPTIONAL,
     BOOLEAN RestartScan
 );
-extern "C" NTSTATUS SysQueryEvent(
+
+extern "C" NTSTATUS SCQueryEvent(
     HANDLE EventHandle,
     EVENT_INFORMATION_CLASS EventInformationClass,
     PVOID EventInformation,
     ULONG EventInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryFullAttributesFile(
+
+extern "C" NTSTATUS SCQueryFullAttributesFile(
     POBJECT_ATTRIBUTES ObjectAttributes,
     PFILE_NETWORK_OPEN_INFORMATION FileInformation
 );
-extern "C" NTSTATUS SysQueryInformationAtom(
+
+extern "C" NTSTATUS SCQueryInformationAtom(
     PRTL_ATOM Atom,
     ATOM_INFORMATION_CLASS AtomInformationClass,
     PVOID AtomInformation,
     ULONG AtomInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationByName(
+
+extern "C" NTSTATUS SCQueryInformationByName(
     POBJECT_ATTRIBUTES ObjectAttributes,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID FileInformation,
     ULONG Length,
     FILE_INFORMATION_CLASS FileInformationClass
 );
-extern "C" NTSTATUS SysQueryInformationCpuPartition(
+
+extern "C" NTSTATUS SCQueryInformationCpuPartition(
     HANDLE PartitionHandle OPTIONAL,
     CPU_PARTITION_INFORMATION_CLASS PartitionInformationClass,
     PVOID PartitionInformation,
     ULONG PartitionInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationEnlistment(
+
+extern "C" NTSTATUS SCQueryInformationEnlistment(
     HANDLE EnlistmentHandle,
     ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
     PVOID EnlistmentInformation,
     ULONG EnlistmentInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationFile(
+
+extern "C" NTSTATUS SCQueryInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID FileInformation,
     ULONG Length,
     FILE_INFORMATION_CLASS FileInformationClass
 );
-extern "C" NTSTATUS SysQueryInformationJobObject(
+
+extern "C" NTSTATUS SCQueryInformationJobObject(
     HANDLE JobHandle OPTIONAL,
     JOBOBJECTINFOCLASS JobObjectInformationClass,
     PVOID JobObjectInformation,
     ULONG JobObjectInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationPort(
+
+extern "C" NTSTATUS SCQueryInformationPort(
     HANDLE PortHandle,
     PORT_INFORMATION_CLASS PortInformationClass,
     PVOID PortInformation,
     ULONG Length,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationProcess(
+
+extern "C" NTSTATUS SCQueryInformationProcess(
     HANDLE ProcessHandle,
     PROCESSINFOCLASS ProcessInformationClass,
     PVOID ProcessInformation,
     ULONG ProcessInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationResourceManager(
+
+extern "C" NTSTATUS SCQueryInformationResourceManager(
     HANDLE ResourceManagerHandle,
     RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
     PVOID ResourceManagerInformation,
     ULONG ResourceManagerInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationThread(
+
+extern "C" NTSTATUS SCQueryInformationThread(
     HANDLE ThreadHandle,
     THREADINFOCLASS ThreadInformationClass,
     PVOID ThreadInformation,
     ULONG ThreadInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationToken(
+
+extern "C" NTSTATUS SCQueryInformationToken(
     HANDLE TokenHandle,
     TOKEN_INFORMATION_CLASS TokenInformationClass,
     PVOID TokenInformation,
     ULONG TokenInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationTransaction(
+
+extern "C" NTSTATUS SCQueryInformationTransaction(
     HANDLE TransactionHandle,
     TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
     PVOID TransactionInformation,
     ULONG TransactionInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationTransactionManager(
+
+extern "C" NTSTATUS SCQueryInformationTransactionManager(
     HANDLE TransactionManagerHandle,
     TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
     PVOID TransactionManagerInformation,
     ULONG TransactionManagerInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInformationWorkerFactory(
+
+extern "C" NTSTATUS SCQueryInformationWorkerFactory(
     HANDLE WorkerFactoryHandle,
     WORKERFACTORYINFOCLASS WorkerFactoryInformationClass,
     PVOID WorkerFactoryInformation,
     ULONG WorkerFactoryInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryInstallUILanguage(
+
+extern "C" NTSTATUS SCQueryInstallUILanguage(
     LANGID * InstallUILanguageId
 );
-extern "C" NTSTATUS SysQueryIntervalProfile(
+
+extern "C" NTSTATUS SCQueryIntervalProfile(
     KPROFILE_SOURCE ProfileSource,
     PULONG Interval
 );
-extern "C" NTSTATUS SysQueryIoCompletion(
+
+extern "C" NTSTATUS SCQueryIoCompletion(
     HANDLE IoCompletionHandle,
     IO_COMPLETION_INFORMATION_CLASS IoCompletionInformationClass,
     PVOID IoCompletionInformation,
     ULONG IoCompletionInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryIoRingCapabilities(
+
+extern "C" NTSTATUS SCQueryIoRingCapabilities(
     SIZE_T IoRingCapabilitiesLength,
     PVOID IoRingCapabilities
 );
-extern "C" NTSTATUS SysQueryKey(
+
+extern "C" NTSTATUS SCQueryKey(
     HANDLE KeyHandle,
     KEY_INFORMATION_CLASS KeyInformationClass,
     PVOID KeyInformation,
     ULONG Length,
     PULONG ResultLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryLicenseValue(
+
+extern "C" NTSTATUS SCQueryLicenseValue(
     PUNICODE_STRING ValueName,
     PULONG Type OPTIONAL,
     PVOID Data OPTIONAL,
     ULONG DataSize,
     PULONG ResultDataSize
 );
-extern "C" NTSTATUS SysQueryMultipleValueKey(
+
+extern "C" NTSTATUS SCQueryMultipleValueKey(
     HANDLE KeyHandle,
     PKEY_VALUE_ENTRY ValueEntries,
     ULONG EntryCount,
@@ -2026,36 +2334,43 @@ extern "C" NTSTATUS SysQueryMultipleValueKey(
     PULONG BufferLength,
     PULONG RequiredBufferLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryMutant(
+
+extern "C" NTSTATUS SCQueryMutant(
     HANDLE MutantHandle,
     MUTANT_INFORMATION_CLASS MutantInformationClass,
     PVOID MutantInformation,
     ULONG MutantInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryObject(
+
+extern "C" NTSTATUS SCQueryObject(
     HANDLE Handle,
     OBJECT_INFORMATION_CLASS ObjectInformationClass,
     PVOID ObjectInformation OPTIONAL,
     ULONG ObjectInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryOpenSubKeys(
+
+extern "C" NTSTATUS SCQueryOpenSubKeys(
     POBJECT_ATTRIBUTES TargetKey,
     PULONG HandleCount
 );
-extern "C" NTSTATUS SysQueryOpenSubKeysEx(
+
+extern "C" NTSTATUS SCQueryOpenSubKeysEx(
     POBJECT_ATTRIBUTES TargetKey,
     ULONG BufferLength,
     PVOID Buffer,
     PULONG RequiredSize
 );
-extern "C" NTSTATUS SysQueryPerformanceCounter(
+
+extern "C" NTSTATUS SCQueryPerformanceCounter(
     PLARGE_INTEGER PerformanceCounter,
     PLARGE_INTEGER PerformanceFrequency OPTIONAL
 );
-extern "C" NTSTATUS SysQueryPortInformationProcess(VOID);
-extern "C" NTSTATUS SysQueryQuotaInformationFile(
+
+extern "C" NTSTATUS SCQueryPortInformationProcess(VOID);
+
+extern "C" NTSTATUS SCQueryQuotaInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID Buffer,
@@ -2066,14 +2381,16 @@ extern "C" NTSTATUS SysQueryQuotaInformationFile(
     PSID StartSid OPTIONAL,
     BOOLEAN RestartScan
 );
-extern "C" NTSTATUS SysQuerySection(
+
+extern "C" NTSTATUS SCQuerySection(
     HANDLE SectionHandle,
     SECTION_INFORMATION_CLASS SectionInformationClass,
     PVOID SectionInformation,
     SIZE_T SectionInformationLength,
     PSIZE_T ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQuerySecurityAttributesToken(
+
+extern "C" NTSTATUS SCQuerySecurityAttributesToken(
     HANDLE TokenHandle,
     PUNICODE_STRING Attributes,
     ULONG NumberOfAttributes,
@@ -2081,14 +2398,16 @@ extern "C" NTSTATUS SysQuerySecurityAttributesToken(
     ULONG Length,
     PULONG ReturnLength
 );
-extern "C" NTSTATUS SysQuerySecurityObject(
+
+extern "C" NTSTATUS SCQuerySecurityObject(
     HANDLE Handle,
     SECURITY_INFORMATION SecurityInformation,
     PSECURITY_DESCRIPTOR SecurityDescriptor,
     ULONG Length,
     PULONG LengthNeeded
 );
-extern "C" NTSTATUS SysQuerySecurityPolicy(
+
+extern "C" NTSTATUS SCQuerySecurityPolicy(
     PCUNICODE_STRING Policy,
     PCUNICODE_STRING KeyName,
     PCUNICODE_STRING ValueName,
@@ -2096,38 +2415,44 @@ extern "C" NTSTATUS SysQuerySecurityPolicy(
     PVOID Value OPTIONAL,
     PULONG ValueSize
 );
-extern "C" NTSTATUS SysQuerySemaphore(
+
+extern "C" NTSTATUS SCQuerySemaphore(
     HANDLE SemaphoreHandle,
     SEMAPHORE_INFORMATION_CLASS SemaphoreInformationClass,
     PVOID SemaphoreInformation,
     ULONG SemaphoreInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQuerySymbolicLinkObject(
+
+extern "C" NTSTATUS SCQuerySymbolicLinkObject(
     HANDLE LinkHandle,
     PUNICODE_STRING LinkTarget,
     PULONG ReturnedLength OPTIONAL
 );
-extern "C" NTSTATUS SysQuerySystemEnvironmentValue(
+
+extern "C" NTSTATUS SCQuerySystemEnvironmentValue(
     PUNICODE_STRING VariableName,
     PWSTR VariableValue,
     USHORT ValueLength,
     PUSHORT ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQuerySystemEnvironmentValueEx(
+
+extern "C" NTSTATUS SCQuerySystemEnvironmentValueEx(
     PCUNICODE_STRING VariableName,
     PCGUID VendorGuid,
     PVOID Buffer OPTIONAL,
     PULONG BufferLength,
     PULONG Attributes OPTIONAL // EFI_VARIABLE_*
 );
-extern "C" NTSTATUS SysQuerySystemInformation(
+
+extern "C" NTSTATUS SCQuerySystemInformation(
     SYSTEM_INFORMATION_CLASS SystemInformationClass,
     PVOID SystemInformation,
     ULONG SystemInformationLength,
     PULONG ReturnLength
 );
-extern "C" NTSTATUS SysQuerySystemInformationEx(
+
+extern "C" NTSTATUS SCQuerySystemInformationEx(
     SYSTEM_INFORMATION_CLASS SystemInformationClass,
     PVOID InputBuffer,
     ULONG InputBufferLength,
@@ -2135,19 +2460,22 @@ extern "C" NTSTATUS SysQuerySystemInformationEx(
     ULONG SystemInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryTimer(
+
+extern "C" NTSTATUS SCQueryTimer(
     HANDLE TimerHandle,
     TIMER_INFORMATION_CLASS TimerInformationClass,
     PVOID TimerInformation,
     ULONG TimerInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryTimerResolution(
+
+extern "C" NTSTATUS SCQueryTimerResolution(
     PULONG MaximumTime,
     PULONG MinimumTime,
     PULONG CurrentTime
 );
-extern "C" NTSTATUS SysQueryValueKey(
+
+extern "C" NTSTATUS SCQueryValueKey(
     HANDLE KeyHandle,
     PUNICODE_STRING ValueName,
     KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
@@ -2155,7 +2483,8 @@ extern "C" NTSTATUS SysQueryValueKey(
     ULONG Length,
     PULONG ResultLength
 );
-extern "C" NTSTATUS SysQueryVirtualMemory(
+
+extern "C" NTSTATUS SCQueryVirtualMemory(
     HANDLE ProcessHandle,
     PVOID BaseAddress OPTIONAL,
     MEMORY_INFORMATION_CLASS MemoryInformationClass,
@@ -2163,14 +2492,16 @@ extern "C" NTSTATUS SysQueryVirtualMemory(
     SIZE_T MemoryInformationLength,
     PSIZE_T ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysQueryVolumeInformationFile(
+
+extern "C" NTSTATUS SCQueryVolumeInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID FsInformation,
     ULONG Length,
     FSINFOCLASS FsInformationClass
 );
-extern "C" NTSTATUS SysQueryWnfStateData(
+
+extern "C" NTSTATUS SCQueryWnfStateData(
     PCWNF_STATE_NAME StateName,
     PCWNF_TYPE_ID TypeId OPTIONAL,
     const VOID * ExplicitScope OPTIONAL,
@@ -2178,21 +2509,24 @@ extern "C" NTSTATUS SysQueryWnfStateData(
     PVOID Buffer OPTIONAL,
     PULONG BufferSize
 );
-extern "C" NTSTATUS SysQueryWnfStateNameInformation(
+
+extern "C" NTSTATUS SCQueryWnfStateNameInformation(
     PCWNF_STATE_NAME StateName,
     WNF_STATE_NAME_INFORMATION NameInfoClass,
     const VOID * ExplicitScope OPTIONAL,
     PVOID InfoBuffer,
     ULONG InfoBufferSize
 );
-extern "C" NTSTATUS SysQueueApcThread(
+
+extern "C" NTSTATUS SCQueueApcThread(
     HANDLE ThreadHandle,
     PPS_APC_ROUTINE ApcRoutine,
     PVOID ApcArgument1 OPTIONAL,
     PVOID ApcArgument2 OPTIONAL,
     PVOID ApcArgument3 OPTIONAL
 );
-extern "C" NTSTATUS SysQueueApcThreadEx(
+
+extern "C" NTSTATUS SCQueueApcThreadEx(
     HANDLE ThreadHandle,
     HANDLE ReserveHandle OPTIONAL,
     PPS_APC_ROUTINE ApcRoutine,
@@ -2200,7 +2534,8 @@ extern "C" NTSTATUS SysQueueApcThreadEx(
     PVOID ApcArgument2 OPTIONAL,
     PVOID ApcArgument3 OPTIONAL
 );
-extern "C" NTSTATUS SysQueueApcThreadEx2(
+
+extern "C" NTSTATUS SCQueueApcThreadEx2(
     HANDLE ThreadHandle,
     HANDLE ReserveHandle OPTIONAL,
     ULONG ApcFlags,
@@ -2209,12 +2544,14 @@ extern "C" NTSTATUS SysQueueApcThreadEx2(
     PVOID ApcArgument2 OPTIONAL,
     PVOID ApcArgument3 OPTIONAL
 );
-extern "C" NTSTATUS SysRaiseException(
+
+extern "C" NTSTATUS SCRaiseException(
     PEXCEPTION_RECORD ExceptionRecord,
     PCONTEXT ContextRecord,
     BOOLEAN FirstChance
 );
-extern "C" NTSTATUS SysRaiseHardError(
+
+extern "C" NTSTATUS SCRaiseHardError(
     NTSTATUS ErrorStatus,
     ULONG NumberOfParameters,
     ULONG UnicodeStringParameterMask,
@@ -2222,7 +2559,8 @@ extern "C" NTSTATUS SysRaiseHardError(
     ULONG ValidResponseOptions,
     PULONG Response
 );
-extern "C" NTSTATUS SysReadFile(
+
+extern "C" NTSTATUS SCReadFile(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -2233,7 +2571,8 @@ extern "C" NTSTATUS SysReadFile(
     PLARGE_INTEGER ByteOffset OPTIONAL,
     PULONG Key OPTIONAL
 );
-extern "C" NTSTATUS SysReadFileScatter(
+
+extern "C" NTSTATUS SCReadFileScatter(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -2244,11 +2583,13 @@ extern "C" NTSTATUS SysReadFileScatter(
     PLARGE_INTEGER ByteOffset OPTIONAL,
     PULONG Key OPTIONAL
 );
-extern "C" NTSTATUS SysReadOnlyEnlistment(
+
+extern "C" NTSTATUS SCReadOnlyEnlistment(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysReadRequestData(
+
+extern "C" NTSTATUS SCReadRequestData(
     HANDLE PortHandle,
     PPORT_MESSAGE Message,
     ULONG DataEntryIndex,
@@ -2256,14 +2597,16 @@ extern "C" NTSTATUS SysReadRequestData(
     SIZE_T BufferSize,
     PSIZE_T NumberOfBytesRead OPTIONAL
 );
-extern "C" NTSTATUS SysReadVirtualMemory(
+
+extern "C" NTSTATUS SCReadVirtualMemory(
     HANDLE ProcessHandle,
     PVOID BaseAddress OPTIONAL,
     PVOID Buffer,
     SIZE_T NumberOfBytesToRead,
     PSIZE_T NumberOfBytesRead OPTIONAL
 );
-extern "C" NTSTATUS SysReadVirtualMemoryEx(
+
+extern "C" NTSTATUS SCReadVirtualMemoryEx(
     HANDLE ProcessHandle,
     PVOID BaseAddress OPTIONAL,
     PVOID Buffer,
@@ -2271,52 +2614,63 @@ extern "C" NTSTATUS SysReadVirtualMemoryEx(
     PSIZE_T NumberOfBytesRead OPTIONAL,
     ULONG Flags
 );
-extern "C" NTSTATUS SysRecoverEnlistment(
+
+extern "C" NTSTATUS SCRecoverEnlistment(
     HANDLE EnlistmentHandle,
     PVOID EnlistmentKey OPTIONAL
 );
-extern "C" NTSTATUS SysRecoverResourceManager(
+
+extern "C" NTSTATUS SCRecoverResourceManager(
     HANDLE ResourceManagerHandle
 );
-extern "C" NTSTATUS SysRecoverTransactionManager(
+
+extern "C" NTSTATUS SCRecoverTransactionManager(
     HANDLE TransactionManagerHandle
 );
-extern "C" NTSTATUS SysRegisterProtocolAddressInformation(
+
+extern "C" NTSTATUS SCRegisterProtocolAddressInformation(
     HANDLE ResourceManager,
     PCRM_PROTOCOL_ID ProtocolId,
     ULONG ProtocolInformationSize,
     PVOID ProtocolInformation,
     ULONG CreateOptions
 );
-extern "C" NTSTATUS SysRegisterThreadTerminatePort(
+
+extern "C" NTSTATUS SCRegisterThreadTerminatePort(
     HANDLE PortHandle
 );
-extern "C" NTSTATUS SysReleaseKeyedEvent(
+
+extern "C" NTSTATUS SCReleaseKeyedEvent(
     HANDLE KeyedEventHandle OPTIONAL,
     PVOID KeyValue,
     BOOLEAN Alertable,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysReleaseMutant(
+
+extern "C" NTSTATUS SCReleaseMutant(
     HANDLE MutantHandle,
     PLONG PreviousCount OPTIONAL
 );
-extern "C" NTSTATUS SysReleaseSemaphore(
+
+extern "C" NTSTATUS SCReleaseSemaphore(
     HANDLE SemaphoreHandle,
     LONG ReleaseCount,
     PLONG PreviousCount OPTIONAL
 );
-extern "C" NTSTATUS SysReleaseWorkerFactoryWorker(
+
+extern "C" NTSTATUS SCReleaseWorkerFactoryWorker(
     HANDLE WorkerFactoryHandle
 );
-extern "C" NTSTATUS SysRemoveIoCompletion(
+
+extern "C" NTSTATUS SCRemoveIoCompletion(
     HANDLE IoCompletionHandle,
     PVOID * KeyContext,
     PVOID * ApcContext,
     PIO_STATUS_BLOCK IoStatusBlock,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysRemoveIoCompletionEx(
+
+extern "C" NTSTATUS SCRemoveIoCompletionEx(
     HANDLE IoCompletionHandle,
     PFILE_IO_COMPLETION_INFORMATION IoCompletionInformation,
     ULONG Count,
@@ -2324,115 +2678,141 @@ extern "C" NTSTATUS SysRemoveIoCompletionEx(
     PLARGE_INTEGER Timeout OPTIONAL,
     BOOLEAN Alertable
 );
-extern "C" NTSTATUS SysRemoveProcessDebug(
+
+extern "C" NTSTATUS SCRemoveProcessDebug(
     HANDLE ProcessHandle,
     HANDLE DebugObjectHandle
 );
-extern "C" NTSTATUS SysRenameKey(
+
+extern "C" NTSTATUS SCRenameKey(
     HANDLE KeyHandle,
     PUNICODE_STRING NewName
 );
-extern "C" NTSTATUS SysRenameTransactionManager(
+
+extern "C" NTSTATUS SCRenameTransactionManager(
     PUNICODE_STRING LogFileName,
     LPGUID ExistingTransactionManagerGuid
 );
-extern "C" NTSTATUS SysReplaceKey(
+
+extern "C" NTSTATUS SCReplaceKey(
     POBJECT_ATTRIBUTES NewFile,
     HANDLE TargetHandle,
     POBJECT_ATTRIBUTES OldFile
 );
-extern "C" NTSTATUS SysReplacePartitionUnit(
+
+extern "C" NTSTATUS SCReplacePartitionUnit(
     PUNICODE_STRING TargetInstancePath,
     PUNICODE_STRING SpareInstancePath,
     ULONG Flags
 );
-extern "C" NTSTATUS SysReplyPort(
+
+extern "C" NTSTATUS SCReplyPort(
     HANDLE PortHandle,
     PPORT_MESSAGE ReplyMessage
 );
-extern "C" NTSTATUS SysReplyWaitReceivePort(
+
+extern "C" NTSTATUS SCReplyWaitReceivePort(
     HANDLE PortHandle,
     PVOID * PortContext OPTIONAL,
     PPORT_MESSAGE RequestMessage,
     PPORT_MESSAGE ReplyMessage
 );
-extern "C" NTSTATUS SysReplyWaitReceivePortEx(
+
+extern "C" NTSTATUS SCReplyWaitReceivePortEx(
     HANDLE PortHandle,
     PVOID * PortContext OPTIONAL,
     PPORT_MESSAGE RequestMessage,
     PPORT_MESSAGE ReplyMessage,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysReplyWaitReplyPort(
+
+extern "C" NTSTATUS SCReplyWaitReplyPort(
     HANDLE PortHandle,
     PPORT_MESSAGE ReplyMessage
 );
-extern "C" NTSTATUS SysRequestPort(
+
+extern "C" NTSTATUS SCRequestPort(
     HANDLE PortHandle,
     PPORT_MESSAGE RequestMessage
 );
-extern "C" NTSTATUS SysRequestWaitReplyPort(
+
+extern "C" NTSTATUS SCRequestWaitReplyPort(
     HANDLE PortHandle,
     PPORT_MESSAGE RequestMessage,
     PPORT_MESSAGE ReplyMessage
 );
-extern "C" NTSTATUS SysResetEvent(
+
+extern "C" NTSTATUS SCResetEvent(
     HANDLE EventHandle,
     PLONG PreviousState OPTIONAL
 );
-extern "C" NTSTATUS SysResetWriteWatch(
+
+extern "C" NTSTATUS SCResetWriteWatch(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
     SIZE_T RegionSize
 );
-extern "C" NTSTATUS SysRestoreKey(
+
+extern "C" NTSTATUS SCRestoreKey(
     HANDLE KeyHandle,
     HANDLE FileHandle,
     ULONG Flags
 );
-extern "C" NTSTATUS SysResumeProcess(
+
+extern "C" NTSTATUS SCResumeProcess(
     HANDLE ProcessHandle
 );
-extern "C" NTSTATUS SysResumeThread(
+
+extern "C" NTSTATUS SCResumeThread(
     HANDLE ThreadHandle,
     PULONG PreviousSuspendCount
 );
-extern "C" NTSTATUS SysRevertContainerImpersonation(VOID);
-extern "C" NTSTATUS SysRollbackComplete(
+
+extern "C" NTSTATUS SCRevertContainerImpersonation(VOID);
+
+extern "C" NTSTATUS SCRollbackComplete(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysRollbackEnlistment(
+
+extern "C" NTSTATUS SCRollbackEnlistment(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysRollbackRegistryTransaction(
+
+extern "C" NTSTATUS SCRollbackRegistryTransaction(
     HANDLE RegistryTransactionHandle,
     ULONG Flags // Reserved
 );
-extern "C" NTSTATUS SysRollbackTransaction(
+
+extern "C" NTSTATUS SCRollbackTransaction(
     HANDLE TransactionHandle,
     BOOLEAN Wait
 );
-extern "C" NTSTATUS SysRollforwardTransactionManager(
+
+extern "C" NTSTATUS SCRollforwardTransactionManager(
     HANDLE TransactionManagerHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysSaveKey(
+
+extern "C" NTSTATUS SCSaveKey(
     HANDLE KeyHandle,
     HANDLE FileHandle
 );
-extern "C" NTSTATUS SysSaveKeyEx(
+
+extern "C" NTSTATUS SCSaveKeyEx(
     HANDLE KeyHandle,
     HANDLE FileHandle,
     ULONG Format
 );
-extern "C" NTSTATUS SysSaveMergedKeys(
+
+extern "C" NTSTATUS SCSaveMergedKeys(
     HANDLE HighPrecedenceKeyHandle,
     HANDLE LowPrecedenceKeyHandle,
     HANDLE FileHandle
 );
-extern "C" NTSTATUS SysSecureConnectPort(
+
+extern "C" NTSTATUS SCSecureConnectPort(
     PHANDLE PortHandle,
     PUNICODE_STRING PortName,
     PSECURITY_QUALITY_OF_SERVICE SecurityQos,
@@ -2443,23 +2823,28 @@ extern "C" NTSTATUS SysSecureConnectPort(
     PVOID ConnectionInformation OPTIONAL,
     PULONG ConnectionInformationLength OPTIONAL
 );
-extern "C" NTSTATUS SysSerializeBoot(VOID);
-extern "C" NTSTATUS SysSetBootEntryOrder(
+
+extern "C" NTSTATUS SCSerializeBoot(VOID);
+
+extern "C" NTSTATUS SCSetBootEntryOrder(
     PULONG Ids,
     ULONG Count
 );
-extern "C" NTSTATUS SysSetBootOptions(
+
+extern "C" NTSTATUS SCSetBootOptions(
     PBOOT_OPTIONS BootOptions,
     ULONG FieldsToChange
 );
-extern "C" NTSTATUS SysSetCachedSigningLevel(
+
+extern "C" NTSTATUS SCSetCachedSigningLevel(
     ULONG Flags,
     SE_SIGNING_LEVEL InputSigningLevel,
     PHANDLE SourceFiles,
     ULONG SourceFileCount,
     HANDLE TargetFile OPTIONAL
 );
-extern "C" NTSTATUS SysSetCachedSigningLevel2(
+
+extern "C" NTSTATUS SCSetCachedSigningLevel2(
     ULONG Flags,
     SE_SIGNING_LEVEL InputSigningLevel,
     PHANDLE SourceFiles,
@@ -2467,53 +2852,66 @@ extern "C" NTSTATUS SysSetCachedSigningLevel2(
     HANDLE TargetFile OPTIONAL,
     SE_SET_FILE_CACHE_INFORMATION * CacheInformation OPTIONAL
 );
-extern "C" NTSTATUS SysSetContextThread(
+
+extern "C" NTSTATUS SCSetContextThread(
     HANDLE ThreadHandle,
     PCONTEXT ThreadContext
 );
-extern "C" NTSTATUS SysSetDebugFilterState(
+
+extern "C" NTSTATUS SCSetDebugFilterState(
     ULONG ComponentId,
     ULONG Level,
     BOOLEAN State
 );
-extern "C" NTSTATUS SysSetDefaultHardErrorPort(
+
+extern "C" NTSTATUS SCSetDefaultHardErrorPort(
     HANDLE DefaultHardErrorPort
 );
-extern "C" NTSTATUS SysSetDefaultLocale(
+
+extern "C" NTSTATUS SCSetDefaultLocale(
     BOOLEAN UserProfile,
     LCID DefaultLocaleId
 );
-extern "C" NTSTATUS SysSetDefaultUILanguage(
+
+extern "C" NTSTATUS SCSetDefaultUILanguage(
     LANGID DefaultUILanguageId
 );
-extern "C" NTSTATUS SysSetDriverEntryOrder(
+
+extern "C" NTSTATUS SCSetDriverEntryOrder(
     PULONG Ids,
     ULONG Count
 );
-extern "C" NTSTATUS SysSetEaFile(
+
+extern "C" NTSTATUS SCSetEaFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID Buffer,
     ULONG Length
 );
-extern "C" NTSTATUS SysSetEvent(
+
+extern "C" NTSTATUS SCSetEvent(
     HANDLE EventHandle,
     PLONG PreviousState OPTIONAL
 );
-extern "C" NTSTATUS SysSetEventBoostPriority(
+
+extern "C" NTSTATUS SCSetEventBoostPriority(
     HANDLE EventHandle
 );
-extern "C" NTSTATUS SysSetHighEventPair(
+
+extern "C" NTSTATUS SCSetHighEventPair(
     HANDLE EventPairHandle
 );
-extern "C" NTSTATUS SysSetHighWaitLowEventPair(
+
+extern "C" NTSTATUS SCSetHighWaitLowEventPair(
     HANDLE EventPairHandle
 );
-extern "C" NTSTATUS SysSetIRTimer(
+
+extern "C" NTSTATUS SCSetIRTimer(
     HANDLE TimerHandle,
     PLARGE_INTEGER DueTime OPTIONAL
 );
-extern "C" NTSTATUS SysSetInformationCpuPartition(
+
+extern "C" NTSTATUS SCSetInformationCpuPartition(
     HANDLE CpuPartitionHandle,
     ULONG CpuPartitionInformationClass,
     PVOID CpuPartitionInformation,
@@ -2522,93 +2920,108 @@ extern "C" NTSTATUS SysSetInformationCpuPartition(
     ULONG Reserved2 OPTIONAL,
     ULONG Reserved3 OPTIONAL
 );
-extern "C" NTSTATUS SysSetInformationDebugObject(
+
+extern "C" NTSTATUS SCSetInformationDebugObject(
     HANDLE DebugObjectHandle,
     DEBUGOBJECTINFOCLASS DebugObjectInformationClass,
     PVOID DebugInformation,
     ULONG DebugInformationLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysSetInformationEnlistment(
+
+extern "C" NTSTATUS SCSetInformationEnlistment(
     HANDLE EnlistmentHandle OPTIONAL,
     ENLISTMENT_INFORMATION_CLASS EnlistmentInformationClass,
     PVOID EnlistmentInformation,
     ULONG EnlistmentInformationLength
 );
-extern "C" NTSTATUS SysSetInformationFile(
+
+extern "C" NTSTATUS SCSetInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID FileInformation,
     ULONG Length,
     FILE_INFORMATION_CLASS FileInformationClass
 );
-extern "C" NTSTATUS SysSetInformationIoRing(
+
+extern "C" NTSTATUS SCSetInformationIoRing(
     HANDLE IoRingHandle,
     ULONG IoRingInformationClass,
     ULONG IoRingInformationLength,
     PVOID IoRingInformation
 );
-extern "C" NTSTATUS SysSetInformationJobObject(
+
+extern "C" NTSTATUS SCSetInformationJobObject(
     HANDLE JobHandle,
     JOBOBJECTINFOCLASS JobObjectInformationClass,
     PVOID JobObjectInformation,
     ULONG JobObjectInformationLength
 );
-extern "C" NTSTATUS SysSetInformationKey(
+
+extern "C" NTSTATUS SCSetInformationKey(
     HANDLE KeyHandle,
     KEY_SET_INFORMATION_CLASS KeySetInformationClass,
     PVOID KeySetInformation,
     ULONG KeySetInformationLength
 );
-extern "C" NTSTATUS SysSetInformationObject(
+
+extern "C" NTSTATUS SCSetInformationObject(
     HANDLE Handle,
     OBJECT_INFORMATION_CLASS ObjectInformationClass,
     PVOID ObjectInformation,
     ULONG ObjectInformationLength
 );
-extern "C" NTSTATUS SysSetInformationProcess(
+
+extern "C" NTSTATUS SCSetInformationProcess(
     HANDLE ProcessHandle,
     PROCESSINFOCLASS ProcessInformationClass,
     PVOID ProcessInformation,
     ULONG ProcessInformationLength
 );
-extern "C" NTSTATUS SysSetInformationResourceManager(
+
+extern "C" NTSTATUS SCSetInformationResourceManager(
     HANDLE ResourceManagerHandle,
     RESOURCEMANAGER_INFORMATION_CLASS ResourceManagerInformationClass,
     PVOID ResourceManagerInformation,
     ULONG ResourceManagerInformationLength
 );
-extern "C" NTSTATUS SysSetInformationSymbolicLink(
+
+extern "C" NTSTATUS SCSetInformationSymbolicLink(
     HANDLE LinkHandle,
     SYMBOLIC_LINK_INFO_CLASS SymbolicLinkInformationClass,
     PVOID SymbolicLinkInformation,
     ULONG SymbolicLinkInformationLength
 );
-extern "C" NTSTATUS SysSetInformationThread(
+
+extern "C" NTSTATUS SCSetInformationThread(
     HANDLE ThreadHandle,
     THREADINFOCLASS ThreadInformationClass,
     PVOID ThreadInformation,
     ULONG ThreadInformationLength
 );
-extern "C" NTSTATUS SysSetInformationToken(
+
+extern "C" NTSTATUS SCSetInformationToken(
     HANDLE TokenHandle,
     TOKEN_INFORMATION_CLASS TokenInformationClass,
     PVOID TokenInformation,
     ULONG TokenInformationLength
 );
-extern "C" NTSTATUS SysSetInformationTransaction(
+
+extern "C" NTSTATUS SCSetInformationTransaction(
     HANDLE TransactionHandle,
     TRANSACTION_INFORMATION_CLASS TransactionInformationClass,
     PVOID TransactionInformation,
     ULONG TransactionInformationLength
 );
-extern "C" NTSTATUS SysSetInformationTransactionManager(
+
+extern "C" NTSTATUS SCSetInformationTransactionManager(
     HANDLE TmHandle OPTIONAL,
     TRANSACTIONMANAGER_INFORMATION_CLASS TransactionManagerInformationClass,
     PVOID TransactionManagerInformation,
     ULONG TransactionManagerInformationLength
 );
-extern "C" NTSTATUS SysSetInformationVirtualMemory(
+
+extern "C" NTSTATUS SCSetInformationVirtualMemory(
     HANDLE ProcessHandle,
     VIRTUAL_MEMORY_INFORMATION_CLASS VmInformationClass,
     SIZE_T NumberOfEntries,
@@ -2616,24 +3029,28 @@ extern "C" NTSTATUS SysSetInformationVirtualMemory(
     PVOID VmInformation,
     ULONG VmInformationLength
 );
-extern "C" NTSTATUS SysSetInformationWorkerFactory(
+
+extern "C" NTSTATUS SCSetInformationWorkerFactory(
     HANDLE WorkerFactoryHandle,
     WORKERFACTORYINFOCLASS WorkerFactoryInformationClass,
     PVOID WorkerFactoryInformation,
     ULONG WorkerFactoryInformationLength
 );
-extern "C" NTSTATUS SysSetIntervalProfile(
+
+extern "C" NTSTATUS SCSetIntervalProfile(
     ULONG Interval,
     KPROFILE_SOURCE Source
 );
-extern "C" NTSTATUS SysSetIoCompletion(
+
+extern "C" NTSTATUS SCSetIoCompletion(
     HANDLE IoCompletionHandle,
     PVOID KeyContext OPTIONAL,
     PVOID ApcContext OPTIONAL,
     NTSTATUS IoStatus,
     ULONG_PTR IoStatusInformation
 );
-extern "C" NTSTATUS SysSetIoCompletionEx(
+
+extern "C" NTSTATUS SCSetIoCompletionEx(
     HANDLE IoCompletionHandle,
     HANDLE IoCompletionPacketHandle,
     PVOID KeyContext OPTIONAL,
@@ -2641,7 +3058,8 @@ extern "C" NTSTATUS SysSetIoCompletionEx(
     NTSTATUS IoStatus,
     ULONG_PTR IoStatusInformation
 );
-extern "C" NTSTATUS SysSetLdtEntries(
+
+extern "C" NTSTATUS SCSetLdtEntries(
     ULONG Selector0,
     ULONG Entry0Low,
     ULONG Entry0Hi,
@@ -2649,53 +3067,64 @@ extern "C" NTSTATUS SysSetLdtEntries(
     ULONG Entry1Low,
     ULONG Entry1Hi
 );
-extern "C" NTSTATUS SysSetLowEventPair(
+
+extern "C" NTSTATUS SCSetLowEventPair(
     HANDLE EventPairHandle
 );
-extern "C" NTSTATUS SysSetLowWaitHighEventPair(
+
+extern "C" NTSTATUS SCSetLowWaitHighEventPair(
     HANDLE EventPairHandle
 );
-extern "C" NTSTATUS SysSetQuotaInformationFile(
+
+extern "C" NTSTATUS SCSetQuotaInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID Buffer,
     ULONG Length
 );
-extern "C" NTSTATUS SysSetSecurityObject(
+
+extern "C" NTSTATUS SCSetSecurityObject(
     HANDLE Handle,
     SECURITY_INFORMATION SecurityInformation,
     PSECURITY_DESCRIPTOR SecurityDescriptor
 );
-extern "C" NTSTATUS SysSetSystemEnvironmentValue(
+
+extern "C" NTSTATUS SCSetSystemEnvironmentValue(
     PCUNICODE_STRING VariableName,
     PCUNICODE_STRING VariableValue
 );
-extern "C" NTSTATUS SysSetSystemEnvironmentValueEx(
+
+extern "C" NTSTATUS SCSetSystemEnvironmentValueEx(
     PCUNICODE_STRING VariableName,
     PCGUID VendorGuid,
     PVOID Buffer OPTIONAL,
     ULONG BufferLength, // 0 = delete variable
     ULONG Attributes // EFI_VARIABLE_*
 );
-extern "C" NTSTATUS SysSetSystemInformation(
+
+extern "C" NTSTATUS SCSetSystemInformation(
     SYSTEM_INFORMATION_CLASS SystemInformationClass,
     PVOID SystemInformation,
     ULONG SystemInformationLength
 );
-extern "C" NTSTATUS SysSetSystemPowerState(
+
+extern "C" NTSTATUS SCSetSystemPowerState(
     POWER_ACTION SystemAction,
     SYSTEM_POWER_STATE LightestSystemState,
     ULONG Flags // POWER_ACTION_* flags
 );
-extern "C" NTSTATUS SysSetSystemTime(
+
+extern "C" NTSTATUS SCSetSystemTime(
     PLARGE_INTEGER SystemTime OPTIONAL,
     PLARGE_INTEGER PreviousTime OPTIONAL
 );
-extern "C" NTSTATUS SysSetThreadExecutionState(
+
+extern "C" NTSTATUS SCSetThreadExecutionState(
     EXECUTION_STATE NewFlags, // ES_* flags
     EXECUTION_STATE * PreviousFlags
 );
-extern "C" NTSTATUS SysSetTimer(
+
+extern "C" NTSTATUS SCSetTimer(
     HANDLE TimerHandle,
     PLARGE_INTEGER DueTime,
     PTIMER_APC_ROUTINE TimerApcRoutine OPTIONAL,
@@ -2704,27 +3133,32 @@ extern "C" NTSTATUS SysSetTimer(
     LONG Period OPTIONAL,
     PBOOLEAN PreviousState OPTIONAL
 );
-extern "C" NTSTATUS SysSetTimer2(
+
+extern "C" NTSTATUS SCSetTimer2(
     HANDLE TimerHandle,
     PLARGE_INTEGER DueTime,
     PLARGE_INTEGER Period OPTIONAL,
     PT2_SET_PARAMETERS Parameters
 );
-extern "C" NTSTATUS SysSetTimerEx(
+
+extern "C" NTSTATUS SCSetTimerEx(
     HANDLE TimerHandle,
     TIMER_SET_INFORMATION_CLASS TimerSetInformationClass,
     PVOID TimerSetInformation,
     ULONG TimerSetInformationLength
 );
-extern "C" NTSTATUS SysSetTimerResolution(
+
+extern "C" NTSTATUS SCSetTimerResolution(
     ULONG DesiredTime,
     BOOLEAN SetResolution,
     PULONG ActualTime
 );
-extern "C" NTSTATUS SysSetUuidSeed(
+
+extern "C" NTSTATUS SCSetUuidSeed(
     PCHAR Seed
 );
-extern "C" NTSTATUS SysSetValueKey(
+
+extern "C" NTSTATUS SCSetValueKey(
     HANDLE KeyHandle,
     PUNICODE_STRING ValueName,
     ULONG TitleIndex OPTIONAL,
@@ -2732,59 +3166,72 @@ extern "C" NTSTATUS SysSetValueKey(
     PVOID Data OPTIONAL,
     ULONG DataSize
 );
-extern "C" NTSTATUS SysSetVolumeInformationFile(
+
+extern "C" NTSTATUS SCSetVolumeInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PVOID FsInformation,
     ULONG Length,
     FSINFOCLASS FsInformationClass
 );
-extern "C" NTSTATUS SysSetWnfProcessNotificationEvent(
+
+extern "C" NTSTATUS SCSetWnfProcessNotificationEvent(
     HANDLE NotificationEvent
 );
-extern "C" NTSTATUS SysShutdownSystem(
+
+extern "C" NTSTATUS SCShutdownSystem(
     SHUTDOWN_ACTION Action
 );
-extern "C" NTSTATUS SysShutdownWorkerFactory(
+
+extern "C" NTSTATUS SCShutdownWorkerFactory(
     HANDLE WorkerFactoryHandle,
     volatile LONG * PendingWorkerCount
 );
-extern "C" NTSTATUS SysSignalAndWaitForSingleObject(
+
+extern "C" NTSTATUS SCSignalAndWaitForSingleObject(
     HANDLE SignalHandle,
     HANDLE WaitHandle,
     BOOLEAN Alertable,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysSinglePhaseReject(
+
+extern "C" NTSTATUS SCSinglePhaseReject(
     HANDLE EnlistmentHandle,
     PLARGE_INTEGER TmVirtualClock OPTIONAL
 );
-extern "C" NTSTATUS SysStartProfile(
+
+extern "C" NTSTATUS SCStartProfile(
     HANDLE ProfileHandle
 );
-extern "C" NTSTATUS SysStopProfile(
+
+extern "C" NTSTATUS SCStopProfile(
     HANDLE ProfileHandle
 );
-extern "C" NTSTATUS SysSubmitIoRing(
+
+extern "C" NTSTATUS SCSubmitIoRing(
     HANDLE IoRingHandle,
     ULONG Flags,
     ULONG WaitOperations OPTIONAL,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysSubscribeWnfStateChange(
+
+extern "C" NTSTATUS SCSubscribeWnfStateChange(
     PCWNF_STATE_NAME StateName,
     WNF_CHANGE_STAMP ChangeStamp OPTIONAL,
     ULONG EventMask,
     PULONG64 SubscriptionId OPTIONAL
 );
-extern "C" NTSTATUS SysSuspendProcess(
+
+extern "C" NTSTATUS SCSuspendProcess(
     HANDLE ProcessHandle
 );
-extern "C" NTSTATUS SysSuspendThread(
+
+extern "C" NTSTATUS SCSuspendThread(
     HANDLE ThreadHandle,
     PULONG PreviousSuspendCount
 );
-extern "C" NTSTATUS SysSystemDebugControl(
+
+extern "C" NTSTATUS SCSystemDebugControl(
     SYSDBG_COMMAND Command,
     PVOID InputBuffer OPTIONAL,
     ULONG InputBufferLength,
@@ -2792,26 +3239,34 @@ extern "C" NTSTATUS SysSystemDebugControl(
     ULONG OutputBufferLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysTerminateEnclave(
+
+extern "C" NTSTATUS SCTerminateEnclave(
     PVOID BaseAddress,
     ULONG Flags // TERMINATE_ENCLAVE_FLAG_*
 );
-extern "C" NTSTATUS SysTerminateJobObject(
+
+extern "C" NTSTATUS SCTerminateJobObject(
     HANDLE JobHandle,
     NTSTATUS ExitStatus
 );
-extern "C" NTSTATUS SysTerminateProcess(
+
+extern "C" NTSTATUS SCTerminateProcess(
     HANDLE ProcessHandle OPTIONAL,
     NTSTATUS ExitStatus
 );
-extern "C" NTSTATUS SysTerminateThread(
+
+extern "C" NTSTATUS SCTerminateThread(
     HANDLE ThreadHandle OPTIONAL,
     NTSTATUS ExitStatus
 );
-extern "C" NTSTATUS SysTestAlert(VOID);
-extern "C" NTSTATUS SysThawRegistry(VOID);
-extern "C" NTSTATUS SysThawTransactions(VOID);
-extern "C" NTSTATUS SysTraceControl(
+
+extern "C" NTSTATUS SCTestAlert(VOID);
+
+extern "C" NTSTATUS SCThawRegistry(VOID);
+
+extern "C" NTSTATUS SCThawTransactions(VOID);
+
+extern "C" NTSTATUS SCTraceControl(
     ETWTRACECONTROLCODE FunctionCode,
     PVOID InputBuffer OPTIONAL,
     ULONG InputBufferLength,
@@ -2819,61 +3274,74 @@ extern "C" NTSTATUS SysTraceControl(
     ULONG OutputBufferLength,
     PULONG ReturnLength OPTIONAL
 );
-extern "C" NTSTATUS SysTraceEvent(
+
+extern "C" NTSTATUS SCTraceEvent(
     HANDLE TraceHandle,
     ULONG Flags,
     ULONG FieldSize,
     PVOID Fields
 );
-extern "C" NTSTATUS SysTranslateFilePath(
+
+extern "C" NTSTATUS SCTranslateFilePath(
     PFILE_PATH InputFilePath,
     ULONG OutputType,
     PFILE_PATH OutputFilePath,
     PULONG OutputFilePathLength OPTIONAL
 );
-extern "C" NTSTATUS SysUmsThreadYield(
+
+extern "C" NTSTATUS SCUmsThreadYield(
     PVOID SchedulerParam
 );
-extern "C" NTSTATUS SysUnloadDriver(
+
+extern "C" NTSTATUS SCUnloadDriver(
     PUNICODE_STRING DriverServiceName
 );
-extern "C" NTSTATUS SysUnloadKey(
+
+extern "C" NTSTATUS SCUnloadKey(
     POBJECT_ATTRIBUTES TargetKey
 );
-extern "C" NTSTATUS SysUnloadKey2(
+
+extern "C" NTSTATUS SCUnloadKey2(
     POBJECT_ATTRIBUTES TargetKey,
     ULONG Flags
 );
-extern "C" NTSTATUS SysUnloadKeyEx(
+
+extern "C" NTSTATUS SCUnloadKeyEx(
     POBJECT_ATTRIBUTES TargetKey,
     HANDLE Event OPTIONAL
 );
-extern "C" NTSTATUS SysUnlockFile(
+
+extern "C" NTSTATUS SCUnlockFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
     PLARGE_INTEGER ByteOffset,
     PLARGE_INTEGER Length,
     ULONG Key
 );
-extern "C" NTSTATUS SysUnlockVirtualMemory(
+
+extern "C" NTSTATUS SCUnlockVirtualMemory(
     HANDLE ProcessHandle,
     PVOID * BaseAddress,
     PSIZE_T RegionSize,
     ULONG MapType
 );
-extern "C" NTSTATUS SysUnsubscribeWnfStateChange(
+
+extern "C" NTSTATUS SCUnsubscribeWnfStateChange(
     PCWNF_STATE_NAME StateName
 );
-extern "C" NTSTATUS SysUnmapViewOfSection(
+
+extern "C" NTSTATUS SCUnmapViewOfSection(
     HANDLE ProcessHandle,
     PVOID BaseAddress OPTIONAL
 );
-extern "C" NTSTATUS SysUnmapViewOfSectionEx(
+
+extern "C" NTSTATUS SCUnmapViewOfSectionEx(
     HANDLE ProcessHandle,
     PVOID BaseAddress OPTIONAL,
     ULONG Flags
 );
-extern "C" NTSTATUS SysUpdateWnfStateData(
+
+extern "C" NTSTATUS SCUpdateWnfStateData(
     PCWNF_STATE_NAME StateName,
     const VOID * Buffer OPTIONAL,
     ULONG Length OPTIONAL,
@@ -2882,62 +3350,74 @@ extern "C" NTSTATUS SysUpdateWnfStateData(
     WNF_CHANGE_STAMP MatchingChangeStamp,
     LOGICAL CheckStamp
 );
-extern "C" NTSTATUS SysVdmControl(
+
+extern "C" NTSTATUS SCVdmControl(
     VDMSERVICECLASS Service,
     PVOID ServiceData
 );
-extern "C" NTSTATUS SysWaitForAlertByThreadId(
+
+extern "C" NTSTATUS SCWaitForAlertByThreadId(
     PVOID Address OPTIONAL,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysWaitForDebugEvent(
+
+extern "C" NTSTATUS SCWaitForDebugEvent(
     HANDLE DebugObjectHandle,
     BOOLEAN Alertable,
     PLARGE_INTEGER Timeout OPTIONAL,
     PDBGUI_WAIT_STATE_CHANGE WaitStateChange
 );
-extern "C" NTSTATUS SysWaitForKeyedEvent(
+
+extern "C" NTSTATUS SCWaitForKeyedEvent(
     HANDLE KeyedEventHandle OPTIONAL,
     PVOID KeyValue,
     BOOLEAN Alertable,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysWaitForMultipleObjects(
+
+extern "C" NTSTATUS SCWaitForMultipleObjects(
     ULONG Count,
     HANDLE Handles[],
     WAIT_TYPE WaitType,
     BOOLEAN Alertable,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysWaitForMultipleObjects32(
+
+extern "C" NTSTATUS SCWaitForMultipleObjects32(
     ULONG Count,
     LONG Handles[],
     WAIT_TYPE WaitType,
     BOOLEAN Alertable,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysWaitForSingleObject(
+
+extern "C" NTSTATUS SCWaitForSingleObject(
     HANDLE Handle,
     BOOLEAN Alertable,
     PLARGE_INTEGER Timeout OPTIONAL
 );
-extern "C" NTSTATUS SysWaitForWorkViaWorkerFactory(
+
+extern "C" NTSTATUS SCWaitForWorkViaWorkerFactory(
     HANDLE WorkerFactoryHandle,
     PFILE_IO_COMPLETION_INFORMATION MiniPackets,
     ULONG Count,
     PULONG PacketsReturned,
     PWORKER_FACTORY_DEFERRED_WORK DeferredWork
 );
-extern "C" NTSTATUS SysWaitHighEventPair(
+
+extern "C" NTSTATUS SCWaitHighEventPair(
     HANDLE EventPairHandle
 );
-extern "C" NTSTATUS SysWaitLowEventPair(
+
+extern "C" NTSTATUS SCWaitLowEventPair(
     HANDLE EventPairHandle
 );
-extern "C" NTSTATUS SysWorkerFactoryWorkerReady(
+
+extern "C" NTSTATUS SCWorkerFactoryWorkerReady(
     HANDLE WorkerFactoryHandle
 );
-extern "C" NTSTATUS SysWriteFile(
+
+extern "C" NTSTATUS SCWriteFile(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -2948,7 +3428,8 @@ extern "C" NTSTATUS SysWriteFile(
     PLARGE_INTEGER ByteOffset OPTIONAL,
     PULONG Key OPTIONAL
 );
-extern "C" NTSTATUS SysWriteFileGather(
+
+extern "C" NTSTATUS SCWriteFileGather(
     HANDLE FileHandle,
     HANDLE Event OPTIONAL,
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
@@ -2959,7 +3440,8 @@ extern "C" NTSTATUS SysWriteFileGather(
     PLARGE_INTEGER ByteOffset OPTIONAL,
     PULONG Key OPTIONAL
 );
-extern "C" NTSTATUS SysWriteRequestData(
+
+extern "C" NTSTATUS SCWriteRequestData(
     HANDLE PortHandle,
     PPORT_MESSAGE Message,
     ULONG DataEntryIndex,
@@ -2967,13 +3449,15 @@ extern "C" NTSTATUS SysWriteRequestData(
     SIZE_T BufferSize,
     PSIZE_T NumberOfBytesWritten OPTIONAL
 );
-extern "C" NTSTATUS SysWriteVirtualMemory(
+
+extern "C" NTSTATUS SCWriteVirtualMemory(
     HANDLE ProcessHandle,
     PVOID BaseAddress,
     PVOID Buffer,
     SIZE_T NumberOfBytesToWrite,
     PSIZE_T NumberOfBytesWritten
 );
-extern "C" NTSTATUS SysYieldExecution(VOID);
+
+extern "C" NTSTATUS SCYieldExecution(VOID);
 
 #endif
