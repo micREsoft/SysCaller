@@ -23,6 +23,9 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include "Nt/sysNtTypes.h"
-#include "Nt/sysNtExternals.h"
-#include "Nt/sysNtFunctions.h"
+
+#include "Sys/sysTypes.h"
+#include "Sys/sysExternals.h"
+#include "Sys/sysFunctions.h"
+
+#define SYSCALLER_ENABLE_DYNAMIC_LOADER
