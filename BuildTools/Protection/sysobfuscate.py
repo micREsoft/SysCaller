@@ -361,7 +361,12 @@ def generate_exports():
     for i, line in enumerate(header_content):
         if any(line == end_line for end_line in ending_lines):
             continue
-        if not header_part_ended and (f'extern "C" NTSTATUS {syscall_prefix}' in line or 'extern "C" NTSTATUS SC' in line):
+        if not header_part_ended and (
+            f'extern "C" NTSTATUS {syscall_prefix}' in line or 
+            f'extern "C" ULONG {syscall_prefix}' in line or
+            'extern "C" NTSTATUS SC' in line or
+            'extern "C" ULONG SC' in line
+        ):
             header_part_ended = True
         if not header_part_ended:
             if "_WIN64" in line and "#ifdef" in line:
@@ -370,8 +375,13 @@ def generate_exports():
                 continue
             new_header_content.append(line)
             continue
-        if 'extern "C" NTSTATUS SC' in line or f'extern "C" NTSTATUS {syscall_prefix}' in line:
-            match = re.search(rf'extern "C" NTSTATUS ((?:SC|{syscall_prefix})\w+)\(', line)
+        if (
+            'extern "C" NTSTATUS SC' in line or 
+            'extern "C" ULONG SC' in line or
+            f'extern "C" NTSTATUS {syscall_prefix}' in line or
+            f'extern "C" ULONG {syscall_prefix}' in line
+        ):
+            match = re.search(rf'extern "C" (?:NTSTATUS|ULONG) ((?:SC|{syscall_prefix})\w+)\(', line)
             if match:
                 original_name = match.group(1)
                 if original_name.startswith("SC"):
