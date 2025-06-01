@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
                             QSpinBox, QFrame, QPushButton, QTabWidget,
                             QWidget, QCheckBox, QGroupBox, QFormLayout,
                             QScrollArea, QListWidget, QListWidgetItem, QLineEdit,
-                            QMessageBox)
+                            QMessageBox, QRadioButton, QButtonGroup)
 from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QIcon, QFont
 import os
@@ -65,7 +65,7 @@ class SysCallerSettings(QDialog):
             QPushButton:hover {
                 background: #67abdb;
             }
-            QCheckBox {
+            QCheckBox, QRadioButton {
                 color: white;
             }
             QLabel {
@@ -89,7 +89,6 @@ class SysCallerSettings(QDialog):
                 background: transparent;
             }
         """)
-        
         self.settings = QSettings('SysCaller', 'BuildTools')
         self.init_ui()
 
@@ -98,6 +97,27 @@ class SysCallerSettings(QDialog):
         tabs = QTabWidget()
         general_tab = QWidget()
         general_layout = QVBoxLayout(general_tab)
+        syscall_mode_group = QGroupBox("Syscall Mode")
+        syscall_mode_layout = QVBoxLayout()
+        description = QLabel("Select which syscall mode to use. This affects how syscalls are generated and processed.")
+        description.setWordWrap(True)
+        syscall_mode_layout.addWidget(description)
+        self.mode_button_group = QButtonGroup(self)
+        self.nt_mode_radio = QRadioButton("Nt Mode (User Mode)")
+        self.nt_mode_radio.setToolTip("Use Nt prefix for syscalls (default for user mode applications)")
+        self.zw_mode_radio = QRadioButton("Zw Mode (Kernel Mode)")
+        self.zw_mode_radio.setToolTip("Use Zw prefix for syscalls (primarily used in kernel mode)")
+        current_mode = self.settings.value('general/syscall_mode', 'Nt', str)
+        if current_mode == 'Zw':
+            self.zw_mode_radio.setChecked(True)
+        else:
+            self.nt_mode_radio.setChecked(True)
+        self.mode_button_group.addButton(self.nt_mode_radio)
+        self.mode_button_group.addButton(self.zw_mode_radio)
+        syscall_mode_layout.addWidget(self.nt_mode_radio)
+        syscall_mode_layout.addWidget(self.zw_mode_radio)
+        syscall_mode_group.setLayout(syscall_mode_layout)
+        general_layout.addWidget(syscall_mode_group)
         reset_group = QGroupBox("Reset to Default")
         reset_layout = QVBoxLayout()
         description = QLabel("Reset Syscaller to it's default state. This will revert any changes made by obfuscation or manual editing.")
@@ -233,7 +253,7 @@ class SysCallerSettings(QDialog):
 
     def restore_default_files(self):
         reply = QMessageBox.question(self, "SysCaller v1.1.0", 
-                                    "Are you sure you want to restore default files?\nThis will overwrite your current syscaller.asm and sysNtFunctions.h files.",
+                                    "Are you sure you want to restore default files?\nThis will overwrite your current syscaller.asm and sysFunctions.h files.",
                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.No:
             return
@@ -241,9 +261,9 @@ class SysCallerSettings(QDialog):
             script_dir = os.path.dirname(os.path.abspath(__file__))
             project_root = os.path.dirname(os.path.dirname(script_dir))
             default_asm_path = os.path.join(project_root, 'BuildTools', 'Default', 'syscaller.asm')
-            default_header_path = os.path.join(project_root, 'BuildTools', 'Default', 'sysNtFunctions.h')
+            default_header_path = os.path.join(project_root, 'BuildTools', 'Default', 'sysFunctions.h')
             asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
-            header_path = os.path.join(project_root, 'Wrapper', 'include', 'Nt', 'sysNtFunctions.h')
+            header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
             if not os.path.exists(default_asm_path) or not os.path.exists(default_header_path):
                 QMessageBox.warning(self, "Missing Default Files", 
                                    "Default files not found in BuildTools/Default directory.")
@@ -256,7 +276,7 @@ class SysCallerSettings(QDialog):
                 from datetime import datetime
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 backup_asm_path = os.path.join(backups_dir, f'syscaller_{timestamp}.asm')
-                backup_header_path = os.path.join(backups_dir, f'sysNtFunctions_{timestamp}.h')
+                backup_header_path = os.path.join(backups_dir, f'sysFunctions_{timestamp}.h')
                 try:
                     shutil.copy2(asm_path, backup_asm_path)
                     shutil.copy2(header_path, backup_header_path)
@@ -278,13 +298,19 @@ class SysCallerSettings(QDialog):
         self.syscalls = []
         script_dir = os.path.dirname(os.path.abspath(__file__))
         project_root = os.path.dirname(os.path.dirname(script_dir))
-        header_path = os.path.join(project_root, 'Wrapper', 'include', 'Nt', 'sysNtFunctions.h')
+        header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+        syscall_mode = self.settings.value('general/syscall_mode', 'Nt', str)
+        syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
         if os.path.exists(header_path):
             with open(header_path, 'r') as f:
                 for line in f:
-                    match = re.search(r'extern "C" NTSTATUS (Sys\w+)\(', line)
+                    match = re.search(rf'extern "C" NTSTATUS ({syscall_prefix}\w+)\(', line)
                     if match:
                         self.syscalls.append(match.group(1))
+                    sc_match = re.search(r'extern "C" NTSTATUS (SC\w+)\(', line)
+                    if sc_match:
+                        syscall_name = syscall_prefix + sc_match.group(1)[2:]
+                        self.syscalls.append(syscall_name)
         self.syscalls.sort()
         selected_syscalls = self.settings.value('integrity/selected_syscalls', [], type=list)
         if not selected_syscalls:
@@ -320,6 +346,10 @@ class SysCallerSettings(QDialog):
 
     def save_settings(self):
         self.settings.setValue('general/create_backup', self.create_backup.isChecked())
+        if self.zw_mode_radio.isChecked():
+            self.settings.setValue('general/syscall_mode', 'Zw')
+        else:
+            self.settings.setValue('general/syscall_mode', 'Nt')
         if self.create_backup.isChecked():
             script_dir = os.path.dirname(os.path.abspath(__file__))
             project_root = os.path.dirname(os.path.dirname(script_dir))
