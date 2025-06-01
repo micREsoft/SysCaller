@@ -233,15 +233,16 @@ def generate_exports():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(script_dir))
     asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
-    header_path = os.path.join(project_root, 'Wrapper', 'include', 'Nt', 'sysNtFunctions.h')
+    header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
     settings = QSettings('SysCaller', 'BuildTools')
     selected_syscalls = settings.value('integrity/selected_syscalls', [], type=list)
     use_all_syscalls = len(selected_syscalls) == 0
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
     used_names = set()
     used_offsets = set()
     used_offset_names = set()
     offset_name_map = {}  # Maps fake offset to random name
-    # Read syscall names and generate mapping
     syscall_map = {}  # Maps original syscall to random name
     syscall_offsets = {}  # Maps original syscall to its offset
     real_to_fake_offset = {}  # Maps real offset to fake offset
@@ -252,8 +253,11 @@ def generate_exports():
         in_stub = False
         current_syscall = None
         for line in content:
-            if ' PROC' in line:
-                current_syscall = line.split()[0]
+            proc_match = re.search(r"((?:SC|Sys|SysK)\w+)\s+PROC", line)
+            if proc_match:
+                current_syscall = proc_match.group(1)
+                if current_syscall.startswith("SC"):
+                    current_syscall = syscall_prefix + current_syscall[2:]
                 in_stub = True
                 current_stub = [line]
                 if use_all_syscalls or current_syscall in selected_syscalls:
@@ -307,9 +311,15 @@ def generate_exports():
             new_content.append(generate_align_padding())
         for line in stub_lines:
             if ' PROC' in line or ' ENDP' in line:
-                syscall = line.split()[0]
-                if syscall in syscall_map:
-                    line = line.replace(syscall, syscall_map[syscall])
+                syscall_match = re.search(r"((?:SC|Sys|SysK)\w+)\s+(?:PROC|ENDP)", line)
+                if syscall_match:
+                    syscall = syscall_match.group(1)
+                    if syscall.startswith("SC"):
+                        syscall = syscall_prefix + syscall[2:]
+                    if syscall in syscall_map:
+                        line = re.sub(r"(SC|Sys|SysK)(\w+)\s+(PROC|ENDP)", 
+                                     lambda m: f"{syscall_map[syscall]} {m.group(3)}", 
+                                     line)
             elif 'mov eax,' in line and 'syscall' in ''.join(stub_lines):
                 for syscall, offset in syscall_offsets.items():
                     if syscall == original_syscall:
@@ -351,7 +361,7 @@ def generate_exports():
     for i, line in enumerate(header_content):
         if any(line == end_line for end_line in ending_lines):
             continue
-        if not header_part_ended and 'extern "C" NTSTATUS Sys' in line:
+        if not header_part_ended and (f'extern "C" NTSTATUS {syscall_prefix}' in line or 'extern "C" NTSTATUS SC' in line):
             header_part_ended = True
         if not header_part_ended:
             if "_WIN64" in line and "#ifdef" in line:
@@ -360,20 +370,28 @@ def generate_exports():
                 continue
             new_header_content.append(line)
             continue
-        if line.startswith('extern "C" NTSTATUS Sys'):
-            match = re.search(r'extern "C" NTSTATUS (Sys\w+)\(', line)
+        if 'extern "C" NTSTATUS SC' in line or f'extern "C" NTSTATUS {syscall_prefix}' in line:
+            match = re.search(rf'extern "C" NTSTATUS ((?:SC|{syscall_prefix})\w+)\(', line)
             if match:
-                current_syscall = match.group(1)
+                original_name = match.group(1)
+                if original_name.startswith("SC"):
+                    current_syscall = syscall_prefix + original_name[2:]
+                else:
+                    current_syscall = original_name
                 if use_all_syscalls or current_syscall in selected_syscalls:
                     skip_block = False
                     if current_syscall in syscall_map:
-                        line = line.replace(current_syscall, syscall_map[current_syscall])
+                        line = line.replace(original_name, syscall_map[current_syscall])
                     new_header_content.append(line)
                 else:
                     skip_block = True
                 continue
         if not skip_block:
-            new_header_content.append(line)
+            if "SC" in line:
+                updated_line = re.sub(r'\bSC(\w+)\b', fr'{syscall_prefix}\1', line)
+                new_header_content.append(updated_line)
+            else:
+                new_header_content.append(line)
         elif line.strip() == ");":
             skip_block = False
     new_header_content.append("\n// Syscall name mappings\n")
