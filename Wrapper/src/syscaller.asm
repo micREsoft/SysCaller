@@ -1,3391 +1,3391 @@
 .code
 
-SysAcceptConnectPort PROC
+SCAcceptConnectPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAcceptConnectPort syscall offset (<syscall_id>)
     syscall
     ret
-SysAcceptConnectPort ENDP
+SCAcceptConnectPort ENDP
 
-SysAccessCheck PROC
+SCAccessCheck PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAccessCheck syscall offset (<syscall_id>)
     syscall
     ret
-SysAccessCheck ENDP
+SCAccessCheck ENDP
 
-SysAccessCheckAndAuditAlarm PROC
+SCAccessCheckAndAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAccessCheckAndAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysAccessCheckAndAuditAlarm ENDP
+SCAccessCheckAndAuditAlarm ENDP
 
-SysAccessCheckByType PROC
+SCAccessCheckByType PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAccessCheckByType syscall offset (<syscall_id>)
     syscall
     ret
-SysAccessCheckByType ENDP
+SCAccessCheckByType ENDP
 
-SysAccessCheckByTypeAndAuditAlarm PROC
+SCAccessCheckByTypeAndAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAccessCheckByTypeAndAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysAccessCheckByTypeAndAuditAlarm ENDP
+SCAccessCheckByTypeAndAuditAlarm ENDP
 
-SysAccessCheckByTypeResultList PROC
+SCAccessCheckByTypeResultList PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAccessCheckByTypeResultList syscall offset (<syscall_id>)
     syscall
     ret
-SysAccessCheckByTypeResultList ENDP
+SCAccessCheckByTypeResultList ENDP
 
-SysAccessCheckByTypeResultListAndAuditAlarm PROC
+SCAccessCheckByTypeResultListAndAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAccessCheckByTypeResultListAndAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysAccessCheckByTypeResultListAndAuditAlarm ENDP
+SCAccessCheckByTypeResultListAndAuditAlarm ENDP
 
-SysAccessCheckByTypeResultListAndAuditAlarmByHandle PROC
+SCAccessCheckByTypeResultListAndAuditAlarmByHandle PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAccessCheckByTypeResultListAndAuditAlarmByHandle syscall offset (<syscall_id>)
     syscall
     ret
-SysAccessCheckByTypeResultListAndAuditAlarmByHandle ENDP
+SCAccessCheckByTypeResultListAndAuditAlarmByHandle ENDP
 
-SysAcquireCrossVmMutant PROC
+SCAcquireCrossVmMutant PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAcquireCrossVmMutant syscall offset (<syscall_id>)
     syscall
     ret
-SysAcquireCrossVmMutant ENDP
+SCAcquireCrossVmMutant ENDP
 
-SysAcquireProcessActivityReference PROC
+SCAcquireProcessActivityReference PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAcquireProcessActivityReference syscall offset (<syscall_id>)
     syscall
     ret
-SysAcquireProcessActivityReference ENDP
+SCAcquireProcessActivityReference ENDP
 
-SysAddAtom PROC
+SCAddAtom PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAddAtom syscall offset (<syscall_id>)
     syscall
     ret
-SysAddAtom ENDP
+SCAddAtom ENDP
 
-SysAddAtomEx PROC
+SCAddAtomEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAddAtomEx syscall offset (<syscall_id>)
     syscall
     ret
-SysAddAtomEx ENDP
+SCAddAtomEx ENDP
 
-SysAddBootEntry PROC
+SCAddBootEntry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAddBootEntry syscall offset (<syscall_id>)
     syscall
     ret
-SysAddBootEntry ENDP
+SCAddBootEntry ENDP
 
-SysAddDriverEntry PROC
+SCAddDriverEntry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAddDriverEntry syscall offset (<syscall_id>)
     syscall
     ret
-SysAddDriverEntry ENDP
+SCAddDriverEntry ENDP
 
-SysAdjustGroupsToken PROC
+SCAdjustGroupsToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAdjustGroupsToken syscall offset (<syscall_id>)
     syscall
     ret
-SysAdjustGroupsToken ENDP
+SCAdjustGroupsToken ENDP
 
-SysAdjustPrivilegesToken PROC
+SCAdjustPrivilegesToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAdjustPrivilegesToken syscall offset (<syscall_id>)
     syscall
     ret
-SysAdjustPrivilegesToken ENDP
+SCAdjustPrivilegesToken ENDP
 
-SysAdjustTokenClaimsAndDeviceGroups PROC
+SCAdjustTokenClaimsAndDeviceGroups PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAdjustTokenClaimsAndDeviceGroups syscall offset (<syscall_id>)
     syscall
     ret
-SysAdjustTokenClaimsAndDeviceGroups ENDP
+SCAdjustTokenClaimsAndDeviceGroups ENDP
 
-SysAlertResumeThread PROC
+SCAlertResumeThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlertResumeThread syscall offset (<syscall_id>)
     syscall
     ret
-SysAlertResumeThread ENDP
+SCAlertResumeThread ENDP
 
-SysAlertThread PROC
+SCAlertThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlertThread syscall offset (<syscall_id>)
     syscall
     ret
-SysAlertThread ENDP
+SCAlertThread ENDP
 
-SysAlertThreadByThreadId PROC
+SCAlertThreadByThreadId PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlertThreadByThreadId syscall offset (<syscall_id>)
     syscall
     ret
-SysAlertThreadByThreadId ENDP
+SCAlertThreadByThreadId ENDP
 
-SysAllocateLocallyUniqueId PROC
+SCAllocateLocallyUniqueId PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAllocateLocallyUniqueId syscall offset (<syscall_id>)
     syscall
     ret
-SysAllocateLocallyUniqueId ENDP
+SCAllocateLocallyUniqueId ENDP
 
-SysAllocateReserveObject PROC
+SCAllocateReserveObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAllocateReserveObject syscall offset (<syscall_id>)
     syscall
     ret
-SysAllocateReserveObject ENDP
+SCAllocateReserveObject ENDP
 
-SysAllocateUserPhysicalPages PROC
+SCAllocateUserPhysicalPages PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAllocateUserPhysicalPages syscall offset (<syscall_id>)
     syscall
     ret
-SysAllocateUserPhysicalPages ENDP
+SCAllocateUserPhysicalPages ENDP
 
-SysAllocateUserPhysicalPagesEx PROC
+SCAllocateUserPhysicalPagesEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAllocateUserPhysicalPagesEx syscall offset (<syscall_id>)
     syscall
     ret
-SysAllocateUserPhysicalPagesEx ENDP
+SCAllocateUserPhysicalPagesEx ENDP
 
-SysAllocateUuids PROC
+SCAllocateUuids PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAllocateUuids syscall offset (<syscall_id>)
     syscall
     ret
-SysAllocateUuids ENDP
+SCAllocateUuids ENDP
 
-SysAllocateVirtualMemory PROC
+SCAllocateVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAllocateVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysAllocateVirtualMemory ENDP
+SCAllocateVirtualMemory ENDP
 
-SysAllocateVirtualMemoryEx PROC
+SCAllocateVirtualMemoryEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAllocateVirtualMemoryEx syscall offset (<syscall_id>)
     syscall
     ret
-SysAllocateVirtualMemoryEx ENDP
+SCAllocateVirtualMemoryEx ENDP
 
-SysAlpcAcceptConnectPort PROC
+SCAlpcAcceptConnectPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcAcceptConnectPort syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcAcceptConnectPort ENDP
+SCAlpcAcceptConnectPort ENDP
 
-SysAlpcCancelMessage PROC
+SCAlpcCancelMessage PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcCancelMessage syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcCancelMessage ENDP
+SCAlpcCancelMessage ENDP
 
-SysAlpcConnectPort PROC
+SCAlpcConnectPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcConnectPort syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcConnectPort ENDP
+SCAlpcConnectPort ENDP
 
-SysAlpcConnectPortEx PROC
+SCAlpcConnectPortEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcConnectPortEx syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcConnectPortEx ENDP
+SCAlpcConnectPortEx ENDP
 
-SysAlpcCreatePort PROC
+SCAlpcCreatePort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcCreatePort syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcCreatePort ENDP
+SCAlpcCreatePort ENDP
 
-SysAlpcCreatePortSection PROC
+SCAlpcCreatePortSection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcCreatePortSection syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcCreatePortSection ENDP
+SCAlpcCreatePortSection ENDP
 
-SysAlpcCreateResourceReserve PROC
+SCAlpcCreateResourceReserve PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcCreateResourceReserve syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcCreateResourceReserve ENDP
+SCAlpcCreateResourceReserve ENDP
 
-SysAlpcCreateSectionView PROC
+SCAlpcCreateSectionView PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcCreateSectionView syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcCreateSectionView ENDP
+SCAlpcCreateSectionView ENDP
 
-SysAlpcCreateSecurityContext PROC
+SCAlpcCreateSecurityContext PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcCreateSecurityContext syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcCreateSecurityContext ENDP
+SCAlpcCreateSecurityContext ENDP
 
-SysAlpcDeletePortSection PROC
+SCAlpcDeletePortSection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcDeletePortSection syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcDeletePortSection ENDP
+SCAlpcDeletePortSection ENDP
 
-SysAlpcDeleteResourceReserve PROC
+SCAlpcDeleteResourceReserve PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcDeleteResourceReserve syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcDeleteResourceReserve ENDP
+SCAlpcDeleteResourceReserve ENDP
 
-SysAlpcDeleteSectionView PROC
+SCAlpcDeleteSectionView PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcDeleteSectionView syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcDeleteSectionView ENDP
+SCAlpcDeleteSectionView ENDP
 
-SysAlpcDeleteSecurityContext PROC
+SCAlpcDeleteSecurityContext PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcDeleteSecurityContext syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcDeleteSecurityContext ENDP
+SCAlpcDeleteSecurityContext ENDP
 
-SysAlpcDisconnectPort PROC
+SCAlpcDisconnectPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcDisconnectPort syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcDisconnectPort ENDP
+SCAlpcDisconnectPort ENDP
 
-SysAlpcImpersonateClientContainerOfPort PROC
+SCAlpcImpersonateClientContainerOfPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcImpersonateClientContainerOfPort syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcImpersonateClientContainerOfPort ENDP
+SCAlpcImpersonateClientContainerOfPort ENDP
 
-SysAlpcImpersonateClientOfPort PROC
+SCAlpcImpersonateClientOfPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcImpersonateClientOfPort syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcImpersonateClientOfPort ENDP
+SCAlpcImpersonateClientOfPort ENDP
 
-SysAlpcOpenSenderProcess PROC
+SCAlpcOpenSenderProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcOpenSenderProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcOpenSenderProcess ENDP
+SCAlpcOpenSenderProcess ENDP
 
-SysAlpcOpenSenderThread PROC
+SCAlpcOpenSenderThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcOpenSenderThread syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcOpenSenderThread ENDP
+SCAlpcOpenSenderThread ENDP
 
-SysAlpcQueryInformation PROC
+SCAlpcQueryInformation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcQueryInformation syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcQueryInformation ENDP
+SCAlpcQueryInformation ENDP
 
-SysAlpcQueryInformationMessage PROC
+SCAlpcQueryInformationMessage PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcQueryInformationMessage syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcQueryInformationMessage ENDP
+SCAlpcQueryInformationMessage ENDP
 
-SysAlpcRevokeSecurityContext PROC
+SCAlpcRevokeSecurityContext PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcRevokeSecurityContext syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcRevokeSecurityContext ENDP
+SCAlpcRevokeSecurityContext ENDP
 
-SysAlpcSendWaitReceivePort PROC
+SCAlpcSendWaitReceivePort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcSendWaitReceivePort syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcSendWaitReceivePort ENDP
+SCAlpcSendWaitReceivePort ENDP
 
-SysAlpcSetInformation PROC
+SCAlpcSetInformation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAlpcSetInformation syscall offset (<syscall_id>)
     syscall
     ret
-SysAlpcSetInformation ENDP
+SCAlpcSetInformation ENDP
 
-SysApphelpCacheControl PROC
+SCApphelpCacheControl PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwApphelpCacheControl syscall offset (<syscall_id>)
     syscall
     ret
-SysApphelpCacheControl ENDP
+SCApphelpCacheControl ENDP
 
-SysAreMappedFilesTheSame PROC
+SCAreMappedFilesTheSame PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAreMappedFilesTheSame syscall offset (<syscall_id>)
     syscall
     ret
-SysAreMappedFilesTheSame ENDP
+SCAreMappedFilesTheSame ENDP
 
-SysAssignProcessToJobObject PROC
+SCAssignProcessToJobObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAssignProcessToJobObject syscall offset (<syscall_id>)
     syscall
     ret
-SysAssignProcessToJobObject ENDP
+SCAssignProcessToJobObject ENDP
 
-SysAssociateWaitCompletionPacket PROC
+SCAssociateWaitCompletionPacket PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwAssociateWaitCompletionPacket syscall offset (<syscall_id>)
     syscall
     ret
-SysAssociateWaitCompletionPacket ENDP
+SCAssociateWaitCompletionPacket ENDP
 
-SysCallEnclave PROC
+SCCallEnclave PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCallEnclave syscall offset (<syscall_id>)
     syscall
     ret
-SysCallEnclave ENDP
+SCCallEnclave ENDP
 
-SysCallbackReturn PROC
+SCCallbackReturn PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCallbackReturn syscall offset (<syscall_id>)
     syscall
     ret
-SysCallbackReturn ENDP
+SCCallbackReturn ENDP
 
-SysCancelIoFile PROC
+SCCancelIoFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCancelIoFile syscall offset (<syscall_id>)
     syscall
     ret
-SysCancelIoFile ENDP
+SCCancelIoFile ENDP
 
-SysCancelIoFileEx PROC
+SCCancelIoFileEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCancelIoFileEx syscall offset (<syscall_id>)
     syscall
     ret
-SysCancelIoFileEx ENDP
+SCCancelIoFileEx ENDP
 
-SysCancelSynchronousIoFile PROC
+SCCancelSynchronousIoFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCancelSynchronousIoFile syscall offset (<syscall_id>)
     syscall
     ret
-SysCancelSynchronousIoFile ENDP
+SCCancelSynchronousIoFile ENDP
 
-SysCancelTimer PROC
+SCCancelTimer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCancelTimer syscall offset (<syscall_id>)
     syscall
     ret
-SysCancelTimer ENDP
+SCCancelTimer ENDP
 
-SysCancelTimer2 PROC
+SCCancelTimer2 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCancelTimer2 syscall offset (<syscall_id>)
     syscall
     ret
-SysCancelTimer2 ENDP
+SCCancelTimer2 ENDP
 
-SysCancelWaitCompletionPacket PROC
+SCCancelWaitCompletionPacket PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCancelWaitCompletionPacket syscall offset (<syscall_id>)
     syscall
     ret
-SysCancelWaitCompletionPacket ENDP
+SCCancelWaitCompletionPacket ENDP
 
-SysChangeProcessState PROC
+SCChangeProcessState PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwChangeProcessState syscall offset (<syscall_id>)
     syscall
     ret
-SysChangeProcessState ENDP
+SCChangeProcessState ENDP
 
-SysChangeThreadState PROC
+SCChangeThreadState PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwChangeThreadState syscall offset (<syscall_id>)
     syscall
     ret
-SysChangeThreadState ENDP
+SCChangeThreadState ENDP
 
-SysClearEvent PROC
+SCClearEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwClearEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysClearEvent ENDP
+SCClearEvent ENDP
 
-SysClose PROC
+SCClose PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwClose syscall offset (<syscall_id>)
     syscall
     ret
-SysClose ENDP
+SCClose ENDP
 
-SysCloseObjectAuditAlarm PROC
+SCCloseObjectAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCloseObjectAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysCloseObjectAuditAlarm ENDP
+SCCloseObjectAuditAlarm ENDP
 
-SysCommitComplete PROC
+SCCommitComplete PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCommitComplete syscall offset (<syscall_id>)
     syscall
     ret
-SysCommitComplete ENDP
+SCCommitComplete ENDP
 
-SysCommitEnlistment PROC
+SCCommitEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCommitEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysCommitEnlistment ENDP
+SCCommitEnlistment ENDP
 
-SysCommitRegistryTransaction PROC
+SCCommitRegistryTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCommitRegistryTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysCommitRegistryTransaction ENDP
+SCCommitRegistryTransaction ENDP
 
-SysCommitTransaction PROC
+SCCommitTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCommitTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysCommitTransaction ENDP
+SCCommitTransaction ENDP
 
-SysCompactKeys PROC
+SCCompactKeys PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCompactKeys syscall offset (<syscall_id>)
     syscall
     ret
-SysCompactKeys ENDP
+SCCompactKeys ENDP
 
-SysCompareObjects PROC
+SCCompareObjects PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCompareObjects syscall offset (<syscall_id>)
     syscall
     ret
-SysCompareObjects ENDP
+SCCompareObjects ENDP
 
-SysCompareSigningLevels PROC
+SCCompareSigningLevels PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCompareSigningLevels syscall offset (<syscall_id>)
     syscall
     ret
-SysCompareSigningLevels ENDP
+SCCompareSigningLevels ENDP
 
-SysCompareTokens PROC
+SCCompareTokens PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCompareTokens syscall offset (<syscall_id>)
     syscall
     ret
-SysCompareTokens ENDP
+SCCompareTokens ENDP
 
-SysCompleteConnectPort PROC
+SCCompleteConnectPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCompleteConnectPort syscall offset (<syscall_id>)
     syscall
     ret
-SysCompleteConnectPort ENDP
+SCCompleteConnectPort ENDP
 
-SysCompressKey PROC
+SCCompressKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCompressKey syscall offset (<syscall_id>)
     syscall
     ret
-SysCompressKey ENDP
+SCCompressKey ENDP
 
-SysConnectPort PROC
+SCConnectPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwConnectPort syscall offset (<syscall_id>)
     syscall
     ret
-SysConnectPort ENDP
+SCConnectPort ENDP
 
-SysContinue PROC
+SCContinue PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwContinue syscall offset (<syscall_id>)
     syscall
     ret
-SysContinue ENDP
+SCContinue ENDP
 
-SysContinueEx PROC
+SCContinueEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwContinueEx syscall offset (<syscall_id>)
     syscall
     ret
-SysContinueEx ENDP
+SCContinueEx ENDP
 
-SysConvertBetweenAuxiliaryCounterAndPerformanceCounter PROC
+SCConvertBetweenAuxiliaryCounterAndPerformanceCounter PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwConvertBetweenAuxiliaryCounterAndPerformanceCounter syscall offset (<syscall_id>)
     syscall
     ret
-SysConvertBetweenAuxiliaryCounterAndPerformanceCounter ENDP
+SCConvertBetweenAuxiliaryCounterAndPerformanceCounter ENDP
 
-SysCopyFileChunk PROC
+SCCopyFileChunk PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCopyFileChunk syscall offset (<syscall_id>)
     syscall
     ret
-SysCopyFileChunk ENDP
+SCCopyFileChunk ENDP
 
-SysCreateCpuPartition PROC
+SCCreateCpuPartition PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateCpuPartition syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateCpuPartition ENDP
+SCCreateCpuPartition ENDP
 
-SysCreateCrossVmEvent PROC
+SCCreateCrossVmEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateCrossVmEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateCrossVmEvent ENDP
+SCCreateCrossVmEvent ENDP
 
-SysCreateCrossVmMutant PROC
+SCCreateCrossVmMutant PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateCrossVmMutant syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateCrossVmMutant ENDP
+SCCreateCrossVmMutant ENDP
 
-SysCreateDebugObject PROC
+SCCreateDebugObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateDebugObject syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateDebugObject ENDP
+SCCreateDebugObject ENDP
 
-SysCreateDirectoryObject PROC
+SCCreateDirectoryObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateDirectoryObject syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateDirectoryObject ENDP
+SCCreateDirectoryObject ENDP
 
-SysCreateDirectoryObjectEx PROC
+SCCreateDirectoryObjectEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateDirectoryObjectEx syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateDirectoryObjectEx ENDP
+SCCreateDirectoryObjectEx ENDP
 
-SysCreateEnclave PROC
+SCCreateEnclave PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateEnclave syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateEnclave ENDP
+SCCreateEnclave ENDP
 
-SysCreateEnlistment PROC
+SCCreateEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateEnlistment ENDP
+SCCreateEnlistment ENDP
 
-SysCreateEvent PROC
+SCCreateEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateEvent ENDP
+SCCreateEvent ENDP
 
-SysCreateEventPair PROC
+SCCreateEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateEventPair ENDP
+SCCreateEventPair ENDP
 
-SysCreateFile PROC
+SCCreateFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateFile syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateFile ENDP
+SCCreateFile ENDP
 
-SysCreateIRTimer PROC
+SCCreateIRTimer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateIRTimer syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateIRTimer ENDP
+SCCreateIRTimer ENDP
 
-SysCreateIoCompletion PROC
+SCCreateIoCompletion PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateIoCompletion syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateIoCompletion ENDP
+SCCreateIoCompletion ENDP
 
-SysCreateIoRing PROC
+SCCreateIoRing PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateIoRing syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateIoRing ENDP
+SCCreateIoRing ENDP
 
-SysCreateJobObject PROC
+SCCreateJobObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateJobObject syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateJobObject ENDP
+SCCreateJobObject ENDP
 
-SysCreateJobSet PROC
+SCCreateJobSet PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateJobSet syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateJobSet ENDP
+SCCreateJobSet ENDP
 
-SysCreateKey PROC
+SCCreateKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateKey syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateKey ENDP
+SCCreateKey ENDP
 
-SysCreateKeyTransacted PROC
+SCCreateKeyTransacted PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateKeyTransacted syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateKeyTransacted ENDP
+SCCreateKeyTransacted ENDP
 
-SysCreateKeyedEvent PROC
+SCCreateKeyedEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateKeyedEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateKeyedEvent ENDP
+SCCreateKeyedEvent ENDP
 
-SysCreateLowBoxToken PROC
+SCCreateLowBoxToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateLowBoxToken syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateLowBoxToken ENDP
+SCCreateLowBoxToken ENDP
 
-SysCreateMailslotFile PROC
+SCCreateMailslotFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateMailslotFile syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateMailslotFile ENDP
+SCCreateMailslotFile ENDP
 
-SysCreateMutant PROC
+SCCreateMutant PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateMutant syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateMutant ENDP
+SCCreateMutant ENDP
 
-SysCreateNamedPipeFile PROC
+SCCreateNamedPipeFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateNamedPipeFile syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateNamedPipeFile ENDP
+SCCreateNamedPipeFile ENDP
 
-SysCreatePagingFile PROC
+SCCreatePagingFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreatePagingFile syscall offset (<syscall_id>)
     syscall
     ret
-SysCreatePagingFile ENDP
+SCCreatePagingFile ENDP
 
-SysCreatePartition PROC
+SCCreatePartition PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreatePartition syscall offset (<syscall_id>)
     syscall
     ret
-SysCreatePartition ENDP
+SCCreatePartition ENDP
 
-SysCreatePort PROC
+SCCreatePort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreatePort syscall offset (<syscall_id>)
     syscall
     ret
-SysCreatePort ENDP
+SCCreatePort ENDP
 
-SysCreatePrivateNamespace PROC
+SCCreatePrivateNamespace PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreatePrivateNamespace syscall offset (<syscall_id>)
     syscall
     ret
-SysCreatePrivateNamespace ENDP
+SCCreatePrivateNamespace ENDP
 
-SysCreateProcess PROC
+SCCreateProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateProcess ENDP
+SCCreateProcess ENDP
 
-SysCreateProcessEx PROC
+SCCreateProcessEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateProcessEx syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateProcessEx ENDP
+SCCreateProcessEx ENDP
 
-SysCreateProcessStateChange PROC
+SCCreateProcessStateChange PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateProcessStateChange syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateProcessStateChange ENDP
+SCCreateProcessStateChange ENDP
 
-SysCreateProfile PROC
+SCCreateProfile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateProfile syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateProfile ENDP
+SCCreateProfile ENDP
 
-SysCreateProfileEx PROC
+SCCreateProfileEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateProfileEx syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateProfileEx ENDP
+SCCreateProfileEx ENDP
 
-SysCreateRegistryTransaction PROC
+SCCreateRegistryTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateRegistryTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateRegistryTransaction ENDP
+SCCreateRegistryTransaction ENDP
 
-SysCreateResourceManager PROC
+SCCreateResourceManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateResourceManager syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateResourceManager ENDP
+SCCreateResourceManager ENDP
 
-SysCreateSection PROC
+SCCreateSection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateSection syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateSection ENDP
+SCCreateSection ENDP
 
-SysCreateSectionEx PROC
+SCCreateSectionEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateSectionEx syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateSectionEx ENDP
+SCCreateSectionEx ENDP
 
-SysCreateSemaphore PROC
+SCCreateSemaphore PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateSemaphore syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateSemaphore ENDP
+SCCreateSemaphore ENDP
 
-SysCreateSymbolicLinkObject PROC
+SCCreateSymbolicLinkObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateSymbolicLinkObject syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateSymbolicLinkObject ENDP
+SCCreateSymbolicLinkObject ENDP
 
-SysCreateThread PROC
+SCCreateThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateThread syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateThread ENDP
+SCCreateThread ENDP
 
-SysCreateThreadEx PROC
+SCCreateThreadEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateThreadEx syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateThreadEx ENDP
+SCCreateThreadEx ENDP
 
-SysCreateThreadStateChange PROC
+SCCreateThreadStateChange PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateThreadStateChange syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateThreadStateChange ENDP
+SCCreateThreadStateChange ENDP
 
-SysCreateTimer PROC
+SCCreateTimer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateTimer syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateTimer ENDP
+SCCreateTimer ENDP
 
-SysCreateTimer2 PROC
+SCCreateTimer2 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateTimer2 syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateTimer2 ENDP
+SCCreateTimer2 ENDP
 
-SysCreateToken PROC
+SCCreateToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateToken syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateToken ENDP
+SCCreateToken ENDP
 
-SysCreateTokenEx PROC
+SCCreateTokenEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateTokenEx syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateTokenEx ENDP
+SCCreateTokenEx ENDP
 
-SysCreateTransaction PROC
+SCCreateTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateTransaction ENDP
+SCCreateTransaction ENDP
 
-SysCreateTransactionManager PROC
+SCCreateTransactionManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateTransactionManager syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateTransactionManager ENDP
+SCCreateTransactionManager ENDP
 
-SysCreateUserProcess PROC
+SCCreateUserProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateUserProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateUserProcess ENDP
+SCCreateUserProcess ENDP
 
-SysCreateWaitCompletionPacket PROC
+SCCreateWaitCompletionPacket PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateWaitCompletionPacket syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateWaitCompletionPacket ENDP
+SCCreateWaitCompletionPacket ENDP
 
-SysCreateWaitablePort PROC
+SCCreateWaitablePort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateWaitablePort syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateWaitablePort ENDP
+SCCreateWaitablePort ENDP
 
-SysCreateWnfStateName PROC
+SCCreateWnfStateName PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateWnfStateName syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateWnfStateName ENDP
+SCCreateWnfStateName ENDP
 
-SysCreateWorkerFactory PROC
+SCCreateWorkerFactory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwCreateWorkerFactory syscall offset (<syscall_id>)
     syscall
     ret
-SysCreateWorkerFactory ENDP
+SCCreateWorkerFactory ENDP
 
-SysDebugActiveProcess PROC
+SCDebugActiveProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDebugActiveProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysDebugActiveProcess ENDP
+SCDebugActiveProcess ENDP
 
-SysDebugContinue PROC
+SCDebugContinue PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDebugContinue syscall offset (<syscall_id>)
     syscall
     ret
-SysDebugContinue ENDP
+SCDebugContinue ENDP
 
-SysDelayExecution PROC
+SCDelayExecution PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDelayExecution syscall offset (<syscall_id>)
     syscall
     ret
-SysDelayExecution ENDP
+SCDelayExecution ENDP
 
-SysDeleteAtom PROC
+SCDeleteAtom PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteAtom syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteAtom ENDP
+SCDeleteAtom ENDP
 
-SysDeleteBootEntry PROC
+SCDeleteBootEntry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteBootEntry syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteBootEntry ENDP
+SCDeleteBootEntry ENDP
 
-SysDeleteDriverEntry PROC
+SCDeleteDriverEntry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteDriverEntry syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteDriverEntry ENDP
+SCDeleteDriverEntry ENDP
 
-SysDeleteFile PROC
+SCDeleteFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteFile syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteFile ENDP
+SCDeleteFile ENDP
 
-SysDeleteKey PROC
+SCDeleteKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteKey syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteKey ENDP
+SCDeleteKey ENDP
 
-SysDeleteObjectAuditAlarm PROC
+SCDeleteObjectAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteObjectAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteObjectAuditAlarm ENDP
+SCDeleteObjectAuditAlarm ENDP
 
-SysDeletePrivateNamespace PROC
+SCDeletePrivateNamespace PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeletePrivateNamespace syscall offset (<syscall_id>)
     syscall
     ret
-SysDeletePrivateNamespace ENDP
+SCDeletePrivateNamespace ENDP
 
-SysDeleteValueKey PROC
+SCDeleteValueKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteValueKey syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteValueKey ENDP
+SCDeleteValueKey ENDP
 
-SysDeleteWnfStateData PROC
+SCDeleteWnfStateData PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteWnfStateData syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteWnfStateData ENDP
+SCDeleteWnfStateData ENDP
 
-SysDeleteWnfStateName PROC
+SCDeleteWnfStateName PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeleteWnfStateName syscall offset (<syscall_id>)
     syscall
     ret
-SysDeleteWnfStateName ENDP
+SCDeleteWnfStateName ENDP
 
-SysDeviceIoControlFile PROC
+SCDeviceIoControlFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDeviceIoControlFile syscall offset (<syscall_id>)
     syscall
     ret
-SysDeviceIoControlFile ENDP
+SCDeviceIoControlFile ENDP
 
-SysDirectGraphicsCall PROC
+SCDirectGraphicsCall PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDirectGraphicsCall syscall offset (<syscall_id>)
     syscall
     ret
-SysDirectGraphicsCall ENDP
+SCDirectGraphicsCall ENDP
 
-SysDisableLastKnownGood PROC
+SCDisableLastKnownGood PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDisableLastKnownGood syscall offset (<syscall_id>)
     syscall
     ret
-SysDisableLastKnownGood ENDP
+SCDisableLastKnownGood ENDP
 
-SysDisplayString PROC
+SCDisplayString PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDisplayString syscall offset (<syscall_id>)
     syscall
     ret
-SysDisplayString ENDP
+SCDisplayString ENDP
 
-SysDrawText PROC
+SCDrawText PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDrawText syscall offset (<syscall_id>)
     syscall
     ret
-SysDrawText ENDP
+SCDrawText ENDP
 
-SysDuplicateObject PROC
+SCDuplicateObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDuplicateObject syscall offset (<syscall_id>)
     syscall
     ret
-SysDuplicateObject ENDP
+SCDuplicateObject ENDP
 
-SysDuplicateToken PROC
+SCDuplicateToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwDuplicateToken syscall offset (<syscall_id>)
     syscall
     ret
-SysDuplicateToken ENDP
+SCDuplicateToken ENDP
 
-SysEnableLastKnownGood PROC
+SCEnableLastKnownGood PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwEnableLastKnownGood syscall offset (<syscall_id>)
     syscall
     ret
-SysEnableLastKnownGood ENDP
+SCEnableLastKnownGood ENDP
 
-SysEnumerateBootEntries PROC
+SCEnumerateBootEntries PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwEnumerateBootEntries syscall offset (<syscall_id>)
     syscall
     ret
-SysEnumerateBootEntries ENDP
+SCEnumerateBootEntries ENDP
 
-SysEnumerateDriverEntries PROC
+SCEnumerateDriverEntries PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwEnumerateDriverEntries syscall offset (<syscall_id>)
     syscall
     ret
-SysEnumerateDriverEntries ENDP
+SCEnumerateDriverEntries ENDP
 
-SysEnumerateKey PROC
+SCEnumerateKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwEnumerateKey syscall offset (<syscall_id>)
     syscall
     ret
-SysEnumerateKey ENDP
+SCEnumerateKey ENDP
 
-SysEnumerateSystemEnvironmentValuesEx PROC
+SCEnumerateSystemEnvironmentValuesEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwEnumerateSystemEnvironmentValuesEx syscall offset (<syscall_id>)
     syscall
     ret
-SysEnumerateSystemEnvironmentValuesEx ENDP
+SCEnumerateSystemEnvironmentValuesEx ENDP
 
-SysEnumerateTransactionObject PROC
+SCEnumerateTransactionObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwEnumerateTransactionObject syscall offset (<syscall_id>)
     syscall
     ret
-SysEnumerateTransactionObject ENDP
+SCEnumerateTransactionObject ENDP
 
-SysEnumerateValueKey PROC
+SCEnumerateValueKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwEnumerateValueKey syscall offset (<syscall_id>)
     syscall
     ret
-SysEnumerateValueKey ENDP
+SCEnumerateValueKey ENDP
 
-SysExtendSection PROC
+SCExtendSection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwExtendSection syscall offset (<syscall_id>)
     syscall
     ret
-SysExtendSection ENDP
+SCExtendSection ENDP
 
-SysFilterBootOption PROC
+SCFilterBootOption PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFilterBootOption syscall offset (<syscall_id>)
     syscall
     ret
-SysFilterBootOption ENDP
+SCFilterBootOption ENDP
 
-SysFilterToken PROC
+SCFilterToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFilterToken syscall offset (<syscall_id>)
     syscall
     ret
-SysFilterToken ENDP
+SCFilterToken ENDP
 
-SysFilterTokenEx PROC
+SCFilterTokenEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFilterTokenEx syscall offset (<syscall_id>)
     syscall
     ret
-SysFilterTokenEx ENDP
+SCFilterTokenEx ENDP
 
-SysFindAtom PROC
+SCFindAtom PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFindAtom syscall offset (<syscall_id>)
     syscall
     ret
-SysFindAtom ENDP
+SCFindAtom ENDP
 
-SysFlushBuffersFile PROC
+SCFlushBuffersFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushBuffersFile syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushBuffersFile ENDP
+SCFlushBuffersFile ENDP
 
-SysFlushBuffersFileEx PROC
+SCFlushBuffersFileEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushBuffersFileEx syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushBuffersFileEx ENDP
+SCFlushBuffersFileEx ENDP
 
-SysFlushInstallUILanguage PROC
+SCFlushInstallUILanguage PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushInstallUILanguage syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushInstallUILanguage ENDP
+SCFlushInstallUILanguage ENDP
 
-SysFlushInstructionCache PROC
+SCFlushInstructionCache PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushInstructionCache syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushInstructionCache ENDP
+SCFlushInstructionCache ENDP
 
-SysFlushKey PROC
+SCFlushKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushKey syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushKey ENDP
+SCFlushKey ENDP
 
-SysFlushProcessWriteBuffers PROC
+SCFlushProcessWriteBuffers PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushProcessWriteBuffers syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushProcessWriteBuffers ENDP
+SCFlushProcessWriteBuffers ENDP
 
-SysFlushVirtualMemory PROC
+SCFlushVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushVirtualMemory ENDP
+SCFlushVirtualMemory ENDP
 
-SysFlushWriteBuffer PROC
+SCFlushWriteBuffer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFlushWriteBuffer syscall offset (<syscall_id>)
     syscall
     ret
-SysFlushWriteBuffer ENDP
+SCFlushWriteBuffer ENDP
 
-SysFreeUserPhysicalPages PROC
+SCFreeUserPhysicalPages PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFreeUserPhysicalPages syscall offset (<syscall_id>)
     syscall
     ret
-SysFreeUserPhysicalPages ENDP
+SCFreeUserPhysicalPages ENDP
 
-SysFreeVirtualMemory PROC
+SCFreeVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFreeVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysFreeVirtualMemory ENDP
+SCFreeVirtualMemory ENDP
 
-SysFreezeRegistry PROC
+SCFreezeRegistry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFreezeRegistry syscall offset (<syscall_id>)
     syscall
     ret
-SysFreezeRegistry ENDP
+SCFreezeRegistry ENDP
 
-SysFreezeTransactions PROC
+SCFreezeTransactions PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFreezeTransactions syscall offset (<syscall_id>)
     syscall
     ret
-SysFreezeTransactions ENDP
+SCFreezeTransactions ENDP
 
-SysFsControlFile PROC
+SCFsControlFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwFsControlFile syscall offset (<syscall_id>)
     syscall
     ret
-SysFsControlFile ENDP
+SCFsControlFile ENDP
 
-SysGetCachedSigningLevel PROC
+SCGetCachedSigningLevel PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetCachedSigningLevel syscall offset (<syscall_id>)
     syscall
     ret
-SysGetCachedSigningLevel ENDP
+SCGetCachedSigningLevel ENDP
 
-SysGetCompleteWnfStateSubscription PROC
+SCGetCompleteWnfStateSubscription PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetCompleteWnfStateSubscription syscall offset (<syscall_id>)
     syscall
     ret
-SysGetCompleteWnfStateSubscription ENDP
+SCGetCompleteWnfStateSubscription ENDP
 
-SysGetContextThread PROC
+SCGetContextThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetContextThread syscall offset (<syscall_id>)
     syscall
     ret
-SysGetContextThread ENDP
+SCGetContextThread ENDP
 
-SysGetCurrentProcessorNumber PROC
+SCGetCurrentProcessorNumber PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetCurrentProcessorNumber syscall offset (<syscall_id>)
     syscall
     ret
-SysGetCurrentProcessorNumber ENDP
+SCGetCurrentProcessorNumber ENDP
 
-SysGetCurrentProcessorNumberEx PROC
+SCGetCurrentProcessorNumberEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetCurrentProcessorNumberEx syscall offset (<syscall_id>)
     syscall
     ret
-SysGetCurrentProcessorNumberEx ENDP
+SCGetCurrentProcessorNumberEx ENDP
 
-SysGetDevicePowerState PROC
+SCGetDevicePowerState PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetDevicePowerState syscall offset (<syscall_id>)
     syscall
     ret
-SysGetDevicePowerState ENDP
+SCGetDevicePowerState ENDP
 
-SysGetMUIRegistryInfo PROC
+SCGetMUIRegistryInfo PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetMUIRegistryInfo syscall offset (<syscall_id>)
     syscall
     ret
-SysGetMUIRegistryInfo ENDP
+SCGetMUIRegistryInfo ENDP
 
-SysGetNextProcess PROC
+SCGetNextProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetNextProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysGetNextProcess ENDP
+SCGetNextProcess ENDP
 
-SysGetNextThread PROC
+SCGetNextThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetNextThread syscall offset (<syscall_id>)
     syscall
     ret
-SysGetNextThread ENDP
+SCGetNextThread ENDP
 
-SysGetNlsSectionPtr PROC
+SCGetNlsSectionPtr PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetNlsSectionPtr syscall offset (<syscall_id>)
     syscall
     ret
-SysGetNlsSectionPtr ENDP
+SCGetNlsSectionPtr ENDP
 
-SysGetNotificationResourceManager PROC
+SCGetNotificationResourceManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetNotificationResourceManager syscall offset (<syscall_id>)
     syscall
     ret
-SysGetNotificationResourceManager ENDP
+SCGetNotificationResourceManager ENDP
 
-SysGetWriteWatch PROC
+SCGetWriteWatch PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwGetWriteWatch syscall offset (<syscall_id>)
     syscall
     ret
-SysGetWriteWatch ENDP
+SCGetWriteWatch ENDP
 
-SysImpersonateAnonymousToken PROC
+SCImpersonateAnonymousToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwImpersonateAnonymousToken syscall offset (<syscall_id>)
     syscall
     ret
-SysImpersonateAnonymousToken ENDP
+SCImpersonateAnonymousToken ENDP
 
-SysImpersonateClientOfPort PROC
+SCImpersonateClientOfPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwImpersonateClientOfPort syscall offset (<syscall_id>)
     syscall
     ret
-SysImpersonateClientOfPort ENDP
+SCImpersonateClientOfPort ENDP
 
-SysImpersonateThread PROC
+SCImpersonateThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwImpersonateThread syscall offset (<syscall_id>)
     syscall
     ret
-SysImpersonateThread ENDP
+SCImpersonateThread ENDP
 
-SysInitializeEnclave PROC
+SCInitializeEnclave PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwInitializeEnclave syscall offset (<syscall_id>)
     syscall
     ret
-SysInitializeEnclave ENDP
+SCInitializeEnclave ENDP
 
-SysInitializeNlsFiles PROC
+SCInitializeNlsFiles PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwInitializeNlsFiles syscall offset (<syscall_id>)
     syscall
     ret
-SysInitializeNlsFiles ENDP
+SCInitializeNlsFiles ENDP
 
-SysInitializeRegistry PROC
+SCInitializeRegistry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwInitializeRegistry syscall offset (<syscall_id>)
     syscall
     ret
-SysInitializeRegistry ENDP
+SCInitializeRegistry ENDP
 
-SysInitiatePowerAction PROC
+SCInitiatePowerAction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwInitiatePowerAction syscall offset (<syscall_id>)
     syscall
     ret
-SysInitiatePowerAction ENDP
+SCInitiatePowerAction ENDP
 
-SysIsProcessInJob PROC
+SCIsProcessInJob PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwIsProcessInJob syscall offset (<syscall_id>)
     syscall
     ret
-SysIsProcessInJob ENDP
+SCIsProcessInJob ENDP
 
-SysIsSystemResumeAutomatic PROC
+SCIsSystemResumeAutomatic PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwIsSystemResumeAutomatic syscall offset (<syscall_id>)
     syscall
     ret
-SysIsSystemResumeAutomatic ENDP
+SCIsSystemResumeAutomatic ENDP
 
-SysIsUILanguageComitted PROC
+SCIsUILanguageComitted PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwIsUILanguageComitted syscall offset (<syscall_id>)
     syscall
     ret
-SysIsUILanguageComitted ENDP
+SCIsUILanguageComitted ENDP
 
-SysListenPort PROC
+SCListenPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwListenPort syscall offset (<syscall_id>)
     syscall
     ret
-SysListenPort ENDP
+SCListenPort ENDP
 
-SysLoadDriver PROC
+SCLoadDriver PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLoadDriver syscall offset (<syscall_id>)
     syscall
     ret
-SysLoadDriver ENDP
+SCLoadDriver ENDP
 
-SysLoadEnclaveData PROC
+SCLoadEnclaveData PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLoadEnclaveData syscall offset (<syscall_id>)
     syscall
     ret
-SysLoadEnclaveData ENDP
+SCLoadEnclaveData ENDP
 
-SysLoadKey PROC
+SCLoadKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLoadKey syscall offset (<syscall_id>)
     syscall
     ret
-SysLoadKey ENDP
+SCLoadKey ENDP
 
-SysLoadKey2 PROC
+SCLoadKey2 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLoadKey2 syscall offset (<syscall_id>)
     syscall
     ret
-SysLoadKey2 ENDP
+SCLoadKey2 ENDP
 
-SysLoadKey3 PROC
+SCLoadKey3 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLoadKey3 syscall offset (<syscall_id>)
     syscall
     ret
-SysLoadKey3 ENDP
+SCLoadKey3 ENDP
 
-SysLoadKeyEx PROC
+SCLoadKeyEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLoadKeyEx syscall offset (<syscall_id>)
     syscall
     ret
-SysLoadKeyEx ENDP
+SCLoadKeyEx ENDP
 
-SysLockFile PROC
+SCLockFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLockFile syscall offset (<syscall_id>)
     syscall
     ret
-SysLockFile ENDP
+SCLockFile ENDP
 
-SysLockProductActivationKeys PROC
+SCLockProductActivationKeys PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLockProductActivationKeys syscall offset (<syscall_id>)
     syscall
     ret
-SysLockProductActivationKeys ENDP
+SCLockProductActivationKeys ENDP
 
-SysLockRegistryKey PROC
+SCLockRegistryKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLockRegistryKey syscall offset (<syscall_id>)
     syscall
     ret
-SysLockRegistryKey ENDP
+SCLockRegistryKey ENDP
 
-SysLockVirtualMemory PROC
+SCLockVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLockVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysLockVirtualMemory ENDP
+SCLockVirtualMemory ENDP
 
-SysMakePermanentObject PROC
+SCMakePermanentObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwMakePermanentObject syscall offset (<syscall_id>)
     syscall
     ret
-SysMakePermanentObject ENDP
+SCMakePermanentObject ENDP
 
-SysMakeTemporaryObject PROC
+SCMakeTemporaryObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwMakeTemporaryObject syscall offset (<syscall_id>)
     syscall
     ret
-SysMakeTemporaryObject ENDP
+SCMakeTemporaryObject ENDP
 
-SysManageHotPatch PROC
+SCManageHotPatch PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwManageHotPatch syscall offset (<syscall_id>)
     syscall
     ret
-SysManageHotPatch ENDP
+SCManageHotPatch ENDP
 
-SysManagePartition PROC
+SCManagePartition PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwManagePartition syscall offset (<syscall_id>)
     syscall
     ret
-SysManagePartition ENDP
+SCManagePartition ENDP
 
-SysMapCMFModule PROC
+SCMapCMFModule PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwMapCMFModule syscall offset (<syscall_id>)
     syscall
     ret
-SysMapCMFModule ENDP
+SCMapCMFModule ENDP
 
-SysMapUserPhysicalPages PROC
+SCMapUserPhysicalPages PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwMapUserPhysicalPages syscall offset (<syscall_id>)
     syscall
     ret
-SysMapUserPhysicalPages ENDP
+SCMapUserPhysicalPages ENDP
 
-SysMapUserPhysicalPagesScatter PROC
+SCMapUserPhysicalPagesScatter PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwLockProductActivationKeys syscall offset (<syscall_id>)
     syscall
     ret
-SysMapUserPhysicalPagesScatter ENDP
+SCMapUserPhysicalPagesScatter ENDP
 
-SysMapViewOfSection PROC
+SCMapViewOfSection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwMapViewOfSection syscall offset (<syscall_id>)
     syscall
     ret
-SysMapViewOfSection ENDP
+SCMapViewOfSection ENDP
 
-SysMapViewOfSectionEx PROC
+SCMapViewOfSectionEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwMapViewOfSectionEx syscall offset (<syscall_id>)
     syscall
     ret
-SysMapViewOfSectionEx ENDP
+SCMapViewOfSectionEx ENDP
 
-SysModifyBootEntry PROC
+SCModifyBootEntry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwModifyBootEntry syscall offset (<syscall_id>)
     syscall
     ret
-SysModifyBootEntry ENDP
+SCModifyBootEntry ENDP
 
-SysModifyDriverEntry PROC
+SCModifyDriverEntry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwModifyDriverEntry syscall offset (<syscall_id>)
     syscall
     ret
-SysModifyDriverEntry ENDP
+SCModifyDriverEntry ENDP
 
-SysNotifyChangeDirectoryFile PROC
+SCNotifyChangeDirectoryFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwNotifyChangeDirectoryFile syscall offset (<syscall_id>)
     syscall
     ret
-SysNotifyChangeDirectoryFile ENDP
+SCNotifyChangeDirectoryFile ENDP
 
-SysNotifyChangeDirectoryFileEx PROC
+SCNotifyChangeDirectoryFileEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwNotifyChangeDirectoryFileEx syscall offset (<syscall_id>)
     syscall
     ret
-SysNotifyChangeDirectoryFileEx ENDP
+SCNotifyChangeDirectoryFileEx ENDP
 
-SysNotifyChangeKey PROC
+SCNotifyChangeKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwNotifyChangeKey syscall offset (<syscall_id>)
     syscall
     ret
-SysNotifyChangeKey ENDP
+SCNotifyChangeKey ENDP
 
-SysNotifyChangeMultipleKeys PROC
+SCNotifyChangeMultipleKeys PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwNotifyChangeMultipleKeys syscall offset (<syscall_id>)
     syscall
     ret
-SysNotifyChangeMultipleKeys ENDP
+SCNotifyChangeMultipleKeys ENDP
 
-SysNotifyChangeSession PROC
+SCNotifyChangeSession PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwNotifyChangeSession syscall offset (<syscall_id>)
     syscall
     ret
-SysNotifyChangeSession ENDP
+SCNotifyChangeSession ENDP
 
-SysOpenCpuPartition PROC
+SCOpenCpuPartition PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenCpuPartition syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenCpuPartition ENDP
+SCOpenCpuPartition ENDP
 
-SysOpenEnlistment PROC
+SCOpenEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenEnlistment ENDP
+SCOpenEnlistment ENDP
 
-SysOpenEvent PROC
+SCOpenEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenEvent ENDP
+SCOpenEvent ENDP
 
-SysOpenEventPair PROC
+SCOpenEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenEventPair ENDP
+SCOpenEventPair ENDP
 
-SysOpenFile PROC
+SCOpenFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenFile syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenFile ENDP
+SCOpenFile ENDP
 
-SysOpenIoCompletion PROC
+SCOpenIoCompletion PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenIoCompletion syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenIoCompletion ENDP
+SCOpenIoCompletion ENDP
 
-SysOpenJobObject PROC
+SCOpenJobObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenJobObject syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenJobObject ENDP
+SCOpenJobObject ENDP
 
-SysOpenKey PROC
+SCOpenKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenKey syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenKey ENDP
+SCOpenKey ENDP
 
-SysOpenKeyEx PROC
+SCOpenKeyEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenKeyEx syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenKeyEx ENDP
+SCOpenKeyEx ENDP
 
-SysOpenKeyTransacted PROC
+SCOpenKeyTransacted PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenKeyTransacted syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenKeyTransacted ENDP
+SCOpenKeyTransacted ENDP
 
-SysOpenKeyTransactedEx PROC
+SCOpenKeyTransactedEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenKeyTransactedEx syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenKeyTransactedEx ENDP
+SCOpenKeyTransactedEx ENDP
 
-SysOpenKeyedEvent PROC
+SCOpenKeyedEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenKeyedEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenKeyedEvent ENDP
+SCOpenKeyedEvent ENDP
 
-SysOpenMutant PROC
+SCOpenMutant PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenMutant syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenMutant ENDP
+SCOpenMutant ENDP
 
-SysOpenObjectAuditAlarm PROC
+SCOpenObjectAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenObjectAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenObjectAuditAlarm ENDP
+SCOpenObjectAuditAlarm ENDP
 
-SysOpenPartition PROC
+SCOpenPartition PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenPartition syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenPartition ENDP
+SCOpenPartition ENDP
 
-SysOpenPrivateNamespace PROC
+SCOpenPrivateNamespace PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenPrivateNamespace syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenPrivateNamespace ENDP
+SCOpenPrivateNamespace ENDP
 
-SysOpenProcess PROC
+SCOpenProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenProcess ENDP
+SCOpenProcess ENDP
 
-SysOpenProcessToken PROC
+SCOpenProcessToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenProcessToken syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenProcessToken ENDP
+SCOpenProcessToken ENDP
 
-SysOpenProcessTokenEx PROC
+SCOpenProcessTokenEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenProcessTokenEx syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenProcessTokenEx ENDP
+SCOpenProcessTokenEx ENDP
 
-SysOpenRegistryTransaction PROC
+SCOpenRegistryTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenRegistryTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenRegistryTransaction ENDP
+SCOpenRegistryTransaction ENDP
 
-SysOpenResourceManager PROC
+SCOpenResourceManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenResourceManager syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenResourceManager ENDP
+SCOpenResourceManager ENDP
 
-SysOpenSection PROC
+SCOpenSection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenSection syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenSection ENDP
+SCOpenSection ENDP
 
-SysOpenSemaphore PROC
+SCOpenSemaphore PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenSemaphore syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenSemaphore ENDP
+SCOpenSemaphore ENDP
 
-SysOpenSession PROC
+SCOpenSession PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenSession syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenSession ENDP
+SCOpenSession ENDP
 
-SysOpenSymbolicLinkObject PROC
+SCOpenSymbolicLinkObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenSymbolicLinkObject syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenSymbolicLinkObject ENDP
+SCOpenSymbolicLinkObject ENDP
 
-SysOpenThread PROC
+SCOpenThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenThread syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenThread ENDP
+SCOpenThread ENDP
 
-SysOpenThreadToken PROC
+SCOpenThreadToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenThreadToken syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenThreadToken ENDP
+SCOpenThreadToken ENDP
 
-SysOpenThreadTokenEx PROC
+SCOpenThreadTokenEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenThreadTokenEx syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenThreadTokenEx ENDP
+SCOpenThreadTokenEx ENDP
 
-SysOpenTimer PROC
+SCOpenTimer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenTimer syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenTimer ENDP
+SCOpenTimer ENDP
 
-SysOpenTransaction PROC
+SCOpenTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenTransaction ENDP
+SCOpenTransaction ENDP
 
-SysOpenTransactionManager PROC
+SCOpenTransactionManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwOpenTransactionManager syscall offset (<syscall_id>)
     syscall
     ret
-SysOpenTransactionManager ENDP
+SCOpenTransactionManager ENDP
 
-SysPlugPlayControl PROC
+SCPlugPlayControl PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPlugPlayControl syscall offset (<syscall_id>)
     syscall
     ret
-SysPlugPlayControl ENDP
+SCPlugPlayControl ENDP
 
-SysPowerInformation PROC
+SCPowerInformation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPowerInformation syscall offset (<syscall_id>)
     syscall
     ret
-SysPowerInformation ENDP
+SCPowerInformation ENDP
 
-SysPrePrepareComplete PROC
+SCPrePrepareComplete PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPrePrepareComplete syscall offset (<syscall_id>)
     syscall
     ret
-SysPrePrepareComplete ENDP
+SCPrePrepareComplete ENDP
 
-SysPrePrepareEnlistment PROC
+SCPrePrepareEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPrePrepareEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysPrePrepareEnlistment ENDP
+SCPrePrepareEnlistment ENDP
 
-SysPrepareComplete PROC
+SCPrepareComplete PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPrepareComplete syscall offset (<syscall_id>)
     syscall
     ret
-SysPrepareComplete ENDP
+SCPrepareComplete ENDP
 
-SysPrepareEnlistment PROC
+SCPrepareEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPrepareEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysPrepareEnlistment ENDP
+SCPrepareEnlistment ENDP
 
-SysPrivilegeCheck PROC
+SCPrivilegeCheck PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPrivilegeCheck syscall offset (<syscall_id>)
     syscall
     ret
-SysPrivilegeCheck ENDP
+SCPrivilegeCheck ENDP
 
-SysPrivilegeObjectAuditAlarm PROC
+SCPrivilegeObjectAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPrivilegeObjectAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysPrivilegeObjectAuditAlarm ENDP
+SCPrivilegeObjectAuditAlarm ENDP
 
-SysPrivilegedServiceAuditAlarm PROC
+SCPrivilegedServiceAuditAlarm PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPrivilegedServiceAuditAlarm syscall offset (<syscall_id>)
     syscall
     ret
-SysPrivilegedServiceAuditAlarm ENDP
+SCPrivilegedServiceAuditAlarm ENDP
 
-SysPropagationComplete PROC
+SCPropagationComplete PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPropagationComplete syscall offset (<syscall_id>)
     syscall
     ret
-SysPropagationComplete ENDP
+SCPropagationComplete ENDP
 
-SysPropagationFailed PROC
+SCPropagationFailed PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPropagationFailed syscall offset (<syscall_id>)
     syscall
     ret
-SysPropagationFailed ENDP
+SCPropagationFailed ENDP
 
-SysProtectVirtualMemory PROC
+SCProtectVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwProtectVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysProtectVirtualMemory ENDP
+SCProtectVirtualMemory ENDP
 
-SysPssCaptureVaSpaceBulk PROC
+SCPssCaptureVaSpaceBulk PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPssCaptureVaSpaceBulk syscall offset (<syscall_id>)
     syscall
     ret
-SysPssCaptureVaSpaceBulk ENDP
+SCPssCaptureVaSpaceBulk ENDP
 
-SysPulseEvent PROC
+SCPulseEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwPulseEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysPulseEvent ENDP
+SCPulseEvent ENDP
 
-SysQueryAttributesFile PROC
+SCQueryAttributesFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryAttributesFile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryAttributesFile ENDP
+SCQueryAttributesFile ENDP
 
-SysQueryAuxiliaryCounterFrequency PROC
+SCQueryAuxiliaryCounterFrequency PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryAuxiliaryCounterFrequency syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryAuxiliaryCounterFrequency ENDP
+SCQueryAuxiliaryCounterFrequency ENDP
 
-SysQueryBootEntryOrder PROC
+SCQueryBootEntryOrder PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryBootEntryOrder syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryBootEntryOrder ENDP
+SCQueryBootEntryOrder ENDP
 
-SysQueryBootOptions PROC
+SCQueryBootOptions PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryBootOptions syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryBootOptions ENDP
+SCQueryBootOptions ENDP
 
-SysQueryDebugFilterState PROC
+SCQueryDebugFilterState PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryDebugFilterState syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryDebugFilterState ENDP
+SCQueryDebugFilterState ENDP
 
-SysQueryDefaultLocale PROC
+SCQueryDefaultLocale PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryDefaultLocale syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryDefaultLocale ENDP
+SCQueryDefaultLocale ENDP
 
-SysQueryDefaultUILanguage PROC
+SCQueryDefaultUILanguage PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryDefaultUILanguage syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryDefaultUILanguage ENDP
+SCQueryDefaultUILanguage ENDP
 
-SysQueryDirectoryFile PROC
+SCQueryDirectoryFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryDirectoryFile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryDirectoryFile ENDP
+SCQueryDirectoryFile ENDP
 
-SysQueryDirectoryFileEx PROC
+SCQueryDirectoryFileEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryDirectoryFileEx syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryDirectoryFileEx ENDP
+SCQueryDirectoryFileEx ENDP
 
-SysQueryDirectoryObject PROC
+SCQueryDirectoryObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryDirectoryObject syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryDirectoryObject ENDP
+SCQueryDirectoryObject ENDP
 
-SysQueryDriverEntryOrder PROC
+SCQueryDriverEntryOrder PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryDriverEntryOrder syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryDriverEntryOrder ENDP
+SCQueryDriverEntryOrder ENDP
 
-SysQueryEaFile PROC
+SCQueryEaFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryEaFile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryEaFile ENDP
+SCQueryEaFile ENDP
 
-SysQueryEvent PROC
+SCQueryEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryEvent ENDP
+SCQueryEvent ENDP
 
-SysQueryFullAttributesFile PROC
+SCQueryFullAttributesFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryFullAttributesFile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryFullAttributesFile ENDP
+SCQueryFullAttributesFile ENDP
 
-SysQueryInformationAtom PROC
+SCQueryInformationAtom PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationAtom syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationAtom ENDP
+SCQueryInformationAtom ENDP
 
-SysQueryInformationByName PROC
+SCQueryInformationByName PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationByName syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationByName ENDP
+SCQueryInformationByName ENDP
 
-SysQueryInformationCpuPartition PROC
+SCQueryInformationCpuPartition PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationCpuPartition syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationCpuPartition ENDP
+SCQueryInformationCpuPartition ENDP
 
-SysQueryInformationEnlistment PROC
+SCQueryInformationEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationEnlistment ENDP
+SCQueryInformationEnlistment ENDP
 
-SysQueryInformationFile PROC
+SCQueryInformationFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationFile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationFile ENDP
+SCQueryInformationFile ENDP
 
-SysQueryInformationJobObject PROC
+SCQueryInformationJobObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationJobObject syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationJobObject ENDP
+SCQueryInformationJobObject ENDP
 
-SysQueryInformationPort PROC
+SCQueryInformationPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationPort syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationPort ENDP
+SCQueryInformationPort ENDP
 
-SysQueryInformationProcess PROC
+SCQueryInformationProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationProcess ENDP
+SCQueryInformationProcess ENDP
 
-SysQueryInformationResourceManager PROC
+SCQueryInformationResourceManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationResourceManager syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationResourceManager ENDP
+SCQueryInformationResourceManager ENDP
 
-SysQueryInformationThread PROC
+SCQueryInformationThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationThread syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationThread ENDP
+SCQueryInformationThread ENDP
 
-SysQueryInformationToken PROC
+SCQueryInformationToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationToken syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationToken ENDP
+SCQueryInformationToken ENDP
 
-SysQueryInformationTransaction PROC
+SCQueryInformationTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationTransaction ENDP
+SCQueryInformationTransaction ENDP
 
-SysQueryInformationTransactionManager PROC
+SCQueryInformationTransactionManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationTransactionManager syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationTransactionManager ENDP
+SCQueryInformationTransactionManager ENDP
 
-SysQueryInformationWorkerFactory PROC
+SCQueryInformationWorkerFactory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInformationWorkerFactory syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInformationWorkerFactory ENDP
+SCQueryInformationWorkerFactory ENDP
 
-SysQueryInstallUILanguage PROC
+SCQueryInstallUILanguage PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryInstallUILanguage syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryInstallUILanguage ENDP
+SCQueryInstallUILanguage ENDP
 
-SysQueryIntervalProfile PROC
+SCQueryIntervalProfile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryIntervalProfile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryIntervalProfile ENDP
+SCQueryIntervalProfile ENDP
 
-SysQueryIoCompletion PROC
+SCQueryIoCompletion PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryIoCompletion syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryIoCompletion ENDP
+SCQueryIoCompletion ENDP
 
-SysQueryIoRingCapabilities PROC
+SCQueryIoRingCapabilities PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryIoRingCapabilities syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryIoRingCapabilities ENDP
+SCQueryIoRingCapabilities ENDP
 
-SysQueryKey PROC
+SCQueryKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryKey syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryKey ENDP
+SCQueryKey ENDP
 
-SysQueryLicenseValue PROC
+SCQueryLicenseValue PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryLicenseValue syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryLicenseValue ENDP
+SCQueryLicenseValue ENDP
 
-SysQueryMultipleValueKey PROC
+SCQueryMultipleValueKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryMultipleValueKey syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryMultipleValueKey ENDP
+SCQueryMultipleValueKey ENDP
 
-SysQueryMutant PROC
+SCQueryMutant PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryMutant syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryMutant ENDP
+SCQueryMutant ENDP
 
-SysQueryObject PROC
+SCQueryObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryObject syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryObject ENDP
+SCQueryObject ENDP
 
-SysQueryOpenSubKeys PROC
+SCQueryOpenSubKeys PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryOpenSubKeys syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryOpenSubKeys ENDP
+SCQueryOpenSubKeys ENDP
 
-SysQueryOpenSubKeysEx PROC
+SCQueryOpenSubKeysEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryOpenSubKeysEx syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryOpenSubKeysEx ENDP
+SCQueryOpenSubKeysEx ENDP
 
-SysQueryPerformanceCounter PROC
+SCQueryPerformanceCounter PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryPerformanceCounter syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryPerformanceCounter ENDP
+SCQueryPerformanceCounter ENDP
 
-SysQueryPortInformationProcess PROC
+SCQueryPortInformationProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryPortInformationProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryPortInformationProcess ENDP
+SCQueryPortInformationProcess ENDP
 
-SysQueryQuotaInformationFile PROC
+SCQueryQuotaInformationFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryQuotaInformationFile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryQuotaInformationFile ENDP
+SCQueryQuotaInformationFile ENDP
 
-SysQuerySection PROC
+SCQuerySection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySection syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySection ENDP
+SCQuerySection ENDP
 
-SysQuerySecurityAttributesToken PROC
+SCQuerySecurityAttributesToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySecurityAttributesToken syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySecurityAttributesToken ENDP
+SCQuerySecurityAttributesToken ENDP
 
-SysQuerySecurityObject PROC
+SCQuerySecurityObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySecurityObject syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySecurityObject ENDP
+SCQuerySecurityObject ENDP
 
-SysQuerySecurityPolicy PROC
+SCQuerySecurityPolicy PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySecurityPolicy syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySecurityPolicy ENDP
+SCQuerySecurityPolicy ENDP
 
-SysQuerySemaphore PROC
+SCQuerySemaphore PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySemaphore syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySemaphore ENDP
+SCQuerySemaphore ENDP
 
-SysQuerySymbolicLinkObject PROC
+SCQuerySymbolicLinkObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySymbolicLinkObject syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySymbolicLinkObject ENDP
+SCQuerySymbolicLinkObject ENDP
 
-SysQuerySystemEnvironmentValue PROC
+SCQuerySystemEnvironmentValue PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySystemEnvironmentValue syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySystemEnvironmentValue ENDP
+SCQuerySystemEnvironmentValue ENDP
 
-SysQuerySystemEnvironmentValueEx PROC
+SCQuerySystemEnvironmentValueEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySystemEnvironmentValueEx syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySystemEnvironmentValueEx ENDP
+SCQuerySystemEnvironmentValueEx ENDP
 
-SysQuerySystemInformation PROC
+SCQuerySystemInformation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySystemInformation syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySystemInformation ENDP
+SCQuerySystemInformation ENDP
 
-SysQuerySystemInformationEx PROC
+SCQuerySystemInformationEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQuerySystemInformationEx syscall offset (<syscall_id>)
     syscall
     ret
-SysQuerySystemInformationEx ENDP
+SCQuerySystemInformationEx ENDP
 
-SysQueryTimer PROC
+SCQueryTimer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryTimer syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryTimer ENDP
+SCQueryTimer ENDP
 
-SysQueryTimerResolution PROC
+SCQueryTimerResolution PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryTimerResolution syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryTimerResolution ENDP
+SCQueryTimerResolution ENDP
 
-SysQueryValueKey PROC
+SCQueryValueKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryValueKey syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryValueKey ENDP
+SCQueryValueKey ENDP
 
-SysQueryVirtualMemory PROC
+SCQueryVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryVirtualMemory ENDP
+SCQueryVirtualMemory ENDP
 
-SysQueryVolumeInformationFile PROC
+SCQueryVolumeInformationFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryVolumeInformationFile syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryVolumeInformationFile ENDP
+SCQueryVolumeInformationFile ENDP
 
-SysQueryWnfStateData PROC
+SCQueryWnfStateData PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryWnfStateData syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryWnfStateData ENDP
+SCQueryWnfStateData ENDP
 
-SysQueryWnfStateNameInformation PROC
+SCQueryWnfStateNameInformation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueryWnfStateNameInformation syscall offset (<syscall_id>)
     syscall
     ret
-SysQueryWnfStateNameInformation ENDP
+SCQueryWnfStateNameInformation ENDP
 
-SysQueueApcThread PROC
+SCQueueApcThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueueApcThread syscall offset (<syscall_id>)
     syscall
     ret
-SysQueueApcThread ENDP
+SCQueueApcThread ENDP
 
-SysQueueApcThreadEx PROC
+SCQueueApcThreadEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueueApcThreadEx syscall offset (<syscall_id>)
     syscall
     ret
-SysQueueApcThreadEx ENDP
+SCQueueApcThreadEx ENDP
 
-SysQueueApcThreadEx2 PROC
+SCQueueApcThreadEx2 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwQueueApcThreadEx2 syscall offset (<syscall_id>)
     syscall
     ret
-SysQueueApcThreadEx2 ENDP
+SCQueueApcThreadEx2 ENDP
 
-SysRaiseException PROC
+SCRaiseException PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRaiseException syscall offset (<syscall_id>)
     syscall
     ret
-SysRaiseException ENDP
+SCRaiseException ENDP
 
-SysRaiseHardError PROC
+SCRaiseHardError PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRaiseHardError syscall offset (<syscall_id>)
     syscall
     ret
-SysRaiseHardError ENDP
+SCRaiseHardError ENDP
 
-SysReadFile PROC
+SCReadFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReadFile syscall offset (<syscall_id>)
     syscall
     ret
-SysReadFile ENDP
+SCReadFile ENDP
 
-SysReadFileScatter PROC
+SCReadFileScatter PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReadFileScatter syscall offset (<syscall_id>)
     syscall
     ret
-SysReadFileScatter ENDP
+SCReadFileScatter ENDP
 
-SysReadOnlyEnlistment PROC
+SCReadOnlyEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReadOnlyEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysReadOnlyEnlistment ENDP
+SCReadOnlyEnlistment ENDP
 
-SysReadRequestData PROC
+SCReadRequestData PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReadRequestData syscall offset (<syscall_id>)
     syscall
     ret
-SysReadRequestData ENDP
+SCReadRequestData ENDP
 
-SysReadVirtualMemory PROC
+SCReadVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReadVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysReadVirtualMemory ENDP
+SCReadVirtualMemory ENDP
 
-SysReadVirtualMemoryEx PROC
+SCReadVirtualMemoryEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReadVirtualMemoryEx syscall offset (<syscall_id>)
     syscall
     ret
-SysReadVirtualMemoryEx ENDP
+SCReadVirtualMemoryEx ENDP
 
-SysRecoverEnlistment PROC
+SCRecoverEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRecoverEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysRecoverEnlistment ENDP
+SCRecoverEnlistment ENDP
 
-SysRecoverResourceManager PROC
+SCRecoverResourceManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRecoverResourceManager syscall offset (<syscall_id>)
     syscall
     ret
-SysRecoverResourceManager ENDP
+SCRecoverResourceManager ENDP
 
-SysRecoverTransactionManager PROC
+SCRecoverTransactionManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRecoverTransactionManager syscall offset (<syscall_id>)
     syscall
     ret
-SysRecoverTransactionManager ENDP
+SCRecoverTransactionManager ENDP
 
-SysRegisterProtocolAddressInformation PROC
+SCRegisterProtocolAddressInformation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRegisterProtocolAddressInformation syscall offset (<syscall_id>)
     syscall
     ret
-SysRegisterProtocolAddressInformation ENDP
+SCRegisterProtocolAddressInformation ENDP
 
-SysRegisterThreadTerminatePort PROC
+SCRegisterThreadTerminatePort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRegisterThreadTerminatePort syscall offset (<syscall_id>)
     syscall
     ret
-SysRegisterThreadTerminatePort ENDP
+SCRegisterThreadTerminatePort ENDP
 
-SysReleaseKeyedEvent PROC
+SCReleaseKeyedEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReleaseKeyedEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysReleaseKeyedEvent ENDP
+SCReleaseKeyedEvent ENDP
 
-SysReleaseMutant PROC
+SCReleaseMutant PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReleaseMutant syscall offset (<syscall_id>)
     syscall
     ret
-SysReleaseMutant ENDP
+SCReleaseMutant ENDP
 
-SysReleaseSemaphore PROC
+SCReleaseSemaphore PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReleaseSemaphore syscall offset (<syscall_id>)
     syscall
     ret
-SysReleaseSemaphore ENDP
+SCReleaseSemaphore ENDP
 
-SysReleaseWorkerFactoryWorker PROC
+SCReleaseWorkerFactoryWorker PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReleaseWorkerFactoryWorker syscall offset (<syscall_id>)
     syscall
     ret
-SysReleaseWorkerFactoryWorker ENDP
+SCReleaseWorkerFactoryWorker ENDP
 
-SysRemoveIoCompletion PROC
+SCRemoveIoCompletion PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRemoveIoCompletion syscall offset (<syscall_id>)
     syscall
     ret
-SysRemoveIoCompletion ENDP
+SCRemoveIoCompletion ENDP
 
-SysRemoveIoCompletionEx PROC
+SCRemoveIoCompletionEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRemoveIoCompletionEx syscall offset (<syscall_id>)
     syscall
     ret
-SysRemoveIoCompletionEx ENDP
+SCRemoveIoCompletionEx ENDP
 
-SysRemoveProcessDebug PROC
+SCRemoveProcessDebug PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRemoveProcessDebug syscall offset (<syscall_id>)
     syscall
     ret
-SysRemoveProcessDebug ENDP
+SCRemoveProcessDebug ENDP
 
-SysRenameKey PROC
+SCRenameKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRenameKey syscall offset (<syscall_id>)
     syscall
     ret
-SysRenameKey ENDP
+SCRenameKey ENDP
 
-SysRenameTransactionManager PROC
+SCRenameTransactionManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRenameTransactionManager syscall offset (<syscall_id>)
     syscall
     ret
-SysRenameTransactionManager ENDP
+SCRenameTransactionManager ENDP
 
-SysReplaceKey PROC
+SCReplaceKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReplaceKey syscall offset (<syscall_id>)
     syscall
     ret
-SysReplaceKey ENDP
+SCReplaceKey ENDP
 
-SysReplacePartitionUnit PROC
+SCReplacePartitionUnit PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReplacePartitionUnit syscall offset (<syscall_id>)
     syscall
     ret
-SysReplacePartitionUnit ENDP
+SCReplacePartitionUnit ENDP
 
-SysReplyPort PROC
+SCReplyPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReplyPort syscall offset (<syscall_id>)
     syscall
     ret
-SysReplyPort ENDP
+SCReplyPort ENDP
 
-SysReplyWaitReceivePort PROC
+SCReplyWaitReceivePort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReplyWaitReceivePort syscall offset (<syscall_id>)
     syscall
     ret
-SysReplyWaitReceivePort ENDP
+SCReplyWaitReceivePort ENDP
 
-SysReplyWaitReceivePortEx PROC
+SCReplyWaitReceivePortEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReplyWaitReceivePortEx syscall offset (<syscall_id>)
     syscall
     ret
-SysReplyWaitReceivePortEx ENDP
+SCReplyWaitReceivePortEx ENDP
 
-SysReplyWaitReplyPort PROC
+SCReplyWaitReplyPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwReplyWaitReplyPort syscall offset (<syscall_id>)
     syscall
     ret
-SysReplyWaitReplyPort ENDP
+SCReplyWaitReplyPort ENDP
 
-SysRequestPort PROC
+SCRequestPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRequestPort syscall offset (<syscall_id>)
     syscall
     ret
-SysRequestPort ENDP
+SCRequestPort ENDP
 
-SysRequestWaitReplyPort PROC
+SCRequestWaitReplyPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRequestWaitReplyPort syscall offset (<syscall_id>)
     syscall
     ret
-SysRequestWaitReplyPort ENDP
+SCRequestWaitReplyPort ENDP
 
-SysResetEvent PROC
+SCResetEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwResetEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysResetEvent ENDP
+SCResetEvent ENDP
 
-SysResetWriteWatch PROC
+SCResetWriteWatch PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwResetWriteWatch syscall offset (<syscall_id>)
     syscall
     ret
-SysResetWriteWatch ENDP
+SCResetWriteWatch ENDP
 
-SysRestoreKey PROC
+SCRestoreKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRestoreKey syscall offset (<syscall_id>)
     syscall
     ret
-SysRestoreKey ENDP
+SCRestoreKey ENDP
 
-SysResumeProcess PROC
+SCResumeProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwResumeProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysResumeProcess ENDP
+SCResumeProcess ENDP
 
-SysResumeThread PROC
+SCResumeThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwResumeThread syscall offset (<syscall_id>)
     syscall
     ret
-SysResumeThread ENDP
+SCResumeThread ENDP
 
-SysRevertContainerImpersonation PROC
+SCRevertContainerImpersonation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRevertContainerImpersonation syscall offset (<syscall_id>)
     syscall
     ret
-SysRevertContainerImpersonation ENDP
+SCRevertContainerImpersonation ENDP
 
-SysRollbackComplete PROC
+SCRollbackComplete PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRollbackComplete syscall offset (<syscall_id>)
     syscall
     ret
-SysRollbackComplete ENDP
+SCRollbackComplete ENDP
 
-SysRollbackEnlistment PROC
+SCRollbackEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRollbackEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysRollbackEnlistment ENDP
+SCRollbackEnlistment ENDP
 
-SysRollbackRegistryTransaction PROC
+SCRollbackRegistryTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRollbackRegistryTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysRollbackRegistryTransaction ENDP
+SCRollbackRegistryTransaction ENDP
 
-SysRollbackTransaction PROC
+SCRollbackTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRollbackTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysRollbackTransaction ENDP
+SCRollbackTransaction ENDP
 
-SysRollforwardTransactionManager PROC
+SCRollforwardTransactionManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwRollforwardTransactionManager syscall offset (<syscall_id>)
     syscall
     ret
-SysRollforwardTransactionManager ENDP
+SCRollforwardTransactionManager ENDP
 
-SysSaveKey PROC
+SCSaveKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSaveKey syscall offset (<syscall_id>)
     syscall
     ret
-SysSaveKey ENDP
+SCSaveKey ENDP
 
-SysSaveKeyEx PROC
+SCSaveKeyEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSaveKeyEx syscall offset (<syscall_id>)
     syscall
     ret
-SysSaveKeyEx ENDP
+SCSaveKeyEx ENDP
 
-SysSaveMergedKeys PROC
+SCSaveMergedKeys PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSaveMergedKeys syscall offset (<syscall_id>)
     syscall
     ret
-SysSaveMergedKeys ENDP
+SCSaveMergedKeys ENDP
 
-SysSecureConnectPort PROC
+SCSecureConnectPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSecureConnectPort syscall offset (<syscall_id>)
     syscall
     ret
-SysSecureConnectPort ENDP
+SCSecureConnectPort ENDP
 
-SysSerializeBoot PROC
+SCSerializeBoot PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSerializeBoot syscall offset (<syscall_id>)
     syscall
     ret
-SysSerializeBoot ENDP
+SCSerializeBoot ENDP
 
-SysSetBootEntryOrder PROC
+SCSetBootEntryOrder PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetBootEntryOrder syscall offset (<syscall_id>)
     syscall
     ret
-SysSetBootEntryOrder ENDP
+SCSetBootEntryOrder ENDP
 
-SysSetBootOptions PROC
+SCSetBootOptions PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetBootOptions syscall offset (<syscall_id>)
     syscall
     ret
-SysSetBootOptions ENDP
+SCSetBootOptions ENDP
 
-SysSetCachedSigningLevel PROC
+SCSetCachedSigningLevel PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetCachedSigningLevel syscall offset (<syscall_id>)
     syscall
     ret
-SysSetCachedSigningLevel ENDP
+SCSetCachedSigningLevel ENDP
 
-SysSetCachedSigningLevel2 PROC
+SCSetCachedSigningLevel2 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetCachedSigningLevel2 syscall offset (<syscall_id>)
     syscall
     ret
-SysSetCachedSigningLevel2 ENDP
+SCSetCachedSigningLevel2 ENDP
 
-SysSetContextThread PROC
+SCSetContextThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetContextThread syscall offset (<syscall_id>)
     syscall
     ret
-SysSetContextThread ENDP
+SCSetContextThread ENDP
 
-SysSetDebugFilterState PROC
+SCSetDebugFilterState PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetDebugFilterState syscall offset (<syscall_id>)
     syscall
     ret
-SysSetDebugFilterState ENDP
+SCSetDebugFilterState ENDP
 
-SysSetDefaultHardErrorPort PROC
+SCSetDefaultHardErrorPort PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetDefaultHardErrorPort syscall offset (<syscall_id>)
     syscall
     ret
-SysSetDefaultHardErrorPort ENDP
+SCSetDefaultHardErrorPort ENDP
 
-SysSetDefaultLocale PROC
+SCSetDefaultLocale PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetDefaultLocale syscall offset (<syscall_id>)
     syscall
     ret
-SysSetDefaultLocale ENDP
+SCSetDefaultLocale ENDP
 
-SysSetDefaultUILanguage PROC
+SCSetDefaultUILanguage PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetDefaultUILanguage syscall offset (<syscall_id>)
     syscall
     ret
-SysSetDefaultUILanguage ENDP
+SCSetDefaultUILanguage ENDP
 
-SysSetDriverEntryOrder PROC
+SCSetDriverEntryOrder PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetDriverEntryOrder syscall offset (<syscall_id>)
     syscall
     ret
-SysSetDriverEntryOrder ENDP
+SCSetDriverEntryOrder ENDP
 
-SysSetEaFile PROC
+SCSetEaFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetEaFile syscall offset (<syscall_id>)
     syscall
     ret
-SysSetEaFile ENDP
+SCSetEaFile ENDP
 
-SysSetEvent PROC
+SCSetEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysSetEvent ENDP
+SCSetEvent ENDP
 
-SysSetEventBoostPriority PROC
+SCSetEventBoostPriority PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetEventBoostPriority syscall offset (<syscall_id>)
     syscall
     ret
-SysSetEventBoostPriority ENDP
+SCSetEventBoostPriority ENDP
 
-SysSetHighEventPair PROC
+SCSetHighEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetHighEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysSetHighEventPair ENDP
+SCSetHighEventPair ENDP
 
-SysSetHighWaitLowEventPair PROC
+SCSetHighWaitLowEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetHighWaitLowEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysSetHighWaitLowEventPair ENDP
+SCSetHighWaitLowEventPair ENDP
 
-SysSetIRTimer PROC
+SCSetIRTimer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetIRTimer syscall offset (<syscall_id>)
     syscall
     ret
-SysSetIRTimer ENDP
+SCSetIRTimer ENDP
 
-SysSetInformationCpuPartition PROC
+SCSetInformationCpuPartition PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationCpuPartition syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationCpuPartition ENDP
+SCSetInformationCpuPartition ENDP
 
-SysSetInformationDebugObject PROC
+SCSetInformationDebugObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationDebugObject syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationDebugObject ENDP
+SCSetInformationDebugObject ENDP
 
-SysSetInformationEnlistment PROC
+SCSetInformationEnlistment PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationEnlistment syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationEnlistment ENDP
+SCSetInformationEnlistment ENDP
 
-SysSetInformationFile PROC
+SCSetInformationFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationFile syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationFile ENDP
+SCSetInformationFile ENDP
 
-SysSetInformationIoRing PROC
+SCSetInformationIoRing PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationIoRing syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationIoRing ENDP
+SCSetInformationIoRing ENDP
 
-SysSetInformationJobObject PROC
+SCSetInformationJobObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationJobObject syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationJobObject ENDP
+SCSetInformationJobObject ENDP
 
-SysSetInformationKey PROC
+SCSetInformationKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationKey syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationKey ENDP
+SCSetInformationKey ENDP
 
-SysSetInformationObject PROC
+SCSetInformationObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationObject syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationObject ENDP
+SCSetInformationObject ENDP
 
-SysSetInformationProcess PROC
+SCSetInformationProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationProcess ENDP
+SCSetInformationProcess ENDP
 
-SysSetInformationResourceManager PROC
+SCSetInformationResourceManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationResourceManager syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationResourceManager ENDP
+SCSetInformationResourceManager ENDP
 
-SysSetInformationSymbolicLink PROC
+SCSetInformationSymbolicLink PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationSymbolicLink syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationSymbolicLink ENDP
+SCSetInformationSymbolicLink ENDP
 
-SysSetInformationThread PROC
+SCSetInformationThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationThread syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationThread ENDP
+SCSetInformationThread ENDP
 
-SysSetInformationToken PROC
+SCSetInformationToken PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationToken syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationToken ENDP
+SCSetInformationToken ENDP
 
-SysSetInformationTransaction PROC
+SCSetInformationTransaction PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationTransaction syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationTransaction ENDP
+SCSetInformationTransaction ENDP
 
-SysSetInformationTransactionManager PROC
+SCSetInformationTransactionManager PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationTransactionManager syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationTransactionManager ENDP
+SCSetInformationTransactionManager ENDP
 
-SysSetInformationVirtualMemory PROC
+SCSetInformationVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationVirtualMemory ENDP
+SCSetInformationVirtualMemory ENDP
 
-SysSetInformationWorkerFactory PROC
+SCSetInformationWorkerFactory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetInformationWorkerFactory syscall offset (<syscall_id>)
     syscall
     ret
-SysSetInformationWorkerFactory ENDP
+SCSetInformationWorkerFactory ENDP
 
-SysSetIntervalProfile PROC
+SCSetIntervalProfile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetIntervalProfile syscall offset (<syscall_id>)
     syscall
     ret
-SysSetIntervalProfile ENDP
+SCSetIntervalProfile ENDP
 
-SysSetIoCompletion PROC
+SCSetIoCompletion PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetIoCompletion syscall offset (<syscall_id>)
     syscall
     ret
-SysSetIoCompletion ENDP
+SCSetIoCompletion ENDP
 
-SysSetIoCompletionEx PROC
+SCSetIoCompletionEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetIoCompletionEx syscall offset (<syscall_id>)
     syscall
     ret
-SysSetIoCompletionEx ENDP
+SCSetIoCompletionEx ENDP
 
-SysSetLdtEntries PROC
+SCSetLdtEntries PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetLdtEntries syscall offset (<syscall_id>)
     syscall
     ret
-SysSetLdtEntries ENDP
+SCSetLdtEntries ENDP
 
-SysSetLowEventPair PROC
+SCSetLowEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetLowEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysSetLowEventPair ENDP
+SCSetLowEventPair ENDP
 
-SysSetLowWaitHighEventPair PROC
+SCSetLowWaitHighEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetLowWaitHighEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysSetLowWaitHighEventPair ENDP
+SCSetLowWaitHighEventPair ENDP
 
-SysSetQuotaInformationFile PROC
+SCSetQuotaInformationFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetQuotaInformationFile syscall offset (<syscall_id>)
     syscall
     ret
-SysSetQuotaInformationFile ENDP
+SCSetQuotaInformationFile ENDP
 
-SysSetSecurityObject PROC
+SCSetSecurityObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetSecurityObject syscall offset (<syscall_id>)
     syscall
     ret
-SysSetSecurityObject ENDP
+SCSetSecurityObject ENDP
 
-SysSetSystemEnvironmentValue PROC
+SCSetSystemEnvironmentValue PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetSystemEnvironmentValue syscall offset (<syscall_id>)
     syscall
     ret
-SysSetSystemEnvironmentValue ENDP
+SCSetSystemEnvironmentValue ENDP
 
-SysSetSystemEnvironmentValueEx PROC
+SCSetSystemEnvironmentValueEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetSystemEnvironmentValueEx syscall offset (<syscall_id>)
     syscall
     ret
-SysSetSystemEnvironmentValueEx ENDP
+SCSetSystemEnvironmentValueEx ENDP
 
-SysSetSystemInformation PROC
+SCSetSystemInformation PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetSystemInformation syscall offset (<syscall_id>)
     syscall
     ret
-SysSetSystemInformation ENDP
+SCSetSystemInformation ENDP
 
-SysSetSystemPowerState PROC
+SCSetSystemPowerState PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetSystemPowerState syscall offset (<syscall_id>)
     syscall
     ret
-SysSetSystemPowerState ENDP
+SCSetSystemPowerState ENDP
 
-SysSetSystemTime PROC
+SCSetSystemTime PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetSystemTime syscall offset (<syscall_id>)
     syscall
     ret
-SysSetSystemTime ENDP
+SCSetSystemTime ENDP
 
-SysSetThreadExecutionState PROC
+SCSetThreadExecutionState PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetThreadExecutionState syscall offset (<syscall_id>)
     syscall
     ret
-SysSetThreadExecutionState ENDP
+SCSetThreadExecutionState ENDP
 
-SysSetTimer PROC
+SCSetTimer PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetTimer syscall offset (<syscall_id>)
     syscall
     ret
-SysSetTimer ENDP
+SCSetTimer ENDP
 
-SysSetTimer2 PROC
+SCSetTimer2 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetTimer2 syscall offset (<syscall_id>)
     syscall
     ret
-SysSetTimer2 ENDP
+SCSetTimer2 ENDP
 
-SysSetTimerEx PROC
+SCSetTimerEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetTimerEx syscall offset (<syscall_id>)
     syscall
     ret
-SysSetTimerEx ENDP
+SCSetTimerEx ENDP
 
-SysSetTimerResolution PROC
+SCSetTimerResolution PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetTimerResolution syscall offset (<syscall_id>)
     syscall
     ret
-SysSetTimerResolution ENDP
+SCSetTimerResolution ENDP
 
-SysSetUuidSeed PROC
+SCSetUuidSeed PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetUuidSeed syscall offset (<syscall_id>)
     syscall
     ret
-SysSetUuidSeed ENDP
+SCSetUuidSeed ENDP
 
-SysSetValueKey PROC
+SCSetValueKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetValueKey syscall offset (<syscall_id>)
     syscall
     ret
-SysSetValueKey ENDP
+SCSetValueKey ENDP
 
-SysSetVolumeInformationFile PROC
+SCSetVolumeInformationFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetVolumeInformationFile syscall offset (<syscall_id>)
     syscall
     ret
-SysSetVolumeInformationFile ENDP
+SCSetVolumeInformationFile ENDP
 
-SysSetWnfProcessNotificationEvent PROC
+SCSetWnfProcessNotificationEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSetWnfProcessNotificationEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysSetWnfProcessNotificationEvent ENDP
+SCSetWnfProcessNotificationEvent ENDP
 
-SysShutdownSystem PROC
+SCShutdownSystem PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwShutdownSystem syscall offset (<syscall_id>)
     syscall
     ret
-SysShutdownSystem ENDP
+SCShutdownSystem ENDP
 
-SysShutdownWorkerFactory PROC
+SCShutdownWorkerFactory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwShutdownWorkerFactory syscall offset (<syscall_id>)
     syscall
     ret
-SysShutdownWorkerFactory ENDP
+SCShutdownWorkerFactory ENDP
 
-SysSignalAndWaitForSingleObject PROC
+SCSignalAndWaitForSingleObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSignalAndWaitForSingleObject syscall offset (<syscall_id>)
     syscall
     ret
-SysSignalAndWaitForSingleObject ENDP
+SCSignalAndWaitForSingleObject ENDP
 
-SysSinglePhaseReject PROC
+SCSinglePhaseReject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSinglePhaseReject syscall offset (<syscall_id>)
     syscall
     ret
-SysSinglePhaseReject ENDP
+SCSinglePhaseReject ENDP
 
-SysStartProfile PROC
+SCStartProfile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwStartProfile syscall offset (<syscall_id>)
     syscall
     ret
-SysStartProfile ENDP
+SCStartProfile ENDP
 
-SysStopProfile PROC
+SCStopProfile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwStopProfile syscall offset (<syscall_id>)
     syscall
     ret
-SysStopProfile ENDP
+SCStopProfile ENDP
 
-SysSubmitIoRing PROC
+SCSubmitIoRing PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSubmitIoRing syscall offset (<syscall_id>)
     syscall
     ret
-SysSubmitIoRing ENDP
+SCSubmitIoRing ENDP
 
-SysSubscribeWnfStateChange PROC
+SCSubscribeWnfStateChange PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSubscribeWnfStateChange syscall offset (<syscall_id>)
     syscall
     ret
-SysSubscribeWnfStateChange ENDP
+SCSubscribeWnfStateChange ENDP
 
-SysSuspendProcess PROC
+SCSuspendProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSuspendProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysSuspendProcess ENDP
+SCSuspendProcess ENDP
 
-SysSuspendThread PROC
+SCSuspendThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSuspendThread syscall offset (<syscall_id>)
     syscall
     ret
-SysSuspendThread ENDP
+SCSuspendThread ENDP
 
-SysSystemDebugControl PROC
+SCSystemDebugControl PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwSystemDebugControl syscall offset (<syscall_id>)
     syscall
     ret
-SysSystemDebugControl ENDP
+SCSystemDebugControl ENDP
 
-SysTerminateEnclave PROC
+SCTerminateEnclave PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTerminateEnclave syscall offset (<syscall_id>)
     syscall
     ret
-SysTerminateEnclave ENDP
+SCTerminateEnclave ENDP
 
-SysTerminateJobObject PROC
+SCTerminateJobObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTerminateJobObject syscall offset (<syscall_id>)
     syscall
     ret
-SysTerminateJobObject ENDP
+SCTerminateJobObject ENDP
 
-SysTerminateProcess PROC
+SCTerminateProcess PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTerminateProcess syscall offset (<syscall_id>)
     syscall
     ret
-SysTerminateProcess ENDP
+SCTerminateProcess ENDP
 
-SysTerminateThread PROC
+SCTerminateThread PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTerminateThread syscall offset (<syscall_id>)
     syscall
     ret
-SysTerminateThread ENDP
+SCTerminateThread ENDP
 
-SysTestAlert PROC
+SCTestAlert PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTestAlert syscall offset (<syscall_id>)
     syscall
     ret
-SysTestAlert ENDP
+SCTestAlert ENDP
 
-SysThawRegistry PROC
+SCThawRegistry PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwThawRegistry syscall offset (<syscall_id>)
     syscall
     ret
-SysThawRegistry ENDP
+SCThawRegistry ENDP
 
-SysThawTransactions PROC
+SCThawTransactions PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwThawTransactions syscall offset (<syscall_id>)
     syscall
     ret
-SysThawTransactions ENDP
+SCThawTransactions ENDP
 
-SysTraceControl PROC
+SCTraceControl PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTraceControl syscall offset (<syscall_id>)
     syscall
     ret
-SysTraceControl ENDP
+SCTraceControl ENDP
 
-SysTraceEvent PROC
+SCTraceEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTraceEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysTraceEvent ENDP
+SCTraceEvent ENDP
 
-SysTranslateFilePath PROC
+SCTranslateFilePath PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwTranslateFilePath syscall offset (<syscall_id>)
     syscall
     ret
-SysTranslateFilePath ENDP
+SCTranslateFilePath ENDP
 
-SysUmsThreadYield PROC
+SCUmsThreadYield PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUmsThreadYield syscall offset (<syscall_id>)
     syscall
     ret
-SysUmsThreadYield ENDP
+SCUmsThreadYield ENDP
 
-SysUnloadDriver PROC
+SCUnloadDriver PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnloadDriver syscall offset (<syscall_id>)
     syscall
     ret
-SysUnloadDriver ENDP
+SCUnloadDriver ENDP
 
-SysUnloadKey PROC
+SCUnloadKey PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnloadKey syscall offset (<syscall_id>)
     syscall
     ret
-SysUnloadKey ENDP
+SCUnloadKey ENDP
 
-SysUnloadKey2 PROC
+SCUnloadKey2 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnloadKey2 syscall offset (<syscall_id>)
     syscall
     ret
-SysUnloadKey2 ENDP
+SCUnloadKey2 ENDP
 
-SysUnloadKeyEx PROC
+SCUnloadKeyEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnloadKeyEx syscall offset (<syscall_id>)
     syscall
     ret
-SysUnloadKeyEx ENDP
+SCUnloadKeyEx ENDP
 
-SysUnlockFile PROC
+SCUnlockFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnlockFile syscall offset (<syscall_id>)
     syscall
     ret
-SysUnlockFile ENDP
+SCUnlockFile ENDP
 
-SysUnlockVirtualMemory PROC
+SCUnlockVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnlockVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysUnlockVirtualMemory ENDP
+SCUnlockVirtualMemory ENDP
 
-SysUnmapViewOfSection PROC
+SCUnmapViewOfSection PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnmapViewOfSection syscall offset (<syscall_id>)
     syscall
     ret
-SysUnmapViewOfSection ENDP
+SCUnmapViewOfSection ENDP
 
-SysUnmapViewOfSectionEx PROC
+SCUnmapViewOfSectionEx PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnmapViewOfSectionEx syscall offset (<syscall_id>)
     syscall
     ret
-SysUnmapViewOfSectionEx ENDP
+SCUnmapViewOfSectionEx ENDP
 
-SysUnsubscribeWnfStateChange PROC
+SCUnsubscribeWnfStateChange PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUnsubscribeWnfStateChange syscall offset (<syscall_id>)
     syscall
     ret
-SysUnsubscribeWnfStateChange ENDP
+SCUnsubscribeWnfStateChange ENDP
 
-SysUpdateWnfStateData PROC
+SCUpdateWnfStateData PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwUpdateWnfStateData syscall offset (<syscall_id>)
     syscall
     ret
-SysUpdateWnfStateData ENDP
+SCUpdateWnfStateData ENDP
 
-SysVdmControl PROC
+SCVdmControl PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwVdmControl syscall offset (<syscall_id>)
     syscall
     ret
-SysVdmControl ENDP
+SCVdmControl ENDP
 
-SysWaitForAlertByThreadId PROC
+SCWaitForAlertByThreadId PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitForAlertByThreadId syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitForAlertByThreadId ENDP
+SCWaitForAlertByThreadId ENDP
 
-SysWaitForDebugEvent PROC
+SCWaitForDebugEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitForDebugEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitForDebugEvent ENDP
+SCWaitForDebugEvent ENDP
 
-SysWaitForKeyedEvent PROC
+SCWaitForKeyedEvent PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitForKeyedEvent syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitForKeyedEvent ENDP
+SCWaitForKeyedEvent ENDP
 
-SysWaitForMultipleObjects PROC
+SCWaitForMultipleObjects PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitForMultipleObjects syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitForMultipleObjects ENDP
+SCWaitForMultipleObjects ENDP
 
-SysWaitForMultipleObjects32 PROC
+SCWaitForMultipleObjects32 PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitForMultipleObjects32 syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitForMultipleObjects32 ENDP
+SCWaitForMultipleObjects32 ENDP
 
-SysWaitForSingleObject PROC
+SCWaitForSingleObject PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitForSingleObject syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitForSingleObject ENDP
+SCWaitForSingleObject ENDP
 
-SysWaitForWorkViaWorkerFactory PROC
+SCWaitForWorkViaWorkerFactory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitForWorkViaWorkerFactory syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitForWorkViaWorkerFactory ENDP
+SCWaitForWorkViaWorkerFactory ENDP
 
-SysWaitHighEventPair PROC
+SCWaitHighEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitHighEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitHighEventPair ENDP
+SCWaitHighEventPair ENDP
 
-SysWaitLowEventPair PROC
+SCWaitLowEventPair PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWaitLowEventPair syscall offset (<syscall_id>)
     syscall
     ret
-SysWaitLowEventPair ENDP
+SCWaitLowEventPair ENDP
 
-SysWorkerFactoryWorkerReady PROC
+SCWorkerFactoryWorkerReady PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWorkerFactoryWorkerReady syscall offset (<syscall_id>)
     syscall
     ret
-SysWorkerFactoryWorkerReady ENDP
+SCWorkerFactoryWorkerReady ENDP
 
-SysWriteFile PROC
+SCWriteFile PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWriteFile syscall offset (<syscall_id>)
     syscall
     ret
-SysWriteFile ENDP
+SCWriteFile ENDP
 
-SysWriteFileGather PROC
+SCWriteFileGather PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWriteFileGather syscall offset (<syscall_id>)
     syscall
     ret
-SysWriteFileGather ENDP
+SCWriteFileGather ENDP
 
-SysWriteRequestData PROC
+SCWriteRequestData PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWriteRequestData syscall offset (<syscall_id>)
     syscall
     ret
-SysWriteRequestData ENDP
+SCWriteRequestData ENDP
 
-SysWriteVirtualMemory PROC
+SCWriteVirtualMemory PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwWriteVirtualMemory syscall offset (<syscall_id>)
     syscall
     ret
-SysWriteVirtualMemory ENDP
+SCWriteVirtualMemory ENDP
 
-SysYieldExecution PROC
+SCYieldExecution PROC
     mov r10, rcx
     mov eax, <syscall_id>h    ; Nt/ZwYieldExecution syscall offset (<syscall_id>)
     syscall
     ret
-SysYieldExecution ENDP
+SCYieldExecution ENDP
 
-end 
+end
