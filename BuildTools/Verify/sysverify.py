@@ -93,9 +93,9 @@ class TypeDefinitionTracker:
     def parse_header_files(self):
         base_path = os.path.join(os.path.dirname(__file__), '..', '..')
         header_files = {
-            'constants': os.path.join(base_path, "Wrapper", "include", "Nt", "sysNtConstants.h"),
-            'types': os.path.join(base_path, "Wrapper", "include", "Nt", "sysNtTypes.h"),
-            'externals': os.path.join(base_path, "Wrapper", "include", "Nt", "sysNtExternals.h")
+            'constants': os.path.join(base_path, "Wrapper", "include", "Sys", "sysConstants.h"),
+            'types': os.path.join(base_path, "Wrapper", "include", "Sys", "sysTypes.h"),
+            'externals': os.path.join(base_path, "Wrapper", "include", "Sys", "sysExternals.h")
         }
         for file_type, filepath in header_files.items():
             with open(filepath, 'r') as f:
@@ -106,19 +106,19 @@ class TypeDefinitionTracker:
                     name = match.group(1)
                     value = match.group(2)
                     self.type_definitions[name] = {
-                        'file': 'sysNtConstants.h',
+                        'file': 'sysConstants.h',
                         'definition': f'#define {name} {value}'
                     }
-            comma_types = re.finditer(r'}\s*(\w+),\s*\*\s*(\w+);', content) # Parse types with comma-separated pointer definitions
+            comma_types = re.finditer(r'}\s*(\w+),\s*\*\s*(\w+);', content) # Parse types with comma separated pointer definitions
             for match in comma_types:
                 base_type = match.group(1)
                 ptr_type = match.group(2)
                 self.type_definitions[base_type] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef struct {base_type}'
                 }
                 self.type_definitions[ptr_type] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {base_type}* {ptr_type}'
                 }
             ptr_types = re.finditer(r'typedef\s+(?:struct\s+)?(?:_)?(\w+)\s*\*\s*(\w+);', content) # Parse direct pointer typedefs
@@ -126,7 +126,7 @@ class TypeDefinitionTracker:
                 base_type = match.group(1)
                 ptr_type = match.group(2)
                 self.type_definitions[ptr_type] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {base_type}* {ptr_type}'
                 }
             basic_types = re.finditer(r'typedef\s+(?:struct\s+)?(?:_)?(\w+)\s+(\w+);', content) # Parse basic types (typedef)
@@ -134,7 +134,7 @@ class TypeDefinitionTracker:
                 base_type = match.group(1)
                 new_type = match.group(2)
                 self.type_definitions[new_type] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {base_type} {new_type}'
                 }
             structs = re.finditer(r'typedef\s+struct\s+(?:_)?(\w+)\s*{[^}]+}\s*(\w+)\s*,\s*\*\s*(\w+);', content, re.DOTALL) # Parse struct definitions with pointer
@@ -142,25 +142,25 @@ class TypeDefinitionTracker:
                 struct_name = match.group(2)
                 ptr_name = match.group(3)
                 self.type_definitions[struct_name] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': match.group(0)
                 }
                 self.type_definitions[ptr_name] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {struct_name}* {ptr_name}'
                 }
             enums = re.finditer(r'typedef\s+enum\s+(?:_)?(\w+)\s*{[^}]+}\s*(\w+);', content, re.DOTALL) # Parse enums
             for match in enums:
                 enum_name = match.group(2)
                 self.type_definitions[enum_name] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': match.group(0)
                 }
             func_ptrs = re.finditer(r'typedef\s+\w+\s*\(\s*\w+\s*\*\s*(\w+)\s*\)\s*\([^)]*\)', content) # Parse function pointer types
             for match in func_ptrs:
                 type_name = match.group(1)
                 self.type_definitions[type_name] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef function_ptr {type_name}'
                 }
             common_types = { # Add common Windows types
@@ -171,7 +171,7 @@ class TypeDefinitionTracker:
             }
             for type_name in common_types:
                 self.type_definitions[type_name] = {
-                    'file': 'sysNtTypes.h',
+                    'file': 'sysTypes.h',
                     'definition': f'typedef base {type_name}'
                 }
             const_ptr_types = re.finditer(r'typedef\s+const\s+(\w+)\s*\*\s*(\w+);', content) # Pattern for const pointer typedefs
@@ -179,7 +179,7 @@ class TypeDefinitionTracker:
                 base_type = match.group(1)
                 new_type = match.group(2)
                 self.type_definitions[new_type] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef const {base_type}* {new_type}'
                 }
             wnf_types = re.finditer(r'typedef\s+(?:const\s+)?(?:struct\s+)?_?(\w+)\s*(?:\*\s*)?(\w+)(?:\s*,\s*\*\s*(\w+))?;', content) # Pattern for WNF specific types
@@ -188,24 +188,24 @@ class TypeDefinitionTracker:
                 new_type = match.group(2)
                 ptr_type = match.group(3)
                 self.type_definitions[new_type] = {
-                    'file': f'sysNt{file_type.capitalize()}.h',
+                    'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {base_type} {new_type}'
                 }
                 if ptr_type:
                     self.type_definitions[ptr_type] = {
-                        'file': f'sysNt{file_type.capitalize()}.h',
+                        'file': f'sys{file_type.capitalize()}.h',
                         'definition': f'typedef {new_type}* {ptr_type}'
                     }
             # WNF_CHANGE_STAMP explicitly
             if 'WNF_CHANGE_STAMP' not in self.type_definitions:
                 self.type_definitions['WNF_CHANGE_STAMP'] = {
-                    'file': 'sysNtExternals.h',
+                    'file': 'sysExternals.h',
                     'definition': 'typedef ULONG WNF_CHANGE_STAMP'
                 }
 
     def check_type(self, type_name: str) -> Dict[str, str]:
         type_name = type_name.strip()
-        if type_name in self.external_types: # Check if type is from external Windows headers
+        if type_name in self.external_types:
             return {
                 'file': 'Windows SDK',
                 'definition': f'typedef external {type_name}'
@@ -216,7 +216,7 @@ class TypeDefinitionTracker:
         if ' *' in type_name: # Handle pointer with space (ULONG64 * -> ULONG64*)
             type_name = type_name.replace(' *', '*')
             base_type = type_name[:-1]
-            ptr_type = 'P' + base_type # Try with P prefix
+            ptr_type = 'P' + base_type
             if ptr_type in self.type_definitions:
                 return self.type_definitions[ptr_type]
             if type_name in self.type_definitions: # Try direct lookup of pointer type
@@ -230,14 +230,14 @@ class TypeDefinitionTracker:
         }
         if type_name in basic_types:
             return {
-                'file': 'sysNtTypes.h',
+                'file': 'sysTypes.h',
                 'definition': f'typedef base {type_name}'
             }
         if type_name.endswith('*'): # Handle pointer types
             base_type = type_name[:-1].strip()
             if base_type in self.type_definitions:
                 return self.type_definitions[base_type]
-            ptr_type = 'P' + base_type # Try with P prefix
+            ptr_type = 'P' + base_type
             if ptr_type in self.type_definitions:
                 return self.type_definitions[ptr_type]
         if type_name.startswith('P'): # Handle P prefixed types
@@ -255,16 +255,25 @@ class SyscallVerification:
 
     def parse_syscall_definitions(self):
         base_path = os.path.join(os.path.dirname(__file__), '..', '..')
-        header_path = os.path.join(base_path, "Wrapper", "include", "Nt", "sysNtFunctions.h")
+        try:
+            from PyQt5.QtCore import QSettings
+            settings = QSettings('SysCaller', 'BuildTools')
+            syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+        except ImportError:
+            syscall_mode = 'Nt'
+        syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
+        header_path = os.path.join(base_path, "Wrapper", "include", "Sys", "sysFunctions.h")
         asm_path = os.path.join(base_path, "Wrapper", "src", "syscaller.asm")
         with open(header_path, 'r') as f:
             content = f.read()
-        pattern = r'extern\s*"C"\s*(\w+)\s+(\w+)\s*\(([\s\S]*?)\)\s*;' # Parse function declarations
+        pattern = rf'extern\s*"C"\s*(\w+)\s+((?:SC|{syscall_prefix})\w+)\s*\(([\s\S]*?)\)\s*;'
         matches = re.finditer(pattern, content, re.DOTALL)
         offsets = self.parse_syscall_offsets(asm_path) # Get syscall offsets from ASM file
         for match in matches:
             return_type = match.group(1)
             name = match.group(2)
+            if name.startswith("SC"):
+                name = syscall_prefix + name[2:]
             params_str = match.group(3).strip()
             params = [] # Parse parameters
             if params_str and params_str.upper() != 'VOID':
@@ -274,7 +283,7 @@ class SyscallVerification:
                     param = re.sub(r'//.*$', '', param)  # Remove // comments
                     param = re.sub(r'/\*.*?\*/', '', param)  # Remove /* */ comments
                     param = param.strip()
-                    if not param: # Skip empty parameters after comment removal
+                    if not param:
                         continue
                     if 'OPTIONAL' in param:
                         param_type = param.replace('OPTIONAL', '').strip()
@@ -283,13 +292,13 @@ class SyscallVerification:
                         param_type = param
                         is_optional = False
                     if param_type: 
-                        param_parts = param_type.split() # Split on whitespace and take everything except the last part as type
+                        param_parts = param_type.split()
                         if len(param_parts) > 0:
                             param_name = param_parts[-1]
-                            param_type = ' '.join(param_parts[:-1]) # Join all parts except the last one for the type
-                            param_type = param_type.split('//')[0].strip() # Remove any remaining comment indicators
+                            param_type = ' '.join(param_parts[:-1])
+                            param_type = param_type.split('//')[0].strip()
                             param_type = param_type.split('/*')[0].strip()
-                            if param_type:  # Only add if we have a valid type
+                            if param_type:
                                 params.append({
                                     'type': param_type,
                                     'name': param_name,
@@ -305,13 +314,22 @@ class SyscallVerification:
 
     def parse_syscall_offsets(self, asm_path: str) -> Dict[str, str]:
         offsets = {}
+        try:
+            from PyQt5.QtCore import QSettings
+            settings = QSettings('SysCaller', 'BuildTools')
+            syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+        except ImportError:
+            syscall_mode = 'Nt'
+        syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
         with open(asm_path, 'r') as f:
             content = f.read()
-        pattern = r'(\w+)\s+PROC[\s\S]*?mov\s+eax,\s+([\dA-Fa-fh]+)' # Find all syscall procedures and their offsets
+        pattern = r'((?:SC|Sys|SysK)\w+)\s+PROC[\s\S]*?mov\s+eax,\s+([\dA-Fa-fh]+)'
         matches = re.finditer(pattern, content)
         for match in matches:
             name = match.group(1)
             offset = match.group(2)
+            if name.startswith("SC"):
+                name = syscall_prefix + name[2:]
             offsets[name] = offset
         return offsets
 
@@ -323,15 +341,15 @@ class SyscallVerification:
             'return_type': syscall.return_type,
             'parameter_count': len(syscall.parameters),
             'errors': [],
-            'type_definitions': []  # Track where types are defined
+            'type_definitions': []
         }
-        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'} # Verify return type
+        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'}
         if syscall.return_type not in valid_return_types:
             result['errors'].append(f"Unexpected return type: {syscall.return_type}")
         for param in syscall.parameters: 
             if not self.validate_parameter_type(param['type']):
                 result['errors'].append(f"Invalid parameter type: {param['type']}")
-        offset = syscall.offset.lower().replace('h', '') # Validate syscall offset format and range
+        offset = syscall.offset.lower().replace('h', '') 
         try:
             offset_value = int(offset, 16)
             if offset_value > 0x0200:
@@ -363,13 +381,19 @@ class SyscallVerification:
         try:
             pe = pefile.PE(self.dll_path)
             md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
-            nt_name = 'Nt' + syscall_name[3:]
-            zw_name = 'Zw' + syscall_name[3:]
+            if syscall_name.startswith("Sys"):
+                base_name = syscall_name[3:]
+            elif syscall_name.startswith("SysK"):
+                base_name = syscall_name[4:]
+            else:
+                base_name = syscall_name
+            primary_name = 'Nt' + base_name
+            secondary_name = 'Zw' + base_name
             for export in pe.DIRECTORY_ENTRY_EXPORT.symbols:
                 if not export.name:
                     continue
                 func_name = export.name.decode()
-                if func_name in (nt_name, zw_name):
+                if func_name in (primary_name, secondary_name):
                     func_rva = export.address
                     func_bytes = pe.get_data(func_rva, 16)
                     for instruction in md.disasm(func_bytes, func_rva):
@@ -558,7 +582,7 @@ class SyscallVerification:
             'PFILE_PATH_INFORMATION',
             'PFILE_NETWORK_OPEN_INFORMATION'
         }
-        param_type = param_type.strip() # Clean up the parameter type string
+        param_type = param_type.strip()
         if not param_type: 
             return False
         if param_type.startswith('const '): # Handle const types
@@ -601,7 +625,7 @@ class SyscallVerification:
           
     def print_result(self, result: Dict):
         use_ascii = '--from-gui' in sys.argv
-        tree_chars = { # Use different characters based on whether were in GUI or CLI
+        tree_chars = {
             'branch': '|--' if use_ascii else '├─',
             'last': '`--' if use_ascii else '└─',
             'indent': '   ' if use_ascii else '   '
