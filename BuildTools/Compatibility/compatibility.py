@@ -3,6 +3,15 @@ import re
 import capstone
 import os
 
+try:
+    from PyQt5.QtCore import QSettings
+except ImportError:
+    class QSettings:
+        def __init__(self, *args):
+            self.settings = {}
+        def value(self, key, default, type):
+            return default
+
 class Colors:
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
@@ -20,12 +29,11 @@ def read_syscalls(asm_file):
         lines = file.readlines()
     syscall = None
     for line in lines:
-        proc_match = re.search(r"(Sys\w+)\s+PROC", line)
+        proc_match = re.search(r"((?:Sys|SysK)\w+)\s+PROC", line)
         if proc_match:
             if syscall and syscall not in syscalls:
                 syscalls.append(syscall)
             syscall = {'name': proc_match.group(1)}
-            # Check for duplicate names
             if syscall['name'] in unique_names:
                 syscall['duplicate_name'] = True
                 syscall['duplicate_name_with'] = unique_names[syscall['name']]
@@ -35,7 +43,6 @@ def read_syscalls(asm_file):
         offset_match = re.search(r"mov\s+(eax|rax),\s*(0x[0-9A-Fa-f]+|[0-9A-Fa-f]+)h?", line)
         if syscall and offset_match:
             syscall['offset'] = int(offset_match.group(2), 16)
-            # Check for duplicate offsets
             if syscall['offset'] in unique_offsets:
                 syscall['duplicate_offset'] = True
                 syscall['duplicate_offset_with'] = unique_offsets[syscall['offset']]
@@ -82,25 +89,32 @@ def print_legend():
     print(f"{Colors.BOLD}MATCH = Syscall Offset & Name Match ntdll Version{Colors.ENDC}")
     print(f"{Colors.BOLD}MISMATCH = Syscall Offset & or Name dont Match ntdll Version{Colors.ENDC}")
     print(f"{Colors.BOLD}v = Valid Offset{Colors.ENDC}")
-    print(f"{Colors.BOLD}Zw = Zw Syscall (Coming Soon!){Colors.ENDC}")
+    print(f"{Colors.BOLD}Zw = Zw Syscall{Colors.ENDC}")
     print()
 
 def validate_syscalls(asm_file, dll_path):
+    settings = QSettings('SysCaller', 'BuildTools')
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    is_zw_mode = syscall_mode == 'Zw'
+    mode_display = "Zw" if is_zw_mode else "Nt"
     syscalls = read_syscalls(asm_file)
     syscall_numbers = get_syscalls(dll_path)
     print(f"{Colors.BOLD}Found {len(syscalls)} syscalls in {asm_file}{Colors.ENDC}")
     print_legend()
     valid, invalid, duplicates = 0, 0, 0
     for syscall in syscalls:
+        if syscall['name'].startswith('SysK'):
+            base_name = syscall['name'][4:]
+        elif syscall['name'].startswith('Sys'):
+            base_name = syscall['name'][3:]
+        else:
+            base_name = syscall['name']
+        expected_name = "Nt" + base_name
+        actual_offset = syscall_numbers.get(expected_name, 0)
         if syscall.get('duplicate_offset', False) or syscall.get('duplicate_name', False):
             duplicates += 1
-            expected_nt_name = "Nt" + syscall['name'][3:]
-            expected_zw_name = "Zw" + syscall['name'][3:]
-            actual_offset = syscall_numbers.get(expected_nt_name, syscall_numbers.get(expected_zw_name, 0))
-            # Determine duplicate type message
             if syscall.get('duplicate_offset', False) and syscall.get('duplicate_name', False):
                 dup_type = "Duplicate Offset & Name"
-                # Check if offset and name are duplicated with the same syscall
                 if syscall['duplicate_offset_with'] == syscall['duplicate_name_with']:
                     dup_with = f"Offset & Name with {syscall['duplicate_offset_with']}"
                 else:
@@ -111,30 +125,19 @@ def validate_syscalls(asm_file, dll_path):
             else:
                 dup_type = "Duplicate Name"
                 dup_with = f"with {syscall['duplicate_name_with']}"
-            # Determine if its a valid offset despite being duplicate
             prefix = 'v' if syscall['offset'] == actual_offset else 'i'
-            print(f"{Colors.WARNING}{syscall['name']}: {dup_type} {prefix}0x{syscall['offset']:X} f0x{actual_offset:X} (DUP) {dup_with}{Colors.ENDC}")
+            print(f"{Colors.WARNING}{syscall['name']}: {dup_type} ({mode_display}) {prefix}0x{syscall['offset']:X} f0x{actual_offset:X} (DUP) {dup_with}{Colors.ENDC}")
             continue
-        expected_nt_name = "Nt" + syscall['name'][3:]
-        expected_zw_name = "Zw" + syscall['name'][3:]
-        # Check for valid syscall and correct offset
-        if expected_nt_name in syscall_numbers:
-            if syscall['offset'] == syscall_numbers[expected_nt_name]:
+        if expected_name in syscall_numbers:
+            if syscall['offset'] == syscall_numbers[expected_name]:
                 valid += 1
-                print(f"{Colors.OKGREEN}{syscall['name']}: Found (Nt) v0x{syscall['offset']:X} f0x{syscall_numbers[expected_nt_name]:X} (MATCH){Colors.ENDC}")
+                print(f"{Colors.OKGREEN}{syscall['name']}: Found ({mode_display}) v0x{syscall['offset']:X} f0x{syscall_numbers[expected_name]:X} (MATCH){Colors.ENDC}")
             else:
                 invalid += 1
-                print(f"{Colors.FAIL}{syscall['name']}: Found (Nt) i0x{syscall['offset']:X} f0x{syscall_numbers[expected_nt_name]:X} (MISMATCH){Colors.ENDC}")
-        elif expected_zw_name in syscall_numbers:
-            if syscall['offset'] == syscall_numbers[expected_zw_name]:
-                valid += 1
-                print(f"{Colors.OKGREEN}{syscall['name']}: Found (Zw) v0x{syscall['offset']:X} f0x{syscall_numbers[expected_zw_name]:X} (MATCH){Colors.ENDC}")
-            else:
-                invalid += 1
-                print(f"{Colors.FAIL}{syscall['name']}: Found (Zw) i0x{syscall['offset']:X} f0x{syscall_numbers[expected_zw_name]:X} (MISMATCH){Colors.ENDC}")
+                print(f"{Colors.FAIL}{syscall['name']}: Found ({mode_display}) i0x{syscall['offset']:X} f0x{syscall_numbers[expected_name]:X} (MISMATCH){Colors.ENDC}")
         else:
             invalid += 1
-            print(f"{Colors.FAIL}{syscall['name']}: Not Found i0x{syscall['offset']:X} f0x{syscall_numbers.get(expected_nt_name, 0):X} (MISMATCH){Colors.ENDC}")
+            print(f"{Colors.FAIL}{syscall['name']}: Not Found ({mode_display}) i0x{syscall['offset']:X} f0x{actual_offset:X} (MISMATCH){Colors.ENDC}")
     print(f"\n{Colors.BOLD}Valid: {Colors.OKGREEN}{valid}{Colors.ENDC}{Colors.BOLD}, Invalid: {Colors.FAIL}{invalid}{Colors.ENDC}{Colors.BOLD}, Duplicates: {Colors.WARNING}{duplicates}{Colors.ENDC}")
 
 if __name__ == "__main__":
