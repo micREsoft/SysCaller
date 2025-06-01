@@ -109,7 +109,7 @@ class TypeDefinitionTracker:
                         'file': 'sysConstants.h',
                         'definition': f'#define {name} {value}'
                     }
-            comma_types = re.finditer(r'}\s*(\w+),\s*\*\s*(\w+);', content) # Parse types with comma separated pointer definitions
+            comma_types = re.finditer(r'}\s*(\w+),\s*\*\s*(\w+);', content) # Parse types with comma-separated pointer definitions
             for match in comma_types:
                 base_type = match.group(1)
                 ptr_type = match.group(2)
@@ -163,7 +163,7 @@ class TypeDefinitionTracker:
                     'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef function_ptr {type_name}'
                 }
-            common_types = { # Add common Windows types
+            common_types = {
                 'HANDLE', 'PVOID', 'BOOLEAN', 'ULONG', 'PULONG', 'ACCESS_MASK',
                 'PHANDLE', 'PACCESS_MASK', 'PBOOLEAN', 'VOID',
                 'ULONG_PTR', 'PULONG_PTR', 'ULONG64', 'PULONG64',
@@ -219,9 +219,9 @@ class TypeDefinitionTracker:
             ptr_type = 'P' + base_type
             if ptr_type in self.type_definitions:
                 return self.type_definitions[ptr_type]
-            if type_name in self.type_definitions: # Try direct lookup of pointer type
+            if type_name in self.type_definitions:
                 return self.type_definitions[type_name]
-        basic_types = { # Handle basic Windows types
+        basic_types = {
             'LONG', 'ULONG', 'INT', 'UINT', 'CHAR', 'WCHAR', 'BOOL', 'BOOLEAN',
             'SHORT', 'USHORT', 'LONGLONG', 'ULONGLONG', 'BYTE', 'WORD', 'DWORD',
             'VOID', 'PVOID', 'HANDLE', 'SIZE_T', 'NTSTATUS',
@@ -233,18 +233,18 @@ class TypeDefinitionTracker:
                 'file': 'sysTypes.h',
                 'definition': f'typedef base {type_name}'
             }
-        if type_name.endswith('*'): # Handle pointer types
+        if type_name.endswith('*'):
             base_type = type_name[:-1].strip()
             if base_type in self.type_definitions:
                 return self.type_definitions[base_type]
             ptr_type = 'P' + base_type
             if ptr_type in self.type_definitions:
                 return self.type_definitions[ptr_type]
-        if type_name.startswith('P'): # Handle P prefixed types
+        if type_name.startswith('P'):
             base_type = type_name[1:]
             if base_type in self.type_definitions:
                 return self.type_definitions[base_type]
-        return self.type_definitions.get(type_name, None) # Direct lookup
+        return self.type_definitions.get(type_name, None)
 
 class SyscallVerification:
     def __init__(self):
@@ -266,7 +266,7 @@ class SyscallVerification:
         asm_path = os.path.join(base_path, "Wrapper", "src", "syscaller.asm")
         with open(header_path, 'r') as f:
             content = f.read()
-        pattern = rf'extern\s*"C"\s*(\w+)\s+((?:SC|{syscall_prefix})\w+)\s*\(([\s\S]*?)\)\s*;'
+        pattern = rf'extern\s*"C"\s*((?:NTSTATUS|ULONG))\s+((?:SC|{syscall_prefix})\w+)\s*\(([\s\S]*?)\)\s*;'
         matches = re.finditer(pattern, content, re.DOTALL)
         offsets = self.parse_syscall_offsets(asm_path) # Get syscall offsets from ASM file
         for match in matches:
@@ -283,7 +283,7 @@ class SyscallVerification:
                     param = re.sub(r'//.*$', '', param)  # Remove // comments
                     param = re.sub(r'/\*.*?\*/', '', param)  # Remove /* */ comments
                     param = param.strip()
-                    if not param:
+                    if not param: # Skip empty parameters after comment removal
                         continue
                     if 'OPTIONAL' in param:
                         param_type = param.replace('OPTIONAL', '').strip()
@@ -295,10 +295,10 @@ class SyscallVerification:
                         param_parts = param_type.split()
                         if len(param_parts) > 0:
                             param_name = param_parts[-1]
-                            param_type = ' '.join(param_parts[:-1])
-                            param_type = param_type.split('//')[0].strip()
+                            param_type = ' '.join(param_parts[:-1]) # Join all parts except the last one for the type
+                            param_type = param_type.split('//')[0].strip() # Remove any remaining comment indicators
                             param_type = param_type.split('/*')[0].strip()
-                            if param_type:
+                            if param_type:  # Only add if we have a valid type
                                 params.append({
                                     'type': param_type,
                                     'name': param_name,
@@ -341,15 +341,15 @@ class SyscallVerification:
             'return_type': syscall.return_type,
             'parameter_count': len(syscall.parameters),
             'errors': [],
-            'type_definitions': []
+            'type_definitions': []  # Track where types are defined
         }
-        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'}
+        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'} # Verify return type
         if syscall.return_type not in valid_return_types:
             result['errors'].append(f"Unexpected return type: {syscall.return_type}")
         for param in syscall.parameters: 
             if not self.validate_parameter_type(param['type']):
                 result['errors'].append(f"Invalid parameter type: {param['type']}")
-        offset = syscall.offset.lower().replace('h', '') 
+        offset = syscall.offset.lower().replace('h', '') # Validate syscall offset format and range
         try:
             offset_value = int(offset, 16)
             if offset_value > 0x0200:
