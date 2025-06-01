@@ -104,9 +104,9 @@ class SysCallerSettings(QDialog):
         syscall_mode_layout.addWidget(description)
         self.mode_button_group = QButtonGroup(self)
         self.nt_mode_radio = QRadioButton("Nt Mode (User Mode)")
-        self.nt_mode_radio.setToolTip("Use Nt prefix for syscalls (default for user mode applications)")
+        self.nt_mode_radio.setToolTip("Use Nt prefix for syscalls (default for user-mode applications)")
         self.zw_mode_radio = QRadioButton("Zw Mode (Kernel Mode)")
-        self.zw_mode_radio.setToolTip("Use Zw prefix for syscalls (primarily used in kernel mode)")
+        self.zw_mode_radio.setToolTip("Use Zw prefix for syscalls (primarily used in kernel-mode drivers)")
         current_mode = self.settings.value('general/syscall_mode', 'Nt', str)
         if current_mode == 'Zw':
             self.zw_mode_radio.setChecked(True)
@@ -304,10 +304,10 @@ class SysCallerSettings(QDialog):
         if os.path.exists(header_path):
             with open(header_path, 'r') as f:
                 for line in f:
-                    match = re.search(rf'extern "C" NTSTATUS ({syscall_prefix}\w+)\(', line)
+                    match = re.search(rf'extern "C" (?:NTSTATUS|ULONG) ({syscall_prefix}\w+)\(', line)
                     if match:
                         self.syscalls.append(match.group(1))
-                    sc_match = re.search(r'extern "C" NTSTATUS (SC\w+)\(', line)
+                    sc_match = re.search(r'extern "C" (?:NTSTATUS|ULONG) (SC\w+)\(', line)
                     if sc_match:
                         syscall_name = syscall_prefix + sc_match.group(1)[2:]
                         self.syscalls.append(syscall_name)
