@@ -1,4 +1,6 @@
-# SysCaller Library
+# SysCaller SDK
+
+*Windows Syscall SDK with dynamic offset resolution, validation, and obfuscation. — C++ primary, Rust, Python & others planned!*
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/ad00dadd-0f4a-45f8-b668-a269f62431b4" alt="SysCaller Logo" width="400"/>
@@ -6,26 +8,33 @@
 
 ## Overview
 
-SysCaller is a robust wrapper for Windows NT system calls (syscalls) that provides direct access to the Windows NT API with added security and obfuscation benefits. By using direct syscalls instead of the standard Windows API functions, applications can bypass certain security monitoring tools and anticheat systems that hook into user mode API calls.
+SysCaller is a powerful SDK providing direct, low level access to Windows NT system calls (syscalls) across multiple languages.  
+Bypassing traditional Windows API hooks, SysCaller enables stealthy and efficient syscall invocation for user-mode and kernel-mode development, with automatic offset validation and builtin obfuscation.
 
 ## Features
 
-- **Direct Syscall Access**: Bypasses user mode API hooks by directly invoking syscalls
-- **Comprehensive Coverage**: Includes wrappers for hundreds of NT system calls
-- **Obfuscation Layer**: Hides syscall IDs and provides protection against static analysis
-- **Cross Compatibility**: Works across different Windows versions (tested on Windows 10+ x64)
-- **Easy Integration**: Simple to include in your projects with minimal dependencies
-- **GUI/Build Tools**: Includes validation, compatibility checking, and GUI tools
+- **Direct Syscall Invocation**: Avoid user-mode API hooks by calling syscalls directly.
+- **Extensive Coverage**: Hundreds of Nt/Zw syscalls.
+- **Dual Mode Operation**: Supports both Nt (user-mode) and Zw (kernel-mode) syscall variants.
+- **Kernel Mode Driver Support**: Ideal for low level driver development via Zw syscalls.
+- **Obfuscation Layer**: Optional but Conceals syscall IDs, hinders static analysis, and more.
+- **Cross Version Compatibility**: Works & tested across Windows 10 and 11 (x64).
+- **Easy Integration**: Minimal dependencies and straightforward project setup.
+- **GUI Build Tools**: Validate, verify, and obfuscate syscalls through a clean user friendly interface.
+- **Cross Language SDK**: Designed for C++ now, with planned bindings for Python, Rust, Go, and others.
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Windows 10+ (x64)**: The library is designed for 64 bit Windows systems (may work > Windows 10 )
+- **Windows 10+ (x64)**: The library is designed for 64-bit Windows systems
 - **Visual Studio** with MASM support (any recent version should work)
-- **Python 3.8+**: Required for build tools (only during development)
+- **Python 3.8+**: Required for GUI build tools (only during development)
 
 ### Building the Library
+
+> **Important:** Before building, always run the BuildTools GUI to validate and update syscall offsets to match your system's `ntdll.dll` version.
+
 
 1. **Clone the Repository**:
    ```bash
@@ -38,17 +47,19 @@ SysCaller is a robust wrapper for Windows NT system calls (syscalls) that provid
    - Make sure the build is set to `release` & `x64` configuration
    - Ensure MASM is enabled for assembly file compilation
 
-3. **Run the BuildTools**:
+3. **Run the BuildTools GUI**:
    ```bash
    cd BuildTools
    pip install -r requirements.txt
    python syscaller.py
    ```
-   - Use Option 1 to run validation checks
-   - Use Option 2 to verify compatibility with your system
-   - Use Option 3 to verify/xref func definitions
-   - Use Option 4 to obfuscate your syscaller build
-   - Use Option 5 to launch the GUI version of BuildTools (recommended)
+   
+   The GUI provides several functions:
+   - **Validation Check**: Analyzes and updates syscall offsets against ntdll.dll
+   - **Compatibility Check**: Verifies syscall compatibility with your system
+   - **Verification Check**: Validates return types and parameter types
+   - **Syscall Obfuscation**: Randomizes syscall names and adds protection
+   - **Settings**: Configure syscall mode (Nt or Zw) and other options
 
 4. **Build the Library**:
    - Build the solution to generate `SysCaller.lib`
@@ -67,13 +78,13 @@ To use SysCaller in your project:
    #include "syscaller.h"
    ```
 
-3. **Use the `Sys` prefixed functions instead of Nt/Zw functions**:
+3. **Use the `Sys` prefixed functions for Nt syscalls or `SysK` for Zw syscalls**:
    ```cpp
-   // Instead of NtAllocateVirtualMemory
+   // For user mode (Nt syscalls)
    SysAllocateVirtualMemory(processHandle, &baseAddress, 0, &regionSize, MEM_COMMIT, PAGE_READWRITE);
    
-   // Instead of NtWriteVirtualMemory
-   SysWriteVirtualMemory(processHandle, baseAddress, buffer, bufferSize, &bytesWritten);
+   // For kernel mode (Zw syscalls)
+   SysKAllocateVirtualMemory(processHandle, &baseAddress, 0, &regionSize, MEM_COMMIT, PAGE_READWRITE);
    ```
 
 ## Usage Example
@@ -255,10 +266,18 @@ bool Bypass::LoadLibraryInj(const std::wstring& dllPath) {
 
 ## Documentation
 
-For detailed API documentation, please refer to the wrapper header files in the `Wrapper/include/Nt` directory. Each function is based on the Windows NT native API, and further information can be found at:
+For detailed API documentation, please refer to the wrapper header files in the `Wrapper/include/Sys` directory. Each function is based on the Windows NT native API, and further information can be found at:
 
 - [Windows Syscall Documentation](https://ntdoc.m417z.com/)
-- Any file in the  `Nt` directory
+- Any file in the `Sys` directory
+
+## Future Development
+
+- **Cross/Multi Language Support**: Upcoming bindings for multiple programming languages:
+  - Rust
+  - Python
+  - Go
+  - And more... (we only support C++ by default atm)
 
 ## Contributing
 
@@ -266,7 +285,7 @@ Contributions are welcome! While this is primarily a passion project, I'm open t
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
