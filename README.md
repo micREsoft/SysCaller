@@ -14,7 +14,7 @@ Bypassing traditional Windows API hooks, SysCaller enables stealthy and efficien
 ## Features
 
 - **Direct Syscall Invocation**: Avoid user-mode API hooks by calling syscalls directly.
-- **Extensive Coverage**: Hundreds of Nt/Zw syscalls.
+- **Extensive Coverage**: Hundreds of Nt/Zw syscalls. (Zw is currently still experimental!)
 - **Dual Mode Operation**: Supports both Nt (user-mode) and Zw (kernel-mode) syscall variants.
 - **Kernel Mode Driver Support**: Ideal for low level driver development via Zw syscalls.
 - **Obfuscation Layer**: Optional but Conceals syscall IDs, hinders static analysis, and more.
@@ -66,7 +66,9 @@ Bypassing traditional Windows API hooks, SysCaller enables stealthy and efficien
 
 ### Integration
 
-To use SysCaller in your project:
+To use SysCaller in your project: 
+
+**(Note: You can use `CPP 17+` in your projects integrated with SysCaller)**
 
 1. **Include the Library in your Project Settings**:
    - Add the SysCaller `Wrapper/include` directory to your project's include paths
@@ -277,7 +279,7 @@ For detailed API documentation, please refer to the wrapper header files in the 
   - Rust
   - Python
   - Go
-  - And more... (we only support C++ by default atm)
+  - And more...
 
 ## Contributing
 
