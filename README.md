@@ -35,6 +35,7 @@ Bypassing traditional Windows API hooks, SysCaller enables stealthy and efficien
 
 > **Important:** Before building, always run the BuildTools GUI to validate and update syscall offsets to match your system's `ntdll.dll` version.
 
+### Option 1: Visual Studio 2022
 
 1. **Clone the Repository**:
    ```bash
@@ -44,8 +45,9 @@ Bypassing traditional Windows API hooks, SysCaller enables stealthy and efficien
 
 2. **Configure the Project**:
    - Open the solution in Visual Studio
-   - Make sure the build is set to `release` & `x64` configuration
-   - Ensure MASM is enabled for assembly file compilation
+   - Set the CPP std to your target projects version (e.g., 17+)
+   - Make sure the build is set to `release` & `x64` configuration if not already
+   - Ensure MASM is enabled for assembly file compilation if not already
 
 3. **Run the BuildTools GUI**:
    ```bash
@@ -62,13 +64,35 @@ Bypassing traditional Windows API hooks, SysCaller enables stealthy and efficien
    - **Settings**: Configure syscall mode (Nt or Zw) and other options
 
 4. **Build the Library**:
+   - Make sure at the minimum you have ran the `Validation Check` in the PY BuildTools (recommended to run all integrity checks, obfuscation is optional)
    - Build the solution to generate `SysCaller.lib`
+
+### Option 2: CMake (For CPP 17+)
+
+1. **Update `CMakeLists.txt`**:
+    - It can be found in the `Wrapper` directory
+    - Open `CMakeLists.txt`
+    - Modify this line to match your project’s C++ version (17, 20, 23, etc.)
+
+    ```cmake
+    set(CMAKE_CXX_STANDARD 20) # Change this to your target standard
+    ```
+
+3. **Run CMake Build**:
+
+    ```bash
+    cd Wrapper
+    mkdir build && cd build
+    cmake .. -A x64
+    cmake --build . --config Release
+    ```
+
+4. **Result**:
+    - The `SysCaller.lib` static library will be generated in `Wrapper/build/Release`
 
 ### Integration
 
 To use SysCaller in your project: 
-
-**(Note: You can use `CPP 17+` in your projects integrated with SysCaller)**
 
 1. **Include the Library in your Project Settings**:
    - Add the SysCaller `Wrapper/include` directory to your project's include paths
