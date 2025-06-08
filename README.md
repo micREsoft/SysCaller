@@ -75,7 +75,7 @@ Bypassing traditional Windows API hooks, SysCaller enables stealthy and efficien
     - Modify this line to match your project’s C++ version (17, 20, 23, etc.)
 
     ```cmake
-    set(CMAKE_CXX_STANDARD 20) # Change this to your target standard
+    set(CMAKE_CXX_STANDARD #CHANGEME) # Change this to your target standard
     ```
 
 3. **Run CMake Build**:
