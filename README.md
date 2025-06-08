@@ -296,7 +296,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 - **Educational Purpose**: SysCaller is created for educational and research purposes.
 - **Legitimate Use**: While the library can be used to bypass certain security mechanisms, it is intended for legitimate security research, penetration testing, and software development.
-- **No Liability**: The author is not responsible for any misuse of this library or any actions taken with it.
+- **No Liability**: The author or any contributors are not responsible for any misuse of this library or any actions taken with it.
 - **Legal Compliance**: Users must ensure they comply with all applicable laws and regulations when using this software.
 
 ---
