@@ -48,7 +48,7 @@ def display_logo():
 
 def launch_gui():
     print(f"{Colors.OKBLUE}Launching SysCaller GUI...{Colors.ENDC}")
-    subprocess.Popen(['python', 'GUI/sysgui.py'])
+    subprocess.Popen(['python', 'GUI/syscaller.py'])
     sys.exit(0)
 
 if __name__ == "__main__":
