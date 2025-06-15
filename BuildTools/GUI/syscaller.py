@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout
                             QStyleFactory, QGraphicsDropShadowEffect, QToolButton, QLineEdit, QFileDialog, QGraphicsOpacityEffect)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, QSize, QTimer, QPropertyAnimation
 from PyQt5.QtGui import QFont, QColor, QIcon, QFontDatabase
-from BuildTools.GUI.settings import SysCallerSettings
+from settings import SysCallerSettings
 
 class WorkerThread(QThread):
     output = pyqtSignal(str)
