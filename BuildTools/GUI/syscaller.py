@@ -581,7 +581,7 @@ class SysCallerWindow(QMainWindow):
         self.status_bar.update_status("Running verification...", "working")
         self.progress_bar.setMaximum(0)
         self.output_text.clear()
-        script_path = os.path.join(os.path.dirname(__file__), '..', 'Verify', 'sysverify.py')
+        script_path = os.path.join(os.path.dirname(__file__), '..', 'Verify', 'verify.py')
         self.worker = WorkerThread(script_path, self.dll_path.text(), '--from-gui')
         self.worker.output.connect(self.update_output)
         self.worker.finished.connect(self.on_worker_finished)
