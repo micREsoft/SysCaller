@@ -51,7 +51,7 @@ class SysCallerWindow(QMainWindow):
     def run_validation(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_bar.update_status("Running validation...", "working")
+        self.status_bar.update_status("Running validation check...", "working")
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Validator', 'validator.py')
@@ -75,7 +75,7 @@ class SysCallerWindow(QMainWindow):
     def run_verification(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_bar.update_status("Running verification...", "working")
+        self.status_bar.update_status("Running verification check...", "working")
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Verify', 'verify.py')
@@ -87,7 +87,7 @@ class SysCallerWindow(QMainWindow):
     def run_obfuscation(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_bar.update_status("Running syscall obfuscation...", "working")
+        self.status_bar.update_status("Running syscaller obfuscation...", "working")
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
