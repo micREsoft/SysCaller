@@ -5,6 +5,7 @@ from encryptor import get_encryption_method, encrypt_offset
 from junkgen import generate_junk_instructions
 from namer import generate_random_name, generate_random_offset_name, generate_random_offset
 from stubgen import generate_masked_sequence, generate_chunked_sequence, generate_align_padding
+import stub_mapper
 
 try:
     from PyQt5.QtCore import QSettings
@@ -20,6 +21,19 @@ def extract_syscall_offset(line):
     return int(offset_part[:-1], 16)
 
 def generate_exports():
+    settings = QSettings('SysCaller', 'BuildTools')
+    syscall_settings = settings.value('stub_mapper/syscall_settings', {}, type=dict)
+    force_normal = settings.value('obfuscation/force_normal', False, type=bool)
+    force_stub_mapper = settings.value('obfuscation/force_stub_mapper', False, type=bool)
+    if force_stub_mapper or (syscall_settings and not force_normal):
+        try:
+            # DEBUG print("Using Stub Mapper obfuscation mode...")
+            stub_mapper.generate_custom_exports()
+            return
+        except Exception as e:
+            print(f"Warning: Error using stub_mapper: {e}")
+            print("Falling back to standard obfuscation.")
+    # DEBUG print("Using Normal obfuscation mode...")
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(script_dir))
     asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
@@ -32,10 +46,10 @@ def generate_exports():
     used_names = set()
     used_offsets = set()
     used_offset_names = set()
-    offset_name_map = {}  # maps fake offset to random name
-    syscall_map = {}  # maps original syscall to random name
-    syscall_offsets = {}  # maps original syscall to its offset
-    real_to_fake_offset = {}  # maps real offset to fake offset
+    offset_name_map = {}  # Maps fake offset to random name
+    syscall_map = {}  # Maps original syscall to random name
+    syscall_offsets = {}  # Maps original syscall to its offset
+    real_to_fake_offset = {}  # Maps real offset to fake offset
     syscall_stubs = []
     current_stub = []
     with open(asm_path, 'r') as f:
@@ -168,7 +182,7 @@ def generate_exports():
         if (
             'extern "C" NTSTATUS SC' in line or 
             'extern "C" ULONG SC' in line or
-            f'extern "C" NTSTATUS {syscall_prefix}' in line or
+            f'extern "C" NTSTATUS {syscall_prefix}' in line or 
             f'extern "C" ULONG {syscall_prefix}' in line
         ):
             match = re.search(rf'extern "C" (?:NTSTATUS|ULONG) ((?:SC|{syscall_prefix})\w+)\(', line)
