@@ -1,14 +1,15 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QStyleFactory
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QFontDatabase
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QStyleFactory, QMessageBox, QDialog
+from PyQt5.QtCore import Qt, QSettings
+from PyQt5.QtGui import QFont, QFontDatabase, QIcon
 from components.title_bar import TitleBar
 from components.left_panel import LeftPanel
 from components.right_panel import RightPanel
 from components.status_bar import StatusBar
 from threads.syscaller_thread import SysCallerThread
 from settings import SysCallerSettings
+from settings.stub_mapper.stub_mapper_dialog import StubMapperDialog
 
 class SysCallerWindow(QMainWindow):
     def __init__(self):
@@ -87,14 +88,77 @@ class SysCallerWindow(QMainWindow):
     def run_obfuscation(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_bar.update_status("Running syscaller obfuscation...", "working")
-        self.left_panel.progress_bar.setMaximum(0)
-        self.right_panel.output_text.clear()
-        script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
-        self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
-        self.worker.output.connect(self.update_output)
-        self.worker.finished.connect(self.on_worker_finished)
-        self.worker.start()
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("SysCaller")
+        msg_box.setText("Select an obfuscation method:")
+        msg_box.setIcon(QMessageBox.Question)
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                background-color: #2A2A2A;
+                color: #FFFFFF;
+                border-radius: 10px;
+            }
+            QLabel {
+                color: #FFFFFF;
+                font-family: 'IBM Plex Mono';
+                font-size: 11px;
+            }
+            QPushButton {
+                background-color: #0b5394;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 5px 15px;
+                font-family: 'IBM Plex Mono';
+                font-size: 10px;
+                font-weight: bold;
+                min-width: 100px;
+            }
+            QPushButton:hover {
+                background-color: #67abdb;
+            }
+            QPushButton:pressed {
+                background-color: #0A7AD1;
+            }
+        """)
+        normal_button = msg_box.addButton("Obfuscation", QMessageBox.ActionRole)
+        stub_mapper_button = msg_box.addButton("Stub Mapper", QMessageBox.ActionRole)
+        cancel_button = msg_box.addButton(QMessageBox.Cancel)
+        try:
+            obfuscate_icon = QIcon("GUI/icons/obfuscate.png")
+            msg_box.setWindowIcon(obfuscate_icon)
+        except:
+            pass
+        msg_box.exec_()
+        clicked_button = msg_box.clickedButton()
+        if clicked_button == normal_button:
+            self.status_bar.update_status("Running normal syscaller obfuscation...", "working")
+            self.left_panel.progress_bar.setMaximum(0)
+            self.right_panel.output_text.clear()
+            settings = QSettings('SysCaller', 'BuildTools')
+            settings.setValue('obfuscation/force_normal', True)
+            script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
+            self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
+            self.worker.output.connect(self.update_output)
+            self.worker.finished.connect(self.on_worker_finished)
+            self.worker.start()
+        elif clicked_button == stub_mapper_button:
+            self.status_bar.update_status("Opening Stub Mapper...", "info")
+            stub_mapper_dialog = StubMapperDialog(self)
+            result = stub_mapper_dialog.exec_()
+            if result == QDialog.Accepted:
+                self.status_bar.update_status("Running stub mapper obfuscation...", "working")
+                self.left_panel.progress_bar.setMaximum(0)
+                self.right_panel.output_text.clear()
+                settings = QSettings('SysCaller', 'BuildTools')
+                settings.setValue('obfuscation/force_stub_mapper', True)
+                script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
+                self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
+                self.worker.output.connect(self.update_output)
+                self.worker.finished.connect(self.on_worker_finished)
+                self.worker.start()
+            else:
+                self.status_bar.update_status("Ready", "idle")
 
     def update_output(self, text):
         self.right_panel.output_text.append(text)
@@ -111,6 +175,9 @@ class SysCallerWindow(QMainWindow):
     def on_worker_finished(self):
         self.left_panel.progress_bar.setRange(0, 1)
         self.left_panel.progress_bar.setValue(1)
+        settings = QSettings('SysCaller', 'BuildTools')
+        settings.remove('obfuscation/force_normal')
+        settings.remove('obfuscation/force_stub_mapper')
         self.worker = None
         if not self.status_bar.result_label.text():
             self.status_bar.update_status("Operation completed", "success")
@@ -136,6 +203,7 @@ class SysCallerWindow(QMainWindow):
 
     def show_settings(self):
         settings_dialog = SysCallerSettings(self)
+        self.last_settings_dialog = settings_dialog
         settings_dialog.exec_()
 
 def main():
