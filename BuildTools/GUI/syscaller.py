@@ -9,7 +9,7 @@ from components.right_panel import RightPanel
 from components.status_bar import StatusBar
 from threads.syscaller_thread import SysCallerThread
 from settings import SysCallerSettings
-from settings.stub_mapper.stub_mapper_dialog import StubMapperDialog
+from features.stub_mapper.stub_mapper_dialog import StubMapperDialog
 
 class SysCallerWindow(QMainWindow):
     def __init__(self):
@@ -210,7 +210,7 @@ def main():
     os.environ['QT_LOGGING_RULES'] = '*.debug=false;qt.qpa.*=false'
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create('Fusion'))
-    font_id = QFontDatabase.addApplicationFont("GUI/fonts/ibmplexmono.ttf")
+    font_id = QFontDatabase.addApplicationFont("GUI/res/fonts/ibmplexmono.ttf")
     if font_id != -1:
         font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
         app.setFont(QFont(font_family, 10))
