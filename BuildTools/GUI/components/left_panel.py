@@ -24,7 +24,7 @@ class LeftPanel(QFrame):
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(10)
         logo_image = QLabel()
-        logo_pixmap = QIcon("GUI/icons/syscaller.png").pixmap(QSize(64, 64))
+        logo_pixmap = QIcon("GUI/res/icons/syscaller.png").pixmap(QSize(64, 64))
         logo_image.setPixmap(logo_pixmap)
         logo_image.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo_image)
@@ -103,7 +103,7 @@ class LeftPanel(QFrame):
         layout.addSpacing(10)
         self.validate_btn = SysCallerButton(
             "Validation Check", 
-            "GUI/icons/validate.png",
+            "GUI/res/icons/validate.png",
             "Syscall Validation",
             "Analyzes and updates syscall offsets in syscaller.asm by comparing against ntdll.dll. <br><br>"
             "• Disassembles ntdll.dll exports to extract syscall IDs and ensures correct mapping <br>"
@@ -112,7 +112,7 @@ class LeftPanel(QFrame):
         layout.addWidget(self.validate_btn)
         self.compatibility_btn = SysCallerButton(
             "Compatibility Check", 
-            "GUI/icons/compat.png",
+            "GUI/res/icons/compat.png",
             "Syscall Compatibility",
             "Performs compatibility analysis of syscalls against ntdll.dll: <br><br>"
             "• Detects duplicate syscall names and offsets <br>"
@@ -123,7 +123,7 @@ class LeftPanel(QFrame):
         layout.addWidget(self.compatibility_btn)
         self.verify_btn = SysCallerButton(
             "Verification Check", 
-            "GUI/icons/verify.png",
+            "GUI/res/icons/verify.png",
             "Syscall Verification",
             "Performs comprehensive syscall verification: <br><br>"
             "• Validates return types (NTSTATUS, BOOL, HANDLE, etc.) <br>"
@@ -134,7 +134,7 @@ class LeftPanel(QFrame):
         layout.addWidget(self.verify_btn)
         self.obfuscate_btn = SysCallerButton(
             "Syscall Obfuscation", 
-            "GUI/icons/obfuscate.png",
+            "GUI/res/icons/obfuscate.png",
             "Syscall Obfuscation",
             "Obfuscates syscalls to enhance protection: <br><br>"
             "• Randomizes syscall names and offsets <br>"
@@ -145,7 +145,7 @@ class LeftPanel(QFrame):
         layout.addWidget(self.obfuscate_btn)
         self.settings_btn = SysCallerButton(
             "Settings",
-            "GUI/icons/settings.png",
+            "GUI/res/icons/settings.png",
             "SysCaller Settings",
             "Configure SysCaller settings"
         )
