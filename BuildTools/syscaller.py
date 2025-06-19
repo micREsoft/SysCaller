@@ -55,5 +55,4 @@ if __name__ == "__main__":
     os.system('cls' if os.name == 'nt' else 'clear')
     display_logo()
     print(f"{Colors.OKBLUE}=== SysCaller BuildTools ==={Colors.ENDC}")
-    print(f"{Colors.OKGREEN}Starting GUI...{Colors.ENDC}")
     launch_gui()
