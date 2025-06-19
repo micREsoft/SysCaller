@@ -1,11 +1,14 @@
 import random
 from PyQt5.QtCore import QSettings
 
-def generate_junk_instructions():
+def generate_junk_instructions(min_inst=None, max_inst=None, use_advanced=None):
     settings = QSettings('SysCaller', 'BuildTools')
-    min_inst = settings.value('obfuscation/min_instructions', 2, int)
-    max_inst = settings.value('obfuscation/max_instructions', 8, int)
-    use_advanced = settings.value('obfuscation/use_advanced_junk', False, bool)
+    if min_inst is None:
+        min_inst = settings.value('obfuscation/min_instructions', 2, int)
+    if max_inst is None:
+        max_inst = settings.value('obfuscation/max_instructions', 8, int)
+    if use_advanced is None:
+        use_advanced = settings.value('obfuscation/use_advanced_junk', False, bool)
     junk_instructions = [
         "    nop\n",
         "    xchg r8, r8\n",
