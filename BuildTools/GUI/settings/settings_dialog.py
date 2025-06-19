@@ -5,6 +5,7 @@ from PyQt5.QtCore import QSettings
 from .general_tab import GeneralTab
 from .obfuscation_tab import ObfuscationTab
 from .integrity_tab import IntegrityTab
+from .stub_mapper import StubMapperDialog
 
 class SysCallerSettings(QDialog):
     def __init__(self, parent=None):
@@ -99,10 +100,14 @@ class SysCallerSettings(QDialog):
         tabs.addTab(self.integrity_tab, "Integrity")
         layout.addWidget(tabs)
         button_layout = QHBoxLayout()
+        stub_mapper_btn = QPushButton("Stub Mapper")
+        stub_mapper_btn.setToolTip("Customize obfuscation settings for individual syscalls")
+        stub_mapper_btn.clicked.connect(self.open_stub_mapper)
         save_btn = QPushButton("Save")
         save_btn.clicked.connect(self.save_settings)
         cancel_btn = QPushButton("Cancel")
         cancel_btn.clicked.connect(self.reject)
+        button_layout.addWidget(stub_mapper_btn)
         button_layout.addStretch()
         button_layout.addWidget(save_btn)
         button_layout.addWidget(cancel_btn)
@@ -112,4 +117,8 @@ class SysCallerSettings(QDialog):
         self.general_tab.save_settings()
         self.obfuscation_tab.save_settings()
         self.integrity_tab.save_settings()
-        self.accept() 
+        self.accept()
+        
+    def open_stub_mapper(self):
+        dialog = StubMapperDialog(self)
+        dialog.exec_() 
