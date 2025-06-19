@@ -27,6 +27,9 @@ I welcome PRs and improvements for the following:
 - **Translations**  
   If you want to contribute to different translations for SysCaller outside of english I am all for it.
 
+- **Bindings**
+  If you know another language like Rust, GO, Python etc then making Bindings for SysCaller to work with other languages is totally possible! 
+
 ---
 
 ## What I'm *Not* Accepting (Yet)
