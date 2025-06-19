@@ -5,7 +5,7 @@ from PyQt5.QtCore import QSettings
 from .general_tab import GeneralTab
 from .obfuscation_tab import ObfuscationTab
 from .integrity_tab import IntegrityTab
-from .stub_mapper import StubMapperDialog
+from features.stub_mapper import StubMapperDialog
 
 class SysCallerSettings(QDialog):
     def __init__(self, parent=None):
