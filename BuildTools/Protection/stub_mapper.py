@@ -325,9 +325,7 @@ def generate_custom_exports():
     with open(header_path, 'w') as f:
         f.writelines(cleaned_header_content)
     print(f"Generated {len(syscall_map)} unique syscalls with custom obfuscation settings")
-    custom_count = len(syscall_settings)
-    if custom_count > 0:
-        print(f"Applied custom settings to {custom_count} syscalls")
+    print(f"Applied stub_mapper settings to syscalls")
 
 if __name__ == "__main__":
-    generate_custom_exports() 
+    generate_custom_exports()
