@@ -3,10 +3,10 @@ import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QStyleFactory, QMessageBox, QDialog
 from PyQt5.QtCore import Qt, QSettings
 from PyQt5.QtGui import QFont, QFontDatabase, QIcon
-from components.title_bar import TitleBar
-from components.left_panel import LeftPanel
-from components.right_panel import RightPanel
-from components.status_bar import StatusBar
+from components.bars.title_bar import TitleBar
+from components.panels.left_panel import LeftPanel
+from components.panels.right_panel import RightPanel
+from components.bars.status_bar import StatusBar
 from threads.syscaller_thread import SysCallerThread
 from settings import SysCallerSettings
 from features.stub_mapper.stub_mapper_dialog import StubMapperDialog
