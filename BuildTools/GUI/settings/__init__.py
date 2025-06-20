@@ -1,3 +1,3 @@
-from .settings_dialog import SysCallerSettings
+from .dialogs.settings_dialog import SysCallerSettings
 
 __all__ = ['SysCallerSettings'] 
