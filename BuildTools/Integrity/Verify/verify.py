@@ -91,7 +91,7 @@ class TypeDefinitionTracker:
         self.parse_header_files()
 
     def parse_header_files(self):
-        base_path = os.path.join(os.path.dirname(__file__), '..', '..')
+        base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..')
         header_files = {
             'constants': os.path.join(base_path, "Wrapper", "include", "Sys", "sysConstants.h"),
             'types': os.path.join(base_path, "Wrapper", "include", "Sys", "sysTypes.h"),
@@ -100,7 +100,7 @@ class TypeDefinitionTracker:
         for file_type, filepath in header_files.items():
             with open(filepath, 'r') as f:
                 content = f.read()
-            if file_type == 'constants':  # Parse #define constants
+            if file_type == 'constants':
                 defines = re.finditer(r'#define\s+(\w+)\s+(.+)', content)
                 for match in defines:
                     name = match.group(1)
@@ -109,7 +109,7 @@ class TypeDefinitionTracker:
                         'file': 'sysConstants.h',
                         'definition': f'#define {name} {value}'
                     }
-            comma_types = re.finditer(r'}\s*(\w+),\s*\*\s*(\w+);', content) # Parse types with comma-separated pointer definitions
+            comma_types = re.finditer(r'}\s*(\w+),\s*\*\s*(\w+);', content)
             for match in comma_types:
                 base_type = match.group(1)
                 ptr_type = match.group(2)
@@ -121,7 +121,7 @@ class TypeDefinitionTracker:
                     'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {base_type}* {ptr_type}'
                 }
-            ptr_types = re.finditer(r'typedef\s+(?:struct\s+)?(?:_)?(\w+)\s*\*\s*(\w+);', content) # Parse direct pointer typedefs
+            ptr_types = re.finditer(r'typedef\s+(?:struct\s+)?(?:_)?(\w+)\s*\*\s*(\w+);', content)
             for match in ptr_types:
                 base_type = match.group(1)
                 ptr_type = match.group(2)
@@ -129,7 +129,7 @@ class TypeDefinitionTracker:
                     'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {base_type}* {ptr_type}'
                 }
-            basic_types = re.finditer(r'typedef\s+(?:struct\s+)?(?:_)?(\w+)\s+(\w+);', content) # Parse basic types (typedef)
+            basic_types = re.finditer(r'typedef\s+(?:struct\s+)?(?:_)?(\w+)\s+(\w+);', content)
             for match in basic_types:
                 base_type = match.group(1)
                 new_type = match.group(2)
@@ -137,7 +137,7 @@ class TypeDefinitionTracker:
                     'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {base_type} {new_type}'
                 }
-            structs = re.finditer(r'typedef\s+struct\s+(?:_)?(\w+)\s*{[^}]+}\s*(\w+)\s*,\s*\*\s*(\w+);', content, re.DOTALL) # Parse struct definitions with pointer
+            structs = re.finditer(r'typedef\s+struct\s+(?:_)?(\w+)\s*{[^}]+}\s*(\w+)\s*,\s*\*\s*(\w+);', content, re.DOTALL)
             for match in structs:
                 struct_name = match.group(2)
                 ptr_name = match.group(3)
@@ -149,14 +149,14 @@ class TypeDefinitionTracker:
                     'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef {struct_name}* {ptr_name}'
                 }
-            enums = re.finditer(r'typedef\s+enum\s+(?:_)?(\w+)\s*{[^}]+}\s*(\w+);', content, re.DOTALL) # Parse enums
+            enums = re.finditer(r'typedef\s+enum\s+(?:_)?(\w+)\s*{[^}]+}\s*(\w+);', content, re.DOTALL)
             for match in enums:
                 enum_name = match.group(2)
                 self.type_definitions[enum_name] = {
                     'file': f'sys{file_type.capitalize()}.h',
                     'definition': match.group(0)
                 }
-            func_ptrs = re.finditer(r'typedef\s+\w+\s*\(\s*\w+\s*\*\s*(\w+)\s*\)\s*\([^)]*\)', content) # Parse function pointer types
+            func_ptrs = re.finditer(r'typedef\s+\w+\s*\(\s*\w+\s*\*\s*(\w+)\s*\)\s*\([^)]*\)', content)
             for match in func_ptrs:
                 type_name = match.group(1)
                 self.type_definitions[type_name] = {
@@ -174,7 +174,7 @@ class TypeDefinitionTracker:
                     'file': 'sysTypes.h',
                     'definition': f'typedef base {type_name}'
                 }
-            const_ptr_types = re.finditer(r'typedef\s+const\s+(\w+)\s*\*\s*(\w+);', content) # Pattern for const pointer typedefs
+            const_ptr_types = re.finditer(r'typedef\s+const\s+(\w+)\s*\*\s*(\w+);', content)
             for match in const_ptr_types:
                 base_type = match.group(1)
                 new_type = match.group(2)
@@ -196,7 +196,6 @@ class TypeDefinitionTracker:
                         'file': f'sys{file_type.capitalize()}.h',
                         'definition': f'typedef {new_type}* {ptr_type}'
                     }
-            # WNF_CHANGE_STAMP explicitly
             if 'WNF_CHANGE_STAMP' not in self.type_definitions:
                 self.type_definitions['WNF_CHANGE_STAMP'] = {
                     'file': 'sysExternals.h',
@@ -210,10 +209,10 @@ class TypeDefinitionTracker:
                 'file': 'Windows SDK',
                 'definition': f'typedef external {type_name}'
             }
-        if type_name.startswith('const '): # Handle const types
+        if type_name.startswith('const '):
             type_name = type_name.replace('const ', '')
             type_name = type_name.strip()
-        if ' *' in type_name: # Handle pointer with space (ULONG64 * -> ULONG64*)
+        if ' *' in type_name:
             type_name = type_name.replace(' *', '*')
             base_type = type_name[:-1]
             ptr_type = 'P' + base_type
@@ -254,7 +253,7 @@ class SyscallVerification:
         self.type_tracker = TypeDefinitionTracker()
 
     def parse_syscall_definitions(self):
-        base_path = os.path.join(os.path.dirname(__file__), '..', '..')
+        base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..')
         try:
             from PyQt5.QtCore import QSettings
             settings = QSettings('SysCaller', 'BuildTools')
@@ -268,22 +267,22 @@ class SyscallVerification:
             content = f.read()
         pattern = rf'extern\s*"C"\s*((?:NTSTATUS|ULONG))\s+((?:SC|{syscall_prefix})\w+)\s*\(([\s\S]*?)\)\s*;'
         matches = re.finditer(pattern, content, re.DOTALL)
-        offsets = self.parse_syscall_offsets(asm_path) # Get syscall offsets from ASM file
+        offsets = self.parse_syscall_offsets(asm_path)
         for match in matches:
             return_type = match.group(1)
             name = match.group(2)
             if name.startswith("SC"):
                 name = syscall_prefix + name[2:]
             params_str = match.group(3).strip()
-            params = [] # Parse parameters
+            params = []
             if params_str and params_str.upper() != 'VOID':
                 param_list = params_str.split(',')
                 for param in param_list:
                     param = param.strip()
-                    param = re.sub(r'//.*$', '', param)  # Remove // comments
-                    param = re.sub(r'/\*.*?\*/', '', param)  # Remove /* */ comments
+                    param = re.sub(r'//.*$', '', param)
+                    param = re.sub(r'/\*.*?\*/', '', param)
                     param = param.strip()
-                    if not param: # Skip empty parameters after comment removal
+                    if not param:
                         continue
                     if 'OPTIONAL' in param:
                         param_type = param.replace('OPTIONAL', '').strip()
@@ -295,16 +294,16 @@ class SyscallVerification:
                         param_parts = param_type.split()
                         if len(param_parts) > 0:
                             param_name = param_parts[-1]
-                            param_type = ' '.join(param_parts[:-1]) # Join all parts except the last one for the type
-                            param_type = param_type.split('//')[0].strip() # Remove any remaining comment indicators
+                            param_type = ' '.join(param_parts[:-1])
+                            param_type = param_type.split('//')[0].strip()
                             param_type = param_type.split('/*')[0].strip()
-                            if param_type:  # Only add if we have a valid type
+                            if param_type:
                                 params.append({
                                     'type': param_type,
                                     'name': param_name,
                                     'optional': is_optional
                                 })
-            offset = offsets.get(name, "Unknown") # Get offset from ASM definitions
+            offset = offsets.get(name, "Unknown")
             self.syscalls[name] = SyscallDefinition(
                 name=name,
                 return_type=return_type,
@@ -341,20 +340,20 @@ class SyscallVerification:
             'return_type': syscall.return_type,
             'parameter_count': len(syscall.parameters),
             'errors': [],
-            'type_definitions': []  # Track where types are defined
+            'type_definitions': []
         }
-        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'} # Verify return type
+        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'}
         if syscall.return_type not in valid_return_types:
             result['errors'].append(f"Unexpected return type: {syscall.return_type}")
         for param in syscall.parameters: 
             if not self.validate_parameter_type(param['type']):
                 result['errors'].append(f"Invalid parameter type: {param['type']}")
-        offset = syscall.offset.lower().replace('h', '') # Validate syscall offset format and range
+        offset = syscall.offset.lower().replace('h', '')
         try:
             offset_value = int(offset, 16)
             if offset_value > 0x0200:
                 result['errors'].append(f"Suspicious syscall offset: 0x{offset} (expected range: 0x0000-0x0200)")
-            expected_offset = self.get_offset_from_dll(syscall.name) # Get expected offset from ntdll
+            expected_offset = self.get_offset_from_dll(syscall.name)
             if expected_offset and expected_offset != offset_value:
                 result['errors'].append(
                     f"Offset mismatch: got 0x{offset}, expected 0x{expected_offset:X}"
@@ -363,7 +362,7 @@ class SyscallVerification:
             result['errors'].append(f"Invalid syscall offset format: {syscall.offset}")
         for param in syscall.parameters:
             param_type = param['type']
-            type_info = self.type_tracker.check_type(param_type) # Check parameter type definitions
+            type_info = self.type_tracker.check_type(param_type)
             if not type_info:
                 result['errors'].append(
                     f"Type '{param_type}' not found in header files"
@@ -585,16 +584,16 @@ class SyscallVerification:
         param_type = param_type.strip()
         if not param_type: 
             return False
-        if param_type.startswith('const '): # Handle const types
+        if param_type.startswith('const '):
             param_type = param_type[6:]
-        if param_type.endswith('*'): # Handle pointer types
+        if param_type.endswith('*'):
             base_type = param_type[:-1].strip()
             pointer_type = 'P' + base_type
             return (base_type in valid_types or pointer_type in valid_types or
                     any(valid_type in base_type for valid_type in valid_types))
-        if '[' in param_type: # Handle array types
+        if '[' in param_type:
             param_type = param_type[:param_type.index('[')].strip()
-        if param_type.startswith('LP'): # Handle LP prefix (Long Pointer)
+        if param_type.startswith('LP'):
             alt_type = 'P' + param_type[2:]
             return (param_type in valid_types or alt_type in valid_types or
                     any(valid_type in param_type for valid_type in valid_types))

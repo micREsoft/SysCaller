@@ -12,7 +12,7 @@ except ImportError:
             return default
 
 def update_syscalls(asm_file, syscall_numbers):
-    asm_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'src', 'syscaller.asm')
+    asm_file_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'src', 'syscaller.asm')
     with open(asm_file_path, 'r') as file:
         lines = file.readlines()
     updated_lines = []
@@ -63,9 +63,7 @@ def update_syscalls(asm_file, syscall_numbers):
             else:
                 expected_dll_name = "Zw" + base_name
                 expected_alt_name = "Nt" + base_name
-                
             syscall_id = syscall_numbers.get(expected_dll_name, syscall_numbers.get(expected_alt_name, None))
-            
             if syscall_id is not None:
                 updated_lines.append(line.replace("<syscall_id>", f"0{syscall_id:X}"))
             else:
@@ -92,13 +90,14 @@ def update_syscalls(asm_file, syscall_numbers):
     print(f"Updated syscalls written to {asm_file}")
 
 def update_header_file(selected_syscalls, use_all_syscalls):
-    header_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+    header_file_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
     with open(header_file_path, 'r') as file:
         lines = file.readlines()
     updated_lines = []
     skip_block = False
     header_part_ended = False
     ending_lines = []
+    
     settings = QSettings('SysCaller', 'BuildTools')
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
@@ -205,7 +204,7 @@ def get_syscalls(dll_path):
     return syscall_numbers
 
 if __name__ == "__main__":
-    asm_file = os.path.join(os.path.dirname(__file__), '..', '..', 'Wrapper', 'src', 'syscaller.asm')
+    asm_file = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'src', 'syscaller.asm')
     dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
     syscall_numbers = get_syscalls(dll_path)
     update_syscalls(asm_file, syscall_numbers)
