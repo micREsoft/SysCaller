@@ -1,10 +1,10 @@
-from .button import SysCallerButton
-from .output import SysCallerOutput
-from .progress_bar import SysCallerProgressBar
-from .status_bar import StatusBar
-from .title_bar import TitleBar
-from .left_panel import LeftPanel
-from .right_panel import RightPanel
+from .buttons.button import SysCallerButton
+from .panels.output import SysCallerOutput
+from .bars.progress_bar import SysCallerProgressBar
+from .bars.status_bar import StatusBar
+from .bars.title_bar import TitleBar
+from .panels.left_panel import LeftPanel
+from .panels.right_panel import RightPanel
 
 __all__ = [
     'SysCallerButton',
@@ -14,4 +14,4 @@ __all__ = [
     'TitleBar',
     'LeftPanel',
     'RightPanel'
-]
+] 
