@@ -15,10 +15,10 @@
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
   <a href="#documentation">Documentation</a> •
-  <a href="Considerations">Considerations</a> •
-  <a href="Contributing">Contributing</a> •
+  <a href="#considerations">Considerations</a> •
+  <a href="#contributing">Contributing</a> •
   <a href="#license">License</a> •
-  <a href="Disclaimer">Disclaimer</a>
+  <a href="#disclaimer">Disclaimer</a>
 </p>
 
 ## Key Features
@@ -169,7 +169,7 @@ bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data,
 The SysCaller GUI provides additional tools for working with syscalls:
 
 - **Stub Mapper**: Create custom syscall mappings using predefined techniques to enhance obfuscation
-- **Stub Craft**: Design and validate custom syscall stubs maunally (WIP)
+- **Stub Craft**: Design and validate custom syscall stubs manually (WIP)
 - **Settings**: Configure global syscall behavior and protection options
 
 ## Documentation
@@ -192,7 +192,7 @@ The full API documentation is available in the header files:
 
 ## Considerations
 
-SysCaller is designed for educational and legitimate security purposes. When using this library:
+SysCaller is intended for educational and legitimate security research. When using this library:
 
 - Ensure proper error handling for all syscalls
 - Be aware that direct syscalls may bypass security mechanisms
