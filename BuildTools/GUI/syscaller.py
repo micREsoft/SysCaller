@@ -15,7 +15,7 @@ from settings.utils import get_project_paths, generate_stub_hashes, save_stub_ha
 class SysCallerWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SysCaller")
+        self.setWindowTitle("SysCaller v1.1.0")
         self.setMinimumSize(1400, 900)
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -90,7 +90,7 @@ class SysCallerWindow(QMainWindow):
         if self.worker is not None and self.worker.isRunning():
             return
         msg_box = QMessageBox(self)
-        msg_box.setWindowTitle("SysCaller")
+        msg_box.setWindowTitle("SysCaller - Obfuscation Selector")
         msg_box.setText("Select an obfuscation method:")
         msg_box.setIcon(QMessageBox.Question)
         msg_box.setStyleSheet("""
