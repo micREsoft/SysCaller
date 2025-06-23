@@ -1,5 +1,5 @@
 # SysCaller SDK | Roadmap  
-_Last updated: 6/19/25 by Maintainer_
+_Last updated: 6/23/25 by Maintainer_
 
 ---
 
@@ -14,24 +14,21 @@ _Last updated: 6/19/25 by Maintainer_
 - [ ] **Comprehensive README & Docs**  
   Finalize usage documentation, internal flow explanations, and examples.
 
+- [ ] **Global Profile System**  
+  Allow saving/loading build profiles (.json/.ini) for reuse and automation.
+
+- [ ] **Enhance GUI**  
+  More consistent layout, better tooltips, real time logging panel, and easier navigation.
+
 ---
 
 ## Feature Enhancements
 
-- [ ] **Global Profile System**  
-  Allow saving/loading build profiles (.json/.ini) for reuse and automation.
-
 - [ ] **Add More Obfuscation/Encryption Techniques**  
   Junk logic, encryption layers, stub layout shuffling, sig disorientation.
 
-- [ ] **Add Hashes for Stub Integrity**  
-  Optionally tag each stub or full build with unique hash for future lookups.
-
 - [ ] **Support Debug Mode**  
-  Support debug mode for VS alongside release mode
-
-- [ ] **Enhance GUI**  
-  More consistent layout, better tooltips, real time logging panel, and easier navigation.
+  Support debug mode for VS alongside release mode + debug mode in BuildTools
 
 ---
 
@@ -64,11 +61,13 @@ _Last updated: 6/19/25 by Maintainer_
 
 ## Completed ✓
 
+- ✓ **Initial Public Release**
 - ✓ **GUI Tooling (PyQt)**
 - ✓ **Validation / Compatibility / Verification Checks**
 - ✓ **Dynamic Obfuscation Engine**
 - ✓ **Stub Mapper**
 - ✓ **CMake Build Script**
 - ✓ **Modularize BuildTools & Wrapper**
-- ✓ **Initial Public Release**
 - ✓ **Added Backup/Restore Function**
+- ✓ **Added Hashes for Stub Integrity**
+- ✓ **Added Hash Comparison for Stub Hashes**
