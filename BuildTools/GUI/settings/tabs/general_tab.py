@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
 from settings.utils import format_timestamp, get_project_paths, create_backup, get_available_backups
+from features.hash_compare import HashCompareDialog
 
 def is_file_locked(file_path):
     if not os.path.exists(file_path):
@@ -59,6 +60,10 @@ class GeneralTab(QWidget):
         description = QLabel("Optionally hash each stub/build with unique hash for future lookups.")
         description.setWordWrap(True)
         hash_stubs_layout.addWidget(description)
+        hash_compare_btn = QPushButton("Hash Compare")
+        hash_compare_btn.setToolTip("Compare hash files from different builds to identify changes")
+        hash_compare_btn.clicked.connect(self.open_hash_compare)
+        hash_stubs_layout.addWidget(hash_compare_btn)
         self.hash_stubs = QCheckBox("Enable Hash Stubs")
         self.hash_stubs.setChecked(self.settings.value('general/hash_stubs', False, bool))
         self.hash_stubs.setToolTip("If checked, will generate hashes for all stubs after obfuscation and save them to a JSON file in the Backups directory")
@@ -352,4 +357,8 @@ class GeneralTab(QWidget):
         except Exception as e:
             import traceback
             traceback.print_exc()
-            QMessageBox.critical(self, "Error", f"An error occurred while restoring backup files: {str(e)}") 
+            QMessageBox.critical(self, "Error", f"An error occurred while restoring backup files: {str(e)}")
+    
+    def open_hash_compare(self):
+        dialog = HashCompareDialog(self)
+        dialog.exec_() 
