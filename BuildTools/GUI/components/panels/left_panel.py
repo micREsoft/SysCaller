@@ -24,7 +24,7 @@ class LeftPanel(QFrame):
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSpacing(10)
         logo_image = QLabel()
-        logo_pixmap = QIcon("GUI/res/icons/syscaller.png").pixmap(QSize(64, 64))
+        logo_pixmap = QIcon("GUI/res/icons/syscaller.png").pixmap(QSize(128, 128))
         logo_image.setPixmap(logo_pixmap)
         logo_image.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo_image)
