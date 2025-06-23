@@ -1,7 +1,11 @@
 import os
 import re
 import shutil
+import json
+import hashlib
+from datetime import datetime
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtCore import QSettings
 
 def format_timestamp(timestamp):
     try:
@@ -23,6 +27,7 @@ def get_project_paths():
     buildtools_dir = os.path.dirname(gui_dir)
     project_root = os.path.dirname(buildtools_dir)
     backups_dir = os.path.join(project_root, 'Backups')
+    hash_backups_dir = os.path.join(project_root, 'Backups', 'Hashes')
     default_dir = os.path.join(buildtools_dir, 'Default')
     asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
     header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
@@ -30,6 +35,7 @@ def get_project_paths():
     # DEBUG print(f"  Project root: {project_root}")
     # DEBUG print(f"  BuildTools dir: {buildtools_dir}")
     # DEBUG print(f"  Backups dir: {backups_dir}")
+    # DEBUG print(f"  Hash backups dir: {hash_backups_dir}")
     # DEBUG print(f"  Default dir: {default_dir}")
     # DEBUG print(f"  ASM path: {asm_path}")
     # DEBUG print(f"  Header path: {header_path}")
@@ -37,6 +43,7 @@ def get_project_paths():
         'project_root': project_root,
         'buildtools_dir': buildtools_dir,
         'backups_dir': backups_dir,
+        'hash_backups_dir': hash_backups_dir,
         'default_dir': default_dir,
         'asm_path': asm_path,
         'header_path': header_path
@@ -106,3 +113,144 @@ def get_available_backups():
                       if 'asm' in files and 'header' in files}
     # DEBUG print(f"Found {len(complete_backups)} complete backup sets")
     return complete_backups 
+
+def generate_stub_hashes(asm_file_path, header_file_path=None, obfuscation_method=None):
+    try:
+        from PyQt5.QtCore import QSettings
+        settings = QSettings('SysCaller', 'BuildTools')
+        using_stub_mapper = False
+        if obfuscation_method:
+            using_stub_mapper = (obfuscation_method == 'stub_mapper')
+        else:
+            force_stub_mapper = settings.value('obfuscation/force_stub_mapper', False, bool)
+            force_normal = settings.value('obfuscation/force_normal', False, bool)
+            syscall_settings = settings.value('stub_mapper/syscall_settings', {}, type=dict)
+            using_stub_mapper = force_stub_mapper or (bool(syscall_settings) and not force_normal)
+        syscall_settings = settings.value('stub_mapper/syscall_settings', {}, type=dict)
+        if using_stub_mapper and syscall_settings:
+            config = {
+                "obfuscation_method": "Stub Mapper",
+                "global_settings": {
+                    "junk_instructions": {
+                        "min": settings.value('obfuscation/min_instructions', 2, int),
+                        "max": settings.value('obfuscation/max_instructions', 8, int),
+                        "advanced": settings.value('obfuscation/use_advanced_junk', False, bool)
+                    },
+                    "name_randomization": {
+                        "prefix_length": settings.value('obfuscation/syscall_prefix_length', 8, int),
+                        "number_length": settings.value('obfuscation/syscall_number_length', 6, int),
+                        "offset_length": settings.value('obfuscation/offset_name_length', 8, int)
+                    },
+                    "sequence_shuffling": settings.value('obfuscation/shuffle_sequence', True, bool),
+                    "encryption": {
+                        "enabled": settings.value('obfuscation/enable_encryption', True, bool),
+                        "method": settings.value('obfuscation/encryption_method', 1, int)
+                    },
+                    "function_chunking": settings.value('obfuscation/enable_chunking', True, bool),
+                    "interleaved_execution": settings.value('obfuscation/enable_interleaved', True, bool)
+                },
+                "syscall_specific_settings": {}
+            }
+            for syscall_name, custom_settings in syscall_settings.items():
+                config["syscall_specific_settings"][syscall_name] = custom_settings
+        else:
+            config = {
+                "obfuscation_method": "Normal",
+                "junk_instructions": {
+                    "min": settings.value('obfuscation/min_instructions', 2, int),
+                    "max": settings.value('obfuscation/max_instructions', 8, int),
+                    "advanced": settings.value('obfuscation/use_advanced_junk', False, bool)
+                },
+                "name_randomization": {
+                    "prefix_length": settings.value('obfuscation/syscall_prefix_length', 8, int),
+                    "number_length": settings.value('obfuscation/syscall_number_length', 6, int),
+                    "offset_length": settings.value('obfuscation/offset_name_length', 8, int)
+                },
+                "sequence_shuffling": settings.value('obfuscation/shuffle_sequence', True, bool),
+                "encryption": {
+                    "enabled": settings.value('obfuscation/enable_encryption', True, bool),
+                    "method": settings.value('obfuscation/encryption_method', 1, int)
+                },
+                "function_chunking": settings.value('obfuscation/enable_chunking', True, bool),
+                "interleaved_execution": settings.value('obfuscation/enable_interleaved', True, bool)
+            }
+        stub_hashes = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "config": config,
+            "stubs": {}
+        }
+        if os.path.exists(asm_file_path):
+            with open(asm_file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                asm_content = f.read()
+            alias_pattern = re.compile(r'ALIAS\s+<(Sys[A-Za-z0-9_]+)>\s*=\s*<([A-Za-z0-9_]+)>', re.IGNORECASE)
+            aliases = alias_pattern.findall(asm_content)
+            obfuscated_to_syscall = {obfuscated: syscall for syscall, obfuscated in aliases}
+            proc_pattern = re.compile(r'([A-Za-z0-9_]+)\s+PROC', re.IGNORECASE)
+            procs = proc_pattern.findall(asm_content)
+            for proc_name in procs:
+                if proc_name not in obfuscated_to_syscall:
+                    continue
+                syscall_name = obfuscated_to_syscall[proc_name]
+                stub_start_pattern = re.compile(f"{proc_name}\\s+PROC.*?\\n", re.IGNORECASE)
+                stub_end_pattern = re.compile(f"{proc_name}\\s+ENDP", re.IGNORECASE)
+                start_match = stub_start_pattern.search(asm_content)
+                end_match = stub_end_pattern.search(asm_content)
+                if start_match and end_match:
+                    stub_code = asm_content[start_match.start():end_match.end()]
+                    md5_hash = hashlib.md5(stub_code.encode('utf-8')).hexdigest()
+                    sha256_hash = hashlib.sha256(stub_code.encode('utf-8')).hexdigest()
+                    stub_hashes["stubs"][syscall_name] = {
+                        "md5": md5_hash,
+                        "sha256": sha256_hash,
+                        "size": len(stub_code),
+                        "obfuscated_name": proc_name
+                    }
+                    if using_stub_mapper and syscall_name in syscall_settings:
+                        stub_hashes["stubs"][syscall_name]["custom_config"] = syscall_settings[syscall_name]
+        if header_file_path and os.path.exists(header_file_path):
+            with open(header_file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                header_content = f.read()
+            func_pattern = re.compile(r'EXTERN_C\s+(?:__kernel_entry\s+)?(?:NTSYSCALLAPI\s+)?(?:NTSTATUS|BOOL|VOID|HANDLE|PVOID|ULONG|.*?)\s+(?:NTAPI|WINAPI)?\s*(Sys[A-Za-z0-9_]+)\s*\(([^;]*)\);', re.IGNORECASE)
+            funcs = func_pattern.findall(header_content)
+            for name, params in funcs:
+                if name in stub_hashes["stubs"]:
+                    stub_hashes["stubs"][name]["header_hash"] = hashlib.sha256(params.encode('utf-8')).hexdigest()
+                    stub_hashes["stubs"][name]["params"] = params.strip()
+        return stub_hashes
+    except Exception as e:
+        print(f"Error generating stub hashes: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
+
+def save_stub_hashes(stub_hashes, timestamp=None):
+    try:
+        paths = get_project_paths()
+        hash_backups_dir = paths['hash_backups_dir']
+        if not os.path.exists(hash_backups_dir):
+            os.makedirs(hash_backups_dir)
+        if timestamp is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        json_path = os.path.join(hash_backups_dir, f'stub_hashes_{timestamp}.json')
+        formatted_output = {
+            "timestamp": stub_hashes["timestamp"],
+            "config": stub_hashes["config"],
+            "stubs": {}
+        }
+        for syscall_name, hash_data in stub_hashes["stubs"].items():
+            formatted_output["stubs"][syscall_name] = f"MD5: {hash_data['md5']} SHA-256: {hash_data['sha256']}"
+        all_hashes = []
+        for syscall_name, hash_data in sorted(stub_hashes["stubs"].items()):
+            all_hashes.append(f"{syscall_name}:{hash_data['md5']}:{hash_data['sha256']}")
+        build_id_input = ":".join(all_hashes) + str(stub_hashes["config"])
+        build_id = hashlib.sha256(build_id_input.encode('utf-8')).hexdigest()
+        formatted_output["build_id"] = build_id
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(formatted_output, f, indent=2)
+        # DEBUG print(f"Stub Hashes saved to: {json_path}")
+        return True, json_path
+    except Exception as e:
+        print(f"Error saving stub hashes: {e}")
+        import traceback
+        traceback.print_exc()
+        return False, str(e) 
