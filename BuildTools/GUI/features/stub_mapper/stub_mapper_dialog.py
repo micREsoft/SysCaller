@@ -11,7 +11,7 @@ from .validator import validate_stub_settings, show_validation_error
 class StubMapperDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Syscall Stub Mapper")
+        self.setWindowTitle("SysCaller - Stub Mapper")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
         self.settings = QSettings('SysCaller', 'BuildTools')
