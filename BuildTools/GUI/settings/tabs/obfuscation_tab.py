@@ -68,8 +68,8 @@ class ObfuscationTab(QWidget):
         self.encryption_method.addItem("Basic XOR (Simple)", 1)
         self.encryption_method.addItem("Multi-key XOR (Medium)", 2)
         self.encryption_method.addItem("Add + XOR (Medium)", 3)
-        self.encryption_method.addItem("Enhanced XOR (Strong)", 4)
-        self.encryption_method.addItem("Offset Shifting (Strong)", 5)
+        self.encryption_method.addItem("Enhanced XOR (Medium)", 4)
+        self.encryption_method.addItem("Offset Shifting (Medium)", 5)
         current_method = self.settings.value('obfuscation/encryption_method', 1, int)
         index = self.encryption_method.findData(current_method)
         if index >= 0:
@@ -108,4 +108,4 @@ class ObfuscationTab(QWidget):
         encryption_method = self.encryption_method.currentData()
         self.settings.setValue('obfuscation/encryption_method', encryption_method)
         self.settings.setValue('obfuscation/enable_chunking', self.enable_chunking.isChecked())
-        self.settings.setValue('obfuscation/enable_interleaved', self.enable_interleaved.isChecked()) 
+        self.settings.setValue('obfuscation/enable_interleaved', self.enable_interleaved.isChecked())
