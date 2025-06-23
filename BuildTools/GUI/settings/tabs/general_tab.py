@@ -54,6 +54,17 @@ class GeneralTab(QWidget):
         syscall_mode_layout.addWidget(self.zw_mode_radio)
         syscall_mode_group.setLayout(syscall_mode_layout)
         layout.addWidget(syscall_mode_group)
+        hash_stubs_group = QGroupBox("Hash Stubs")
+        hash_stubs_layout = QVBoxLayout()
+        description = QLabel("Optionally hash each stub/build with unique hash for future lookups.")
+        description.setWordWrap(True)
+        hash_stubs_layout.addWidget(description)
+        self.hash_stubs = QCheckBox("Enable Hash Stubs")
+        self.hash_stubs.setChecked(self.settings.value('general/hash_stubs', False, bool))
+        self.hash_stubs.setToolTip("If checked, will generate hashes for all stubs after obfuscation and save them to a JSON file in the Backups directory")
+        hash_stubs_layout.addWidget(self.hash_stubs)
+        hash_stubs_group.setLayout(hash_stubs_layout)
+        layout.addWidget(hash_stubs_group)
         reset_group = QGroupBox("Reset to Default/Backup")
         reset_layout = QVBoxLayout()
         description = QLabel("Reset Syscaller to it's default state or restore from a backup. This will revert any changes made by obfuscation or manual editing.")
@@ -74,6 +85,7 @@ class GeneralTab(QWidget):
         
     def save_settings(self):
         self.settings.setValue('general/create_backup', self.create_backup.isChecked())
+        self.settings.setValue('general/hash_stubs', self.hash_stubs.isChecked())
         if self.zw_mode_radio.isChecked():
             self.settings.setValue('general/syscall_mode', 'Zw')
         else:
@@ -206,7 +218,7 @@ class GeneralTab(QWidget):
                 elif not os.access(asm_path, os.W_OK):
                     print(f"WARNING: ASM file exists but is not writable: {asm_path}")
                     try:
-                        os.chmod(asm_path, 0o666)  # Make writable
+                        os.chmod(asm_path, 0o666)
                         print(f"Changed permissions on ASM file to make it writable")
                     except Exception as e:
                         print(f"Failed to change permissions: {e}")
@@ -218,7 +230,7 @@ class GeneralTab(QWidget):
                 elif not os.access(header_path, os.W_OK):
                     print(f"WARNING: Header file exists but is not writable: {header_path}")
                     try:
-                        os.chmod(header_path, 0o666)  # Make writable
+                        os.chmod(header_path, 0o666)
                         print(f"Changed permissions on header file to make it writable")
                     except Exception as e:
                         print(f"Failed to change permissions: {e}")
