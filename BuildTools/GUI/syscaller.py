@@ -10,6 +10,7 @@ from components.bars.status_bar import StatusBar
 from threads.syscaller_thread import SysCallerThread
 from settings import SysCallerSettings
 from features.stub_mapper.stub_mapper_dialog import StubMapperDialog
+from settings.utils import get_project_paths, generate_stub_hashes, save_stub_hashes
 
 class SysCallerWindow(QMainWindow):
     def __init__(self):
@@ -52,7 +53,7 @@ class SysCallerWindow(QMainWindow):
     def run_validation(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_bar.update_status("Running validation check...", "working")
+        self.status_bar.update_status("Running Validation Check...", "working")
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Integrity', 'Validator', 'validator.py')
@@ -64,7 +65,7 @@ class SysCallerWindow(QMainWindow):
     def run_compatibility(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_bar.update_status("Running compatibility check...", "working")
+        self.status_bar.update_status("Running Compatibility Check...", "working")
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Integrity', 'Compatibility', 'compatibility.py')
@@ -76,7 +77,7 @@ class SysCallerWindow(QMainWindow):
     def run_verification(self):
         if self.worker is not None and self.worker.isRunning():
             return
-        self.status_bar.update_status("Running verification check...", "working")
+        self.status_bar.update_status("Running Verification Check...", "working")
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Integrity', 'Verify', 'verify.py')
@@ -132,11 +133,13 @@ class SysCallerWindow(QMainWindow):
         msg_box.exec_()
         clicked_button = msg_box.clickedButton()
         if clicked_button == normal_button:
-            self.status_bar.update_status("Running normal syscaller obfuscation...", "working")
+            self.status_bar.update_status("Running Normal SysCaller Obfuscation...", "working")
             self.left_panel.progress_bar.setMaximum(0)
             self.right_panel.output_text.clear()
             settings = QSettings('SysCaller', 'BuildTools')
             settings.setValue('obfuscation/force_normal', True)
+            settings.setValue('obfuscation/force_stub_mapper', False)
+            settings.setValue('obfuscation/last_method', 'normal')
             script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
             self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
             self.worker.output.connect(self.update_output)
@@ -147,11 +150,13 @@ class SysCallerWindow(QMainWindow):
             stub_mapper_dialog = StubMapperDialog(self)
             result = stub_mapper_dialog.exec_()
             if result == QDialog.Accepted:
-                self.status_bar.update_status("Running stub mapper obfuscation...", "working")
+                self.status_bar.update_status("Running Stub Mapper Obfuscation...", "working")
                 self.left_panel.progress_bar.setMaximum(0)
                 self.right_panel.output_text.clear()
                 settings = QSettings('SysCaller', 'BuildTools')
+                settings.setValue('obfuscation/force_normal', False)
                 settings.setValue('obfuscation/force_stub_mapper', True)
+                settings.setValue('obfuscation/last_method', 'stub_mapper')
                 script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
                 self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
                 self.worker.output.connect(self.update_output)
@@ -176,8 +181,30 @@ class SysCallerWindow(QMainWindow):
         self.left_panel.progress_bar.setRange(0, 1)
         self.left_panel.progress_bar.setValue(1)
         settings = QSettings('SysCaller', 'BuildTools')
+        last_method = settings.value('obfuscation/last_method', '', str)
         settings.remove('obfuscation/force_normal')
         settings.remove('obfuscation/force_stub_mapper')
+        if settings.value('general/hash_stubs', False, bool) and self.worker and hasattr(self.worker, 'script_path'):
+            script_path = self.worker.script_path
+            if 'protection.py' in script_path:
+                obfuscation_type = "Stub Mapper" if last_method == 'stub_mapper' else "Normal"
+                self.status_bar.update_status(f"Generating Stub Hashes for {obfuscation_type} Obfuscation...", "working")
+                try:
+                    paths = get_project_paths()
+                    asm_path = paths['asm_path']
+                    header_path = paths['header_path']
+                    stub_hashes = generate_stub_hashes(asm_path, header_path, last_method)
+                    timestamp = None
+                    if hasattr(self.worker, 'start_time'):
+                        timestamp = self.worker.start_time.strftime("%Y%m%d_%H%M%S")
+                    success, result = save_stub_hashes(stub_hashes, timestamp)
+                    if success:
+                        self.right_panel.output_text.append(f"\n[INFO] Stub Hashes saved to: {os.path.basename(result)}")
+                        self.status_bar.update_status("Stub Hashes generated successfully", "success")
+                    else:
+                        self.right_panel.output_text.append(f"\n[ERROR] Failed to save stub hashes: {result}")
+                except Exception as e:
+                    self.right_panel.output_text.append(f"\n[ERROR] Error generating stub hashes: {str(e)}")
         self.worker = None
         if not self.status_bar.result_label.text():
             self.status_bar.update_status("Operation completed", "success")
