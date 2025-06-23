@@ -169,6 +169,8 @@ bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data,
 The SysCaller GUI provides additional tools for working with syscalls:
 
 - **Stub Mapper**: Create custom syscall mappings using predefined techniques to enhance obfuscation
+- **Hash Stubs**: Create Hashes for each Assembly Stub + Build Config
+- **Hash Compare**: Compare two or more files containing Stub Hashes
 - **Stub Craft**: Design and validate custom syscall stubs manually (WIP)
 - **Settings**: Configure global syscall behavior and protection options
 
@@ -180,6 +182,8 @@ The SysCaller GUI provides additional tools for working with syscalls:
 - [Windows Kernel Reference](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/_kernel/)
 - [Windows API Reference](https://learn.microsoft.com/en-us/windows/win32/apiindex/windows-api-list)
 - [Windows NT Reference](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/)
+
+**For comprehensive documentation and guides, check out the [SysCaller Wiki](https://github.com/WindowsAPI/SysCaller/wiki).**
 
 ### SysCaller API Reference
 
@@ -201,6 +205,8 @@ SysCaller is intended for educational and legitimate security research. When usi
 ## Contributing
 
 Contributions to SysCaller are welcome! Please feel free to submit pull requests, create issues, or suggest new features.
+
+If you've cloned or are enjoying this project, please consider [⭐ it on GitHub](https://github.com/WindowsAPI/SysCaller) to help others discover SysCaller!
 
 ## License
 
