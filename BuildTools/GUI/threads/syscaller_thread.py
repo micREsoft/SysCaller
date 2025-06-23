@@ -2,6 +2,7 @@ import os
 import subprocess
 from PyQt5.QtCore import QThread, pyqtSignal
 from threading import Thread
+from datetime import datetime
 
 class SysCallerThread(QThread):
     output = pyqtSignal(str)
@@ -14,9 +15,11 @@ class SysCallerThread(QThread):
         self.args = args
         self.process = None
         self.complete_output = []
+        self.start_time = datetime.now()
 
     def run(self):
         try:
+            self.start_time = datetime.now()
             cmd = ['python', self.script_path]
             if self.dll_path:
                 os.environ['NTDLL_PATH'] = self.dll_path
@@ -55,4 +58,4 @@ class SysCallerThread(QThread):
     def stop(self):
         if self.process and self.process.poll() is None:
             self.process.terminate()
-            self.process.wait() 
+            self.process.wait()
