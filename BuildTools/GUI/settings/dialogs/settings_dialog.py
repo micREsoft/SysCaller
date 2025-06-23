@@ -10,7 +10,7 @@ from features.stub_mapper import StubMapperDialog
 class SysCallerSettings(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("SysCaller v1.1.0")
+        self.setWindowTitle("SysCaller - Settings")
         self.setMinimumWidth(500)
         self.setMinimumHeight(600)
         self.setStyleSheet("""
