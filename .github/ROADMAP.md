@@ -1,5 +1,5 @@
 # SysCaller SDK | Roadmap  
-_Last updated: 6/23/25 by Maintainer_
+_Last updated: 6/24/25 by Maintainer_
 
 ---
 
@@ -11,14 +11,8 @@ _Last updated: 6/23/25 by Maintainer_
 - [ ] **Support Multiple Syscall Tables Per Build**  
   Enable dual/multi version stub sets for compatibility across Windows versions for a single build.
 
-- [ ] **Comprehensive README & Docs**  
-  Finalize usage documentation, internal flow explanations, and examples.
-
 - [ ] **Global Profile System**  
   Allow saving/loading build profiles (.json/.ini) for reuse and automation.
-
-- [ ] **Enhance GUI**  
-  More consistent layout, better tooltips, real time logging panel, and easier navigation.
 
 ---
 
@@ -26,9 +20,6 @@ _Last updated: 6/23/25 by Maintainer_
 
 - [ ] **Add More Obfuscation/Encryption Techniques**  
   Junk logic, encryption layers, stub layout shuffling, sig disorientation.
-
-- [ ] **Support Debug Mode**  
-  Support debug mode for VS alongside release mode + debug mode in BuildTools
 
 ---
 
@@ -71,3 +62,5 @@ _Last updated: 6/23/25 by Maintainer_
 - ✓ **Added Backup/Restore Function**
 - ✓ **Added Hashes for Stub Integrity**
 - ✓ **Added Hash Comparison for Stub Hashes**
+- ✓ **Created better README + SysCaller Wiki**
+- ✓ **Added support for building via Debug mode**
