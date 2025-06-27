@@ -8,12 +8,6 @@ _Last updated: 6/24/25 by Maintainer_
 - [ ] **Finish Custom Stub Maker**  
   Manually create syscall stubs yourself
 
-- [ ] **Support Multiple Syscall Tables Per Build**  
-  Enable dual/multi version stub sets for compatibility across Windows versions for a single build.
-
-- [ ] **Global Profile System**  
-  Allow saving/loading build profiles (.json/.ini) for reuse and automation.
-
 ---
 
 ## Feature Enhancements
@@ -64,3 +58,5 @@ _Last updated: 6/24/25 by Maintainer_
 - ✓ **Added Hash Comparison for Stub Hashes**
 - ✓ **Created better README + SysCaller Wiki**
 - ✓ **Added support for building via Debug mode**
+- ✓ **Added Global Profile / save as .ini**
+- ✓ **Added support for multiple syscall tables per build**
