@@ -8,10 +8,15 @@ class SysCallerThread(QThread):
     output = pyqtSignal(str)
     finished = pyqtSignal()
     
-    def __init__(self, script_path, dll_path=None, *args):
+    def __init__(self, script_path, dll_paths=None, *args):
         super().__init__()
         self.script_path = script_path
-        self.dll_path = dll_path
+        if dll_paths is None:
+            self.dll_paths = []
+        elif isinstance(dll_paths, str):
+            self.dll_paths = [dll_paths]
+        else:
+            self.dll_paths = dll_paths
         self.args = args
         self.process = None
         self.complete_output = []
@@ -21,8 +26,11 @@ class SysCallerThread(QThread):
         try:
             self.start_time = datetime.now()
             cmd = ['python', self.script_path]
-            if self.dll_path:
-                os.environ['NTDLL_PATH'] = self.dll_path
+            if self.dll_paths:
+                os.environ['NTDLL_PATH'] = self.dll_paths[0]
+                for i, path in enumerate(self.dll_paths[1:], start=2):
+                    os.environ[f'NTDLL_PATH_{i}'] = path
+                os.environ['NTDLL_PATH_COUNT'] = str(len(self.dll_paths))
             if self.args:
                 cmd.extend(self.args)
             self.process = subprocess.Popen(
