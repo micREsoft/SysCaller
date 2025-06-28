@@ -249,6 +249,7 @@ class SyscallVerification:
     def __init__(self):
         self.syscalls: Dict[str, SyscallDefinition] = {}
         self.test_results = []
+        self.dll_paths = []
         self.dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
         self.type_tracker = TypeDefinitionTracker()
 
@@ -332,58 +333,22 @@ class SyscallVerification:
             offsets[name] = offset
         return offsets
 
-    def test_syscall(self, syscall: SyscallDefinition) -> Dict:
-        result = {
-            'name': syscall.name,
-            'status': 'SUCCESS',
-            'offset': syscall.offset,
-            'return_type': syscall.return_type,
-            'parameter_count': len(syscall.parameters),
-            'errors': [],
-            'type_definitions': []
-        }
-        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'}
-        if syscall.return_type not in valid_return_types:
-            result['errors'].append(f"Unexpected return type: {syscall.return_type}")
-        for param in syscall.parameters: 
-            if not self.validate_parameter_type(param['type']):
-                result['errors'].append(f"Invalid parameter type: {param['type']}")
-        offset = syscall.offset.lower().replace('h', '')
+    def get_offset_from_dll(self, syscall_name: str, dll_path: str = None) -> Optional[int]:
+        if not dll_path:
+            dll_path = self.dll_path
         try:
-            offset_value = int(offset, 16)
-            if offset_value > 0x0200:
-                result['errors'].append(f"Suspicious syscall offset: 0x{offset} (expected range: 0x0000-0x0200)")
-            expected_offset = self.get_offset_from_dll(syscall.name)
-            if expected_offset and expected_offset != offset_value:
-                result['errors'].append(
-                    f"Offset mismatch: got 0x{offset}, expected 0x{expected_offset:X}"
-                )
-        except ValueError:
-            result['errors'].append(f"Invalid syscall offset format: {syscall.offset}")
-        for param in syscall.parameters:
-            param_type = param['type']
-            type_info = self.type_tracker.check_type(param_type)
-            if not type_info:
-                result['errors'].append(
-                    f"Type '{param_type}' not found in header files"
-                )
-            else:
-                result['type_definitions'].append({
-                    'type': param_type,
-                    'source_file': type_info['file']
-                })
-        if result['errors']:
-            result['status'] = 'FAILED'
-        return result
-
-    def get_offset_from_dll(self, syscall_name: str) -> Optional[int]:
-        try:
-            pe = pefile.PE(self.dll_path)
+            pe = pefile.PE(dll_path)
             md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
             if syscall_name.startswith("Sys"):
                 base_name = syscall_name[3:]
+                version_match = re.search(r'(\w+?)(\d+)?$', base_name)
+                if version_match and version_match.group(2):
+                    base_name = version_match.group(1)
             elif syscall_name.startswith("SysK"):
                 base_name = syscall_name[4:]
+                version_match = re.search(r'(\w+?)(\d+)?$', base_name)
+                if version_match and version_match.group(2):
+                    base_name = version_match.group(1)
             else:
                 base_name = syscall_name
             primary_name = 'Nt' + base_name
@@ -407,6 +372,59 @@ class SyscallVerification:
         finally:
             if 'pe' in locals():
                 pe.close()
+                
+    def test_syscall(self, syscall: SyscallDefinition) -> Dict:
+        result = {
+            'name': syscall.name,
+            'status': 'SUCCESS',
+            'offset': syscall.offset,
+            'return_type': syscall.return_type,
+            'parameter_count': len(syscall.parameters),
+            'errors': [],
+            'type_definitions': []
+        }
+        version_match = re.search(r'(?:Sys|SysK)(\w+?)(\d+)?$', syscall.name)
+        if version_match and version_match.group(2):
+            version = int(version_match.group(2))
+            if version > 1 and len(self.dll_paths) >= version:
+                dll_path = self.dll_paths[version - 1]
+            else:
+                dll_path = self.dll_path
+        else:
+            dll_path = self.dll_path
+        valid_return_types = {'NTSTATUS', 'BOOL', 'HANDLE', 'VOID', 'ULONG', 'ULONG_PTR', 'UINT32', 'UINT64'}
+        if syscall.return_type not in valid_return_types:
+            result['errors'].append(f"Unexpected return type: {syscall.return_type}")
+        for param in syscall.parameters: 
+            if not self.validate_parameter_type(param['type']):
+                result['errors'].append(f"Invalid parameter type: {param['type']}")
+        offset = syscall.offset.lower().replace('h', '')
+        try:
+            offset_value = int(offset, 16)
+            if offset_value > 0x0200:
+                result['errors'].append(f"Suspicious syscall offset: 0x{offset} (expected range: 0x0000-0x0200)")
+            expected_offset = self.get_offset_from_dll(syscall.name, dll_path)
+            if expected_offset and expected_offset != offset_value:
+                result['errors'].append(
+                    f"Offset mismatch: got 0x{offset}, expected 0x{expected_offset:X}"
+                )
+        except ValueError:
+            result['errors'].append(f"Invalid syscall offset format: {syscall.offset}")
+        for param in syscall.parameters:
+            param_type = param['type']
+            type_info = self.type_tracker.check_type(param_type)
+            if not type_info:
+                result['errors'].append(
+                    f"Type '{param_type}' not found in header files"
+                )
+            else:
+                result['type_definitions'].append({
+                    'type': param_type,
+                    'source_file': type_info['file']
+                })
+        if result['errors']:
+            result['status'] = 'FAILED'
+        return result
 
     def validate_parameter_type(self, param_type: str) -> bool:
         valid_types = {
@@ -652,6 +670,14 @@ class SyscallVerification:
 if __name__ == "__main__":
     def run_verification():
         tester = SyscallVerification()
+        main_dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
+        dll_path_count = int(os.getenv('NTDLL_PATH_COUNT', '1'))
+        dll_paths = [main_dll_path]
+        for i in range(2, dll_path_count + 1):
+            additional_dll_path = os.getenv(f'NTDLL_PATH_{i}')
+            if additional_dll_path:
+                dll_paths.append(additional_dll_path)
+        tester.dll_paths = dll_paths
         sys.stdout.flush()
         tester.run_tests()
         sys.stdout.flush()
