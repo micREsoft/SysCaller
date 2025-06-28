@@ -47,8 +47,13 @@ class SysCallerWindow(QMainWindow):
         self.left_panel.verify_btn.clicked.connect(self.run_verification)
         self.left_panel.obfuscate_btn.clicked.connect(self.run_obfuscation)
         self.left_panel.settings_btn.clicked.connect(self.show_settings)
+        self.left_panel.dll_paths_changed.connect(self.on_dll_paths_changed)
         self.worker = None
+        self.dll_paths = self.left_panel.get_dll_paths()
         self.destroyed.connect(self.cleanup_worker)
+
+    def on_dll_paths_changed(self, paths):
+        self.dll_paths = paths
 
     def run_validation(self):
         if self.worker is not None and self.worker.isRunning():
@@ -57,7 +62,7 @@ class SysCallerWindow(QMainWindow):
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Integrity', 'Validator', 'validator.py')
-        self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
+        self.worker = SysCallerThread(script_path, self.dll_paths)
         self.worker.output.connect(self.update_output)
         self.worker.finished.connect(self.on_worker_finished)
         self.worker.start()
@@ -69,7 +74,7 @@ class SysCallerWindow(QMainWindow):
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Integrity', 'Compatibility', 'compatibility.py')
-        self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
+        self.worker = SysCallerThread(script_path, self.dll_paths)
         self.worker.output.connect(self.update_output)
         self.worker.finished.connect(self.on_worker_finished)
         self.worker.start()
@@ -81,7 +86,7 @@ class SysCallerWindow(QMainWindow):
         self.left_panel.progress_bar.setMaximum(0)
         self.right_panel.output_text.clear()
         script_path = os.path.join(os.path.dirname(__file__), '..', 'Integrity', 'Verify', 'verify.py')
-        self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text(), '--from-gui')
+        self.worker = SysCallerThread(script_path, self.dll_paths, '--from-gui')
         self.worker.output.connect(self.update_output)
         self.worker.finished.connect(self.on_worker_finished)
         self.worker.start()
@@ -141,7 +146,7 @@ class SysCallerWindow(QMainWindow):
             settings.setValue('obfuscation/force_stub_mapper', False)
             settings.setValue('obfuscation/last_method', 'normal')
             script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
-            self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
+            self.worker = SysCallerThread(script_path, self.dll_paths)
             self.worker.output.connect(self.update_output)
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
@@ -158,7 +163,7 @@ class SysCallerWindow(QMainWindow):
                 settings.setValue('obfuscation/force_stub_mapper', True)
                 settings.setValue('obfuscation/last_method', 'stub_mapper')
                 script_path = os.path.join(os.path.dirname(__file__), '..', 'Protection', 'protection.py')
-                self.worker = SysCallerThread(script_path, self.left_panel.dll_path.text())
+                self.worker = SysCallerThread(script_path, self.dll_paths)
                 self.worker.output.connect(self.update_output)
                 self.worker.finished.connect(self.on_worker_finished)
                 self.worker.start()
@@ -259,4 +264,4 @@ def main():
     sys.exit(app.exec_())
   
 if __name__ == '__main__':
-    main() 
+    main()
