@@ -33,13 +33,26 @@ def read_syscalls(asm_file):
         if proc_match:
             if syscall and syscall not in syscalls:
                 syscalls.append(syscall)
-            syscall = {'name': proc_match.group(1)}
-            if syscall['name'] in unique_names:
+            syscall_name = proc_match.group(1)
+            version_match = re.search(r"((?:Sys|SysK)\w+?)(\d+)?$", syscall_name)
+            if version_match:
+                base_name = version_match.group(1)
+                version = int(version_match.group(2)) if version_match.group(2) else 1
+            else:
+                base_name = syscall_name
+                version = 1
+            syscall = {
+                'name': syscall_name,
+                'base_name': base_name,
+                'version': version
+            }
+            name_key = f"{base_name}_{version}"
+            if name_key in unique_names:
                 syscall['duplicate_name'] = True
-                syscall['duplicate_name_with'] = unique_names[syscall['name']]
+                syscall['duplicate_name_with'] = unique_names[name_key]
             else:
                 syscall['duplicate_name'] = False
-                unique_names[syscall['name']] = syscall['name']
+                unique_names[name_key] = syscall_name
         offset_match = re.search(r"mov\s+(eax|rax),\s*(0x[0-9A-Fa-f]+|[0-9A-Fa-f]+)h?", line)
         if syscall and offset_match:
             try:
@@ -48,12 +61,13 @@ def read_syscalls(asm_file):
                     syscall['offset'] = int(offset_value, 16)
                 else:
                     syscall['offset'] = int(offset_value.rstrip("h"), 16)
-                if syscall['offset'] in unique_offsets:
+                offset_key = f"{syscall['offset']}_{syscall['version']}"
+                if offset_key in unique_offsets:
                     syscall['duplicate_offset'] = True
-                    syscall['duplicate_offset_with'] = unique_offsets[syscall['offset']]
+                    syscall['duplicate_offset_with'] = unique_offsets[offset_key]
                 else:
                     syscall['duplicate_offset'] = False
-                    unique_offsets[syscall['offset']] = syscall['name']
+                    unique_offsets[offset_key] = syscall['name']
             except ValueError:
                 print(f"Warning: Could not parse offset value: {offset_match.group(2)}")
         
@@ -98,21 +112,30 @@ def print_legend():
     print(f"{Colors.BOLD}v = Valid Offset (resolved in DLL){Colors.ENDC}")
     print()
 
-def validate_syscalls(asm_file, dll_path):
+def validate_syscalls(asm_file, dll_paths):
     settings = QSettings('SysCaller', 'BuildTools')
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     is_zw_mode = syscall_mode == 'Zw'
     mode_display = "Zw" if is_zw_mode else "Nt"
     syscalls = read_syscalls(asm_file)
-    syscall_numbers = get_syscalls(dll_path)
     print(f"{Colors.BOLD}Found {len(syscalls)} syscalls in syscaller.asm{Colors.ENDC}")
+    syscall_tables = {}
+    for i, dll_path in enumerate(dll_paths):
+        syscall_tables[i+1] = get_syscalls(dll_path)
     print_legend()
     valid, invalid, duplicates = 0, 0, 0
     for syscall in syscalls:
+        version = syscall['version']
+        dll_index = min(version, len(syscall_tables))
+        syscall_numbers = syscall_tables[dll_index]
         if syscall['name'].startswith('SysK'):
             base_name = syscall['name'][4:]
+            if syscall['version'] > 1:
+                base_name = base_name[:-len(str(syscall['version']))]
         elif syscall['name'].startswith('Sys'):
             base_name = syscall['name'][3:]
+            if syscall['version'] > 1:
+                base_name = base_name[:-len(str(syscall['version']))]
         else:
             base_name = syscall['name']
         expected_name = "Nt" + base_name
@@ -147,6 +170,13 @@ def validate_syscalls(asm_file, dll_path):
     print(f"\n{Colors.BOLD}Valid: {Colors.OKGREEN}{valid}{Colors.ENDC}{Colors.BOLD}, Invalid: {Colors.FAIL}{invalid}{Colors.ENDC}{Colors.BOLD}, Duplicates: {Colors.WARNING}{duplicates}{Colors.ENDC}")
 
 if __name__ == "__main__":
+
     asm_file = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'src', 'syscaller.asm')
-    dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
-    validate_syscalls(asm_file, dll_path)
+    main_dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
+    dll_path_count = int(os.getenv('NTDLL_PATH_COUNT', '1'))
+    dll_paths = [main_dll_path]
+    for i in range(2, dll_path_count + 1):
+        additional_dll_path = os.getenv(f'NTDLL_PATH_{i}')
+        if additional_dll_path:
+            dll_paths.append(additional_dll_path)
+    validate_syscalls(asm_file, dll_paths)
