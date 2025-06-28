@@ -162,7 +162,7 @@ bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data,
     return NT_SUCCESS(status) && (bytesWritten == size);
 }
 ```
-- For more examples look at the `Examples` directory.
+- For more examples look at the [Examples](https://github.com/micREsoft/SysCallerExamples) repo.
 
 ### Advanced Features
 
