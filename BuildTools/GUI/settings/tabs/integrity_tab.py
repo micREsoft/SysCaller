@@ -43,21 +43,32 @@ class IntegrityTab(QWidget):
         self.syscalls = []
         script_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
         project_root = os.path.dirname(script_dir)
-        header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
         syscall_mode = self.settings.value('general/syscall_mode', 'Nt', str)
+        is_kernel_mode = syscall_mode == 'Zw'
         syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
+        if is_kernel_mode:
+            header_path = os.path.join(project_root, 'SysCallerK', 'Wrapper', 'include', 'SysK', 'sysFunctions_k.h')
+        else:
+            header_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+        selected_syscalls = self.settings.value('integrity/selected_syscalls', [], type=list)
         if os.path.exists(header_path):
             with open(header_path, 'r') as f:
+                header_content = f.read()
+            extern_c_block = re.search(r'#ifdef\s+__cplusplus\s+extern\s+"C"\s+\{', header_content, re.DOTALL)
+            with open(header_path, 'r') as f:
                 for line in f:
-                    match = re.search(rf'extern "C" (?:NTSTATUS|ULONG) ({syscall_prefix}\w+)\(', line)
+                    match = re.search(rf'extern "C" (?:NTSTATUS|ULONG|BOOLEAN|VOID) ({syscall_prefix}\w+)\(', line)
+                    if not match:
+                        match = re.search(rf'(?:NTSTATUS|ULONG|BOOLEAN|VOID) ({syscall_prefix}\w+)\(', line)
                     if match:
                         self.syscalls.append(match.group(1))
-                    sc_match = re.search(r'extern "C" (?:NTSTATUS|ULONG) (SC\w+)\(', line)
+                    sc_match = re.search(r'extern "C" (?:NTSTATUS|ULONG|BOOLEAN|VOID) (SC\w+)\(', line)
+                    if not sc_match:
+                        sc_match = re.search(r'(?:NTSTATUS|ULONG|BOOLEAN|VOID) (SC\w+)\(', line)
                     if sc_match:
                         syscall_name = syscall_prefix + sc_match.group(1)[2:]
                         self.syscalls.append(syscall_name)
         self.syscalls.sort()
-        selected_syscalls = self.settings.value('integrity/selected_syscalls', [], type=list)
         if not selected_syscalls:
             selected_syscalls = self.syscalls
         for syscall in self.syscalls:
