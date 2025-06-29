@@ -234,7 +234,7 @@ class StubMapperDialog(QDialog):
         if not selected_syscalls:
             script_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
             project_root = os.path.dirname(script_dir)
-            header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+            header_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
             syscall_mode = self.settings.value('general/syscall_mode', 'Nt', str)
             syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
             if os.path.exists(header_path):
@@ -411,4 +411,4 @@ class StubMapperDialog(QDialog):
             return
         self.settings.setValue('stub_mapper/syscall_settings', self.syscall_settings)
         QMessageBox.information(self, "Settings Saved", "Custom syscall settings have been saved successfully.")
-        self.accept() 
+        self.accept()

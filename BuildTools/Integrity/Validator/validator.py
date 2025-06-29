@@ -12,8 +12,7 @@ except ImportError:
             return default
 
 def update_syscalls(asm_file, syscall_tables):
-    asm_file_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'src', 'syscaller.asm')
-    with open(asm_file_path, 'r') as file:
+    with open(asm_file, 'r') as file:
         lines = file.readlines()
     num_tables = len(syscall_tables)
     if num_tables == 0:
@@ -107,15 +106,21 @@ def update_syscalls(asm_file, syscall_tables):
     print(f"Updated syscalls written to {asm_file}")
 
 def update_header_file(syscall_tables, selected_syscalls, use_all_syscalls):
-    header_file_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+    base_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+    settings = QSettings('SysCaller', 'BuildTools')
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    is_kernel_mode = syscall_mode == 'Zw'
+    if is_kernel_mode:
+        header_file_path = os.path.join(base_dir, 'SysCallerK', 'Wrapper', 'include', 'SysK', 'sysFunctions_k.h')
+    else:
+        header_file_path = os.path.join(base_dir, 'SysCaller', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
     with open(header_file_path, 'r') as file:
         lines = file.readlines()
     updated_lines = []
     header_part_ended = False
     ending_lines = []
-    settings = QSettings('SysCaller', 'BuildTools')
-    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
+    func_decl_regex = re.compile(r'(?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK)\w+)\s*\(')
     for i in range(len(lines)-1, -1, -1):
         line = lines[i].strip()
         if line == "#endif" or line.startswith("#endif "):
@@ -131,12 +136,7 @@ def update_header_file(syscall_tables, selected_syscalls, use_all_syscalls):
     for i, line in enumerate(lines):
         if any(line == end_line for end_line in ending_lines):
             continue
-        if not header_part_ended and (
-            'extern "C" NTSTATUS SC' in line or 
-            'extern "C" ULONG SC' in line or
-            f'extern "C" NTSTATUS {syscall_prefix}' in line or 
-            f'extern "C" ULONG {syscall_prefix}' in line
-        ):
+        if not header_part_ended and func_decl_regex.search(line):
             header_part_ended = True
         if not header_part_ended:
             if "_WIN64" in line and "#ifdef" in line:
@@ -145,14 +145,11 @@ def update_header_file(syscall_tables, selected_syscalls, use_all_syscalls):
                 continue
             updated_lines.append(line)
             continue
-        if ('extern "C" NTSTATUS SC' in line or 
-            'extern "C" ULONG SC' in line or 
-            f'extern "C" NTSTATUS {syscall_prefix}' in line or 
-            f'extern "C" ULONG {syscall_prefix}' in line):
+        if func_decl_regex.search(line):
             if current_function and function_content:
                 function_declarations[current_function] = function_content
                 function_content = []
-            match = re.search(r'extern "C" (?:NTSTATUS|ULONG) ((?:SC|Sys|SysK)\w+)\s*\(', line)
+            match = func_decl_regex.search(line)
             if match:
                 original_name = match.group(1)
                 if original_name.startswith("SC"):
@@ -178,8 +175,6 @@ def update_header_file(syscall_tables, selected_syscalls, use_all_syscalls):
                     function_content.append(modified_line)
                 else:
                     current_function = None
-            else:
-                current_function = None
         elif current_function:
             if "SC" in line:
                 modified_line = line
@@ -259,6 +254,31 @@ def update_header_file(syscall_tables, selected_syscalls, use_all_syscalls):
                 updated_lines.append("\n")
     if updated_lines and updated_lines[-1].strip() != "":
         updated_lines.append("\n")
+
+    def extern_close_missing(buf):
+        search_window = 50 if len(buf) > 50 else len(buf)
+        tail = "".join(buf[-search_window:])
+        return not re.search(r"#ifdef\s+__cplusplus[\s\S]*?\}\s*\n\s*#endif", tail)
+
+    if extern_close_missing(updated_lines):
+        updated_lines.append("#ifdef __cplusplus\n")
+        updated_lines.append("}\n")
+        updated_lines.append("#endif\n\n")
+    extern_open_idx = None
+    for idx, line in enumerate(updated_lines):
+        if line.strip().startswith("extern \"C\" {"):
+            extern_open_idx = idx
+            break
+    if extern_open_idx is not None:
+        found_close = False
+        for look_ahead in range(1, 6):
+            if extern_open_idx + look_ahead < len(updated_lines):
+                if updated_lines[extern_open_idx + look_ahead].strip().startswith("#endif"):
+                    found_close = True
+                    break
+        if not found_close:
+            insertion_idx = extern_open_idx + 1
+            updated_lines.insert(insertion_idx, "#endif\n\n")
     non_empty_ending_found = False
     filtered_ending_lines = []
     for line in ending_lines:
@@ -298,7 +318,14 @@ def get_syscalls(dll_path):
 
 if __name__ == "__main__":
 
-    asm_file = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'src', 'syscaller.asm')
+    settings = QSettings('SysCaller', 'BuildTools')
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    is_kernel_mode = syscall_mode == 'Zw'
+    base_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+    if is_kernel_mode:
+        asm_file = os.path.join(base_dir, 'SysCallerK', 'Wrapper', 'src', 'syscaller.asm')
+    else:
+        asm_file = os.path.join(base_dir, 'SysCaller', 'Wrapper', 'src', 'syscaller.asm')
     main_dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
     dll_path_count = int(os.getenv('NTDLL_PATH_COUNT', '1'))
     syscall_tables = {}
