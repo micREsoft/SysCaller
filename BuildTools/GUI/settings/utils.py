@@ -29,8 +29,23 @@ def get_project_paths():
     backups_dir = os.path.join(project_root, 'Backups')
     hash_backups_dir = os.path.join(project_root, 'Backups', 'Hashes')
     default_dir = os.path.join(buildtools_dir, 'Default')
-    asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
-    header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+    try:
+        from PyQt5.QtCore import QSettings
+        settings = QSettings('SysCaller', 'BuildTools')
+        syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+        is_kernel_mode = syscall_mode == 'Zw'
+    except ImportError:
+        is_kernel_mode = False
+    if is_kernel_mode:
+        asm_path = os.path.join(project_root, 'SysCallerK', 'Wrapper', 'src', 'syscaller.asm')
+        header_path = os.path.join(project_root, 'SysCallerK', 'Wrapper', 'include', 'SysK', 'sysFunctions_k.h')
+        default_asm_path = os.path.join(default_dir, 'syscaller.asm')
+        default_header_path = os.path.join(default_dir, 'sysFunctions_k.h')
+    else:
+        asm_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'src', 'syscaller.asm')
+        header_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+        default_asm_path = os.path.join(default_dir, 'syscaller.asm')
+        default_header_path = os.path.join(default_dir, 'sysFunctions.h')
     # DEBUG print(f"Project paths:")
     # DEBUG print(f"  Project root: {project_root}")
     # DEBUG print(f"  BuildTools dir: {buildtools_dir}")
@@ -46,7 +61,10 @@ def get_project_paths():
         'hash_backups_dir': hash_backups_dir,
         'default_dir': default_dir,
         'asm_path': asm_path,
-        'header_path': header_path
+        'header_path': header_path,
+        'default_asm_path': default_asm_path,
+        'default_header_path': default_header_path,
+        'is_kernel_mode': is_kernel_mode
     }
 
 def create_backup(parent, settings):
