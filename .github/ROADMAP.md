@@ -1,5 +1,5 @@
 # SysCaller SDK | Roadmap  
-_Last updated: 6/24/25 by Maintainer_
+_Last updated: 6/29/25 by Maintainer_
 
 ---
 
@@ -60,3 +60,5 @@ _Last updated: 6/24/25 by Maintainer_
 - ✓ **Added support for building via Debug mode**
 - ✓ **Added Global Profile / save as .ini**
 - ✓ **Added support for multiple syscall tables per build**
+- ✓ **Added proper kernel mode support**
+- ✓ **Added new regex patterns**
