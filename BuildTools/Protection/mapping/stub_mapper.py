@@ -54,12 +54,18 @@ def apply_custom_syscall_settings(syscall_name, real_offset, settings=None):
 def generate_custom_exports():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
-    asm_path = os.path.join(project_root, 'Wrapper', 'src', 'syscaller.asm')
-    header_path = os.path.join(project_root, 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+    
     settings = QSettings('SysCaller', 'BuildTools')
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    is_kernel_mode = syscall_mode == 'Zw'
+    if is_kernel_mode:
+        asm_path = os.path.join(project_root, 'SysCallerK', 'Wrapper', 'src', 'syscaller.asm')
+        header_path = os.path.join(project_root, 'SysCallerK', 'Wrapper', 'include', 'SysK', 'sysFunctions_k.h')
+    else:
+        asm_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'src', 'syscaller.asm')
+        header_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
     selected_syscalls = settings.value('integrity/selected_syscalls', [], type=list)
     use_all_syscalls = len(selected_syscalls) == 0
-    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
     used_names = set()
     used_offsets = set()
@@ -248,6 +254,14 @@ def generate_custom_exports():
                 ending_lines.insert(0, header_content[j])
                 j -= 1
             break
+    has_extern_c_block = False
+    for line in header_content:
+        if "#ifdef __cplusplus" in line and "extern" in line and "{" in line:
+            has_extern_c_block = True
+            break
+        if "#ifdef __cplusplus" in line and any("extern" in l and "{" in l for l in header_content[header_content.index(line)+1:header_content.index(line)+5]):
+            has_extern_c_block = True
+            break
     header_part_ended = False
     for i, line in enumerate(header_content):
         if any(line == end_line for end_line in ending_lines):
@@ -255,8 +269,21 @@ def generate_custom_exports():
         if not header_part_ended and (
             f'extern "C" NTSTATUS {syscall_prefix}' in line or 
             f'extern "C" ULONG {syscall_prefix}' in line or
+            f'extern "C" BOOLEAN {syscall_prefix}' in line or
+            f'extern "C" VOID {syscall_prefix}' in line or
             'extern "C" NTSTATUS SC' in line or
-            'extern "C" ULONG SC' in line
+            'extern "C" ULONG SC' in line or
+            'extern "C" BOOLEAN SC' in line or
+            'extern "C" VOID SC' in line or
+            f'NTSTATUS {syscall_prefix}' in line or 
+            f'ULONG {syscall_prefix}' in line or
+            f'BOOLEAN {syscall_prefix}' in line or
+            f'VOID {syscall_prefix}' in line or
+            'NTSTATUS SC' in line or
+            'ULONG SC' in line or
+            'BOOLEAN SC' in line or
+            'VOID SC' in line or
+            "#ifdef __cplusplus" in line
         ):
             header_part_ended = True
         if not header_part_ended:
@@ -266,13 +293,29 @@ def generate_custom_exports():
                 continue
             new_header_content.append(line)
             continue
+        if "#ifdef __cplusplus" in line or 'extern "C"' in line or line.strip() == "{" or line.strip() == "}" or "#endif" in line:
+            continue
         if (
             'extern "C" NTSTATUS SC' in line or 
             'extern "C" ULONG SC' in line or
+            'extern "C" BOOLEAN SC' in line or
+            'extern "C" VOID SC' in line or
             f'extern "C" NTSTATUS {syscall_prefix}' in line or 
-            f'extern "C" ULONG {syscall_prefix}' in line
+            f'extern "C" ULONG {syscall_prefix}' in line or
+            f'extern "C" BOOLEAN {syscall_prefix}' in line or
+            f'extern "C" VOID {syscall_prefix}' in line or
+            'NTSTATUS SC' in line or 
+            'ULONG SC' in line or
+            'BOOLEAN SC' in line or
+            'VOID SC' in line or
+            f'NTSTATUS {syscall_prefix}' in line or 
+            f'ULONG {syscall_prefix}' in line or
+            f'BOOLEAN {syscall_prefix}' in line or
+            f'VOID {syscall_prefix}' in line
         ):
-            match = re.search(rf'extern "C" (?:NTSTATUS|ULONG) ((?:SC|{syscall_prefix})\w+)\(', line)
+            match = re.search(rf'extern "C" (?:NTSTATUS|ULONG|BOOLEAN|VOID) ((?:SC|{syscall_prefix})\w+)\(', line)
+            if not match:
+                match = re.search(rf'(?:NTSTATUS|ULONG|BOOLEAN|VOID) ((?:SC|{syscall_prefix})\w+)\(', line)
             if match:
                 original_name = match.group(1)
                 if original_name.startswith("SC"):
@@ -283,6 +326,7 @@ def generate_custom_exports():
                     skip_block = False
                     if current_syscall in syscall_map:
                         line = line.replace(original_name, syscall_map[current_syscall])
+                    line = re.sub(r'extern\s+"C"\s+', '', line)
                     new_header_content.append(line)
                 else:
                     skip_block = True
@@ -295,6 +339,19 @@ def generate_custom_exports():
                 new_header_content.append(line)
         elif line.strip() == ");":
             skip_block = False
+    function_part_start = None
+    function_part_end = None
+    for i, line in enumerate(new_header_content):
+        if any(t in line for t in ["NTSTATUS", "ULONG", "BOOLEAN", "VOID"]) and "(" in line:
+            if function_part_start is None:
+                function_part_start = i
+        if line.strip() == ");" and function_part_start is not None:
+            function_part_end = i
+    if function_part_start is not None and function_part_end is not None:
+        new_header_content.insert(function_part_start, "\n")
+        new_header_content.insert(function_part_start, "#ifdef __cplusplus\nextern \"C\" {\n#endif\n")
+        function_part_end += 4
+        new_header_content.insert(function_part_end + 1, "\n#ifdef __cplusplus\n}\n#endif\n")
     new_header_content.append("\n// Syscall name mappings\n")
     for original, random_name in syscall_map.items():
         new_header_content.append(f"#define {original} {random_name}\n")
