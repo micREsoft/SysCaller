@@ -91,12 +91,26 @@ class TypeDefinitionTracker:
         self.parse_header_files()
 
     def parse_header_files(self):
+        try:
+            from PyQt5.QtCore import QSettings
+            settings = QSettings('SysCaller', 'BuildTools')
+            syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+            is_kernel_mode = syscall_mode == 'Zw'
+        except ImportError:
+            is_kernel_mode = False
         base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..')
-        header_files = {
-            'constants': os.path.join(base_path, "Wrapper", "include", "Sys", "sysConstants.h"),
-            'types': os.path.join(base_path, "Wrapper", "include", "Sys", "sysTypes.h"),
-            'externals': os.path.join(base_path, "Wrapper", "include", "Sys", "sysExternals.h")
-        }
+        if is_kernel_mode:
+            header_files = {
+                'constants': os.path.join(base_path, "SysCallerK", "Wrapper", "include", "SysK", "sysConstants_k.h"),
+                'types': os.path.join(base_path, "SysCallerK", "Wrapper", "include", "SysK", "sysTypes_k.h"),
+                'externals': os.path.join(base_path, "SysCallerK", "Wrapper", "include", "SysK", "sysExternals_k.h")
+            }
+        else:
+            header_files = {
+                'constants': os.path.join(base_path, "SysCaller", "Wrapper", "include", "Sys", "sysConstants.h"),
+                'types': os.path.join(base_path, "SysCaller", "Wrapper", "include", "Sys", "sysTypes.h"),
+                'externals': os.path.join(base_path, "SysCaller", "Wrapper", "include", "Sys", "sysExternals.h")
+            }
         for file_type, filepath in header_files.items():
             with open(filepath, 'r') as f:
                 content = f.read()
@@ -182,7 +196,7 @@ class TypeDefinitionTracker:
                     'file': f'sys{file_type.capitalize()}.h',
                     'definition': f'typedef const {base_type}* {new_type}'
                 }
-            wnf_types = re.finditer(r'typedef\s+(?:const\s+)?(?:struct\s+)?_?(\w+)\s*(?:\*\s*)?(\w+)(?:\s*,\s*\*\s*(\w+))?;', content) # Pattern for WNF specific types
+            wnf_types = re.finditer(r'typedef\s+(?:const\s+)?(?:struct\s+)?_?(\w+)\s*(?:\*\s*)?(\w+)(?:\s*,\s*\*\s*(\w+))?;', content)
             for match in wnf_types:
                 base_type = match.group(1)
                 new_type = match.group(2)
@@ -259,15 +273,28 @@ class SyscallVerification:
             from PyQt5.QtCore import QSettings
             settings = QSettings('SysCaller', 'BuildTools')
             syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+            is_kernel_mode = syscall_mode == 'Zw'
         except ImportError:
             syscall_mode = 'Nt'
+            is_kernel_mode = False
         syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
-        header_path = os.path.join(base_path, "Wrapper", "include", "Sys", "sysFunctions.h")
-        asm_path = os.path.join(base_path, "Wrapper", "src", "syscaller.asm")
+        if is_kernel_mode:
+            header_path = os.path.join(base_path, "SysCallerK", "Wrapper", "include", "SysK", "sysFunctions_k.h")
+            asm_path = os.path.join(base_path, "SysCallerK", "Wrapper", "src", "syscaller.asm")
+        else:
+            header_path = os.path.join(base_path, "SysCaller", "Wrapper", "include", "Sys", "sysFunctions.h")
+            asm_path = os.path.join(base_path, "SysCaller", "Wrapper", "src", "syscaller.asm")
         with open(header_path, 'r') as f:
             content = f.read()
-        pattern = rf'extern\s*"C"\s*((?:NTSTATUS|ULONG))\s+((?:SC|{syscall_prefix})\w+)\s*\(([\s\S]*?)\)\s*;'
-        matches = re.finditer(pattern, content, re.DOTALL)
+        extern_c_block = re.search(r'#ifdef\s+__cplusplus\s+extern\s+"C"\s+\{', content, re.DOTALL)
+        pattern1 = rf'extern\s*"C"\s*((?:NTSTATUS|ULONG|BOOLEAN|VOID))\s+((?:SC|{syscall_prefix})\w+)\s*\(([\s\S]*?)\)\s*;'
+        pattern2 = rf'((?:NTSTATUS|ULONG|BOOLEAN|VOID))\s+((?:SC|{syscall_prefix})\w+)\s*\(([\s\S]*?)\)\s*;'
+        matches = re.finditer(pattern1, content, re.DOTALL)
+        matches_list = list(matches)
+        if len(matches_list) == 0 or extern_c_block:
+            matches = re.finditer(pattern2, content, re.DOTALL)
+        else:
+            matches = matches_list
         offsets = self.parse_syscall_offsets(asm_path)
         for match in matches:
             return_type = match.group(1)
@@ -522,6 +549,7 @@ class SyscallVerification:
             'PBOOT_OPTIONS',
             'FILE_INFORMATION_CLASS',
             'FSINFOCLASS',
+            'SYSK_FSINFOCLASS',
             'PFILE_SEGMENT_ELEMENT',
             'EVENT_INFORMATION_CLASS',
             'ATOM_INFORMATION_CLASS',
