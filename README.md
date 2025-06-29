@@ -24,7 +24,10 @@
 ## Key Features
 
 - **Direct Syscall Access**: Bypass Windows API hooks by communicating directly with the NT kernel
-- **Dual Mode Operation**: Support for both `Nt` (user-mode) and `Zw` (kernel-mode) syscalls (Zw is still experimental!)
+- **Dual Mode Operation**: Single code-base delivers two static libraries:
+  * **SysCaller** – user-mode (`Nt`/`Sys` prefix) 
+  * **SysCallerK** – kernel-mode (`Zw`/`SysK` prefix)
+- **Kernel Ready**: Build the *SysCallerK* variant with the Windows Driver Kit (WDK) and VS22 *Kernel Mode Driver* toolset (VS 2022 supported)
 - **Dynamic Offset Resolution**: Automatic syscall ID detection for compatibility across Windows versions
 - **Advanced Protection**: Optional obfuscation layer to conceal syscall patterns and evade detection
 - **Comprehensive GUI Tools**: Validate, verify, and protect syscalls through an intuitive interface
@@ -75,11 +78,13 @@ The SDK implements hundreds of Windows NT native functions with proper type defi
    - Optionally run "Obfuscation" to add protection layer
    - (NOTE: Obfuscation is still heavily experimental! Sometimes it doesnt work, and you have to generate a new `SysCaller.lib`)
 
-5. **Build the library**
-   - Open `SysCaller.sln` in Visual Studio
-   - Set configuration to `Release` and platform to `x64`
-   - Set C++ Standard to `17+`
-   - Build the solution to generate `SysCaller.lib`
+    
+5. **Build the User Mode library** (SysCaller)
+   - Open **`SysCaller.sln`** in Visual Studio
+   - Select the *SysCaller* project
+   - Set **Configuration** to *Release* and **Platform** to *x64*
+   - Ensure the C++ standard is *17 or newer*
+   - Build → *Build SysCaller* → produces `x64/Release/SysCaller.lib`
 
 ### Option 2: CMake (C++17 or newer)
 
@@ -92,7 +97,7 @@ The SDK implements hundreds of Windows NT native functions with proper type defi
 
 2. **Configure CMake**
    ```bash
-   cd Wrapper
+   cd SysCaller/Wrapper
    ```
 
 3. **Update C++ standard in CMakeLists.txt**
@@ -107,6 +112,20 @@ The SDK implements hundreds of Windows NT native functions with proper type defi
    cmake .. -A x64
    cmake --build . --config Release
    ```
+
+### Building the Kernel Mode library (SysCallerK)
+
+The solution contains a second project named **SysCallerK**.  To compile it you need the WDK components that come with the *Kernel-Mode Driver* workload.
+
+1. Install the WDK (during VS installation setup choose *Windows Driver Kit* or install the *Kernel-Mode Driver, C++* workload).
+2. In **`SysCaller.sln`** change the *Startup Project* (or selection in *Solution Explorer*) to **SysCallerK**.
+3. Select the **`Release | x64`** configuration.
+4. Run the GUI/BuildTools to your liking. (make sure Kernel Mode is selected under settings)
+5. Build → *Build SysCallerK* → produces `x64/Release/SysCallerK.lib`.
+
+> ⚠️ CMake for Kernel Mode coming soon. Also note Kernel Mode is still super experimental I suggest using VM to test any kernel implementations using SysCaller.
+> 
+> ⚠️ Building kernel components usually requires **driver signing certificates** or disabling *Secure Boot / Driver Signature Enforcement* on the test machine. Follow the [Microsoft Docs](https://learn.microsoft.com/windows-hardware/drivers/install/) before loading code built with SysCallerK.
 
 ## Usage
 
@@ -160,6 +179,27 @@ bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data,
         &bytesWritten
     );
     return NT_SUCCESS(status) && (bytesWritten == size);
+}
+```
+
+### Kernel Mode snippet:
+
+```cpp
+#include "syscaller.h"
+
+extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT driver, PUNICODE_STRING path) {
+    SIZE_T regionSize = 0x1000;
+    PVOID  base       = nullptr;
+
+    NTSTATUS st = SysKAllocateVirtualMemory(
+        ZwCurrentProcess(),
+        &base,
+        0,
+        &regionSize,
+        MEM_COMMIT | MEM_RESERVE,
+        PAGE_READWRITE);
+
+    return st;
 }
 ```
 - For more examples look at the [Examples](https://github.com/micREsoft/SysCallerExamples) repo.
