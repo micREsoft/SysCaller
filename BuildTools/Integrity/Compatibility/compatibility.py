@@ -171,7 +171,13 @@ def validate_syscalls(asm_file, dll_paths):
 
 if __name__ == "__main__":
 
-    asm_file = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Wrapper', 'src', 'syscaller.asm')
+    settings = QSettings('SysCaller', 'BuildTools')
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    is_kernel_mode = syscall_mode == 'Zw'
+    if is_kernel_mode:
+        asm_file = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'SysCallerK', 'Wrapper', 'src', 'syscaller.asm')
+    else:
+        asm_file = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'SysCaller', 'Wrapper', 'src', 'syscaller.asm')
     main_dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
     dll_path_count = int(os.getenv('NTDLL_PATH_COUNT', '1'))
     dll_paths = [main_dll_path]
