@@ -32,9 +32,6 @@ _Last updated: 6/29/25 by Maintainer_
 - [ ] **Add More Usage Examples**  
   Include basic to advanced syscall usage patterns and integration in real tools.
 
-- [ ] **Syscall Knowledgebase**  
-  Reference sheet in the repo (`docs/`) listing common NT syscalls, descriptions, return types, etc.
-
 ---
 
 ## Ideas
