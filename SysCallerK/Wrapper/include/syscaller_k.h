@@ -14,10 +14,6 @@
  * For more information, see https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-#ifdef _WIN64
-#define _AMD64_
-#endif
-
 #include "ntifs.h"
 
 #include "SysK/sysTypes_k.h"
