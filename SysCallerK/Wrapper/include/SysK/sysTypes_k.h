@@ -1,5 +1,10 @@
 #pragma once
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4201) // Disable nameless struct/union warnings (C4201)
+#endif
+
 #include "sysExternals_k.h"
 #include "sysConstants_k.h"
 
@@ -1079,3 +1084,7 @@ typedef struct _WORKER_FACTORY_DEFERRED_WORK
     ULONG AlpcSendMessageFlags;
     ULONG Flags;
 } WORKER_FACTORY_DEFERRED_WORK, * PWORKER_FACTORY_DEFERRED_WORK;
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
