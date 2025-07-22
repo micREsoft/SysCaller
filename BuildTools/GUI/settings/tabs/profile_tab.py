@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QMessageBox, QApplication
-from settings.utils import get_ini_path
-from PyQt5.QtCore import QSettings, pyqtSignal
 import os
 import sys
 import subprocess
 import shutil
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QFileDialog, QMessageBox, QApplication
+from settings.utils import get_ini_path
+from PyQt5.QtCore import QSettings, pyqtSignal
 
 class ProfileTab(QWidget):
     settings_reloaded = pyqtSignal()
