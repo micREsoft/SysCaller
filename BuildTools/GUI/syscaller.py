@@ -10,7 +10,7 @@ from components.bars.status_bar import StatusBar
 from threads.syscaller_thread import SysCallerThread
 from settings import SysCallerSettings
 from features.stub_mapper.stub_mapper_dialog import StubMapperDialog
-from settings.utils import get_project_paths, generate_stub_hashes, save_stub_hashes
+from settings.utils import get_project_paths, generate_stub_hashes, save_stub_hashes, get_ini_path
 
 class SysCallerWindow(QMainWindow):
     def __init__(self):
@@ -141,7 +141,7 @@ class SysCallerWindow(QMainWindow):
             self.status_bar.update_status("Running Normal SysCaller Obfuscation...", "working")
             self.left_panel.progress_bar.setMaximum(0)
             self.right_panel.output_text.clear()
-            settings = QSettings('SysCaller', 'BuildTools')
+            settings = QSettings(get_ini_path(), QSettings.IniFormat)
             settings.setValue('obfuscation/force_normal', True)
             settings.setValue('obfuscation/force_stub_mapper', False)
             settings.setValue('obfuscation/last_method', 'normal')
@@ -158,7 +158,7 @@ class SysCallerWindow(QMainWindow):
                 self.status_bar.update_status("Running Stub Mapper Obfuscation...", "working")
                 self.left_panel.progress_bar.setMaximum(0)
                 self.right_panel.output_text.clear()
-                settings = QSettings('SysCaller', 'BuildTools')
+                settings = QSettings(get_ini_path(), QSettings.IniFormat)
                 settings.setValue('obfuscation/force_normal', False)
                 settings.setValue('obfuscation/force_stub_mapper', True)
                 settings.setValue('obfuscation/last_method', 'stub_mapper')
@@ -185,7 +185,7 @@ class SysCallerWindow(QMainWindow):
     def on_worker_finished(self):
         self.left_panel.progress_bar.setRange(0, 1)
         self.left_panel.progress_bar.setValue(1)
-        settings = QSettings('SysCaller', 'BuildTools')
+        settings = QSettings(get_ini_path(), QSettings.IniFormat)
         last_method = settings.value('obfuscation/last_method', '', str)
         settings.remove('obfuscation/force_normal')
         settings.remove('obfuscation/force_stub_mapper')
