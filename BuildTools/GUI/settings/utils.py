@@ -30,8 +30,7 @@ def get_project_paths():
     hash_backups_dir = os.path.join(project_root, 'Backups', 'Hashes')
     default_dir = os.path.join(buildtools_dir, 'Default')
     try:
-        from PyQt5.QtCore import QSettings
-        settings = QSettings('SysCaller', 'BuildTools')
+        settings = QSettings(get_ini_path(), QSettings.IniFormat)
         syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
         is_kernel_mode = syscall_mode == 'Zw'
     except ImportError:
@@ -134,8 +133,7 @@ def get_available_backups():
 
 def generate_stub_hashes(asm_file_path, header_file_path=None, obfuscation_method=None):
     try:
-        from PyQt5.QtCore import QSettings
-        settings = QSettings('SysCaller', 'BuildTools')
+        settings = QSettings(get_ini_path(), QSettings.IniFormat)
         using_stub_mapper = False
         if obfuscation_method:
             using_stub_mapper = (obfuscation_method == 'stub_mapper')
@@ -272,3 +270,7 @@ def save_stub_hashes(stub_hashes, timestamp=None):
         import traceback
         traceback.print_exc()
         return False, str(e) 
+
+def get_ini_path():
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    return os.path.join(project_root, 'SysCaller.ini')
