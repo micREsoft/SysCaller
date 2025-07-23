@@ -366,20 +366,15 @@ class SyscallVerification:
         try:
             pe = pefile.PE(dll_path)
             md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
-            if syscall_name.startswith("Sys"):
-                base_name = syscall_name[3:]
-                version_match = re.search(r'(\w+?)(\d+)?$', base_name)
-                if version_match and version_match.group(2):
-                    base_name = version_match.group(1)
-            elif syscall_name.startswith("SysK"):
-                base_name = syscall_name[4:]
-                version_match = re.search(r'(\w+?)(\d+)?$', base_name)
-                if version_match and version_match.group(2):
-                    base_name = version_match.group(1)
+            if syscall_name.startswith("SysK"):
+                primary_name = 'Nt' + syscall_name[4:]
+                secondary_name = 'Zw' + syscall_name[4:]
+            elif syscall_name.startswith("Sys"):
+                primary_name = 'Nt' + syscall_name[3:]
+                secondary_name = 'Zw' + syscall_name[3:]
             else:
-                base_name = syscall_name
-            primary_name = 'Nt' + base_name
-            secondary_name = 'Zw' + base_name
+                primary_name = syscall_name
+                secondary_name = syscall_name
             for export in pe.DIRECTORY_ENTRY_EXPORT.symbols:
                 if not export.name:
                     continue
@@ -710,4 +705,4 @@ if __name__ == "__main__":
         tester.run_tests()
         sys.stdout.flush()
         print()
-    run_verification() 
+    run_verification()

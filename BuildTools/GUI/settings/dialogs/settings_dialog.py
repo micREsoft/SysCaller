@@ -5,7 +5,9 @@ from PyQt5.QtCore import QSettings
 from settings.tabs.general_tab import GeneralTab
 from settings.tabs.obfuscation_tab import ObfuscationTab
 from settings.tabs.integrity_tab import IntegrityTab
+from settings.tabs.profile_tab import ProfileTab
 from features.stub_mapper import StubMapperDialog
+from settings.utils import get_ini_path
 
 class SysCallerSettings(QDialog):
     def __init__(self, parent=None):
@@ -86,7 +88,7 @@ class SysCallerSettings(QDialog):
                 background: transparent;
             }
         """)
-        self.settings = QSettings('SysCaller', 'BuildTools')
+        self.settings = QSettings(get_ini_path(), QSettings.IniFormat)
         self.init_ui()
 
     def init_ui(self):
@@ -95,9 +97,11 @@ class SysCallerSettings(QDialog):
         self.general_tab = GeneralTab(self.settings)
         self.obfuscation_tab = ObfuscationTab(self.settings)
         self.integrity_tab = IntegrityTab(self.settings)
+        self.profile_tab = ProfileTab(self.settings)
         tabs.addTab(self.general_tab, "General")
-        tabs.addTab(self.obfuscation_tab, "Obfuscation")
         tabs.addTab(self.integrity_tab, "Integrity")
+        tabs.addTab(self.obfuscation_tab, "Obfuscation")
+        tabs.addTab(self.profile_tab, "Profile")
         layout.addWidget(tabs)
         button_layout = QHBoxLayout()
         stub_mapper_btn = QPushButton("Stub Mapper")
@@ -117,6 +121,7 @@ class SysCallerSettings(QDialog):
         self.general_tab.save_settings()
         self.obfuscation_tab.save_settings()
         self.integrity_tab.save_settings()
+        self.profile_tab.save_settings()
         self.accept()
         
     def open_stub_mapper(self):

@@ -7,6 +7,7 @@ from PyQt5.QtGui import QFont
 import os
 import re
 from .validator import validate_stub_settings, show_validation_error
+from settings.utils import get_ini_path
 
 class StubMapperDialog(QDialog):
     def __init__(self, parent=None):
@@ -14,7 +15,7 @@ class StubMapperDialog(QDialog):
         self.setWindowTitle("SysCaller - Stub Mapper")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
-        self.settings = QSettings('SysCaller', 'BuildTools')
+        self.settings = QSettings(get_ini_path(), QSettings.IniFormat)
         self.syscall_settings = {}
         self.load_syscall_settings()
         self.init_ui()

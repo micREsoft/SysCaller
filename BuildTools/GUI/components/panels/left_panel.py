@@ -6,6 +6,14 @@ from PyQt5.QtGui import QFont, QIcon, QCursor
 from components.buttons.button import SysCallerButton
 from components.bars.progress_bar import SysCallerProgressBar
 from utils.dll_path import DllPathLineEdit
+from components.dialogs.changelog_dialog import ChangelogDialog
+
+class ClickableLabel(QLabel):
+    clicked = pyqtSignal()
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.clicked.emit()
+        super().mousePressEvent(event)
 
 class LeftPanel(QFrame):
     dll_paths_changed = pyqtSignal(list)
@@ -43,9 +51,12 @@ class LeftPanel(QFrame):
         """)
         logo_label.setAlignment(Qt.AlignCenter)
         top_section.addWidget(logo_label)
-        version_label = QLabel("v1.1.0")
+        version_label = ClickableLabel("v1.1.0")
         version_label.setStyleSheet("color: #666666; font-size: 12px;")
         version_label.setAlignment(Qt.AlignCenter)
+        version_label.setCursor(Qt.PointingHandCursor)
+        version_label.clicked.connect(self.show_changelog_dialog)
+        self.version_label = version_label
         top_section.addWidget(version_label)
         layout.addLayout(top_section)
         layout.addSpacing(15)
@@ -328,3 +339,7 @@ class LeftPanel(QFrame):
         anim.setStartValue(0)
         anim.setEndValue(1)
         anim.start() 
+
+    def show_changelog_dialog(self):
+        dlg = ChangelogDialog(self)
+        dlg.exec_() 

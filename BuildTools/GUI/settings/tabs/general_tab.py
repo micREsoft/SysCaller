@@ -6,9 +6,10 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                            QCheckBox, QMessageBox, QMenu)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-
 from settings.utils import format_timestamp, get_project_paths, create_backup, get_available_backups
 from features.hash_compare import HashCompareDialog
+
+# NOTE: this tab requires a QSettings instance.
 
 def is_file_locked(file_path):
     if not os.path.exists(file_path):
@@ -45,6 +46,7 @@ class GeneralTab(QWidget):
         self.zw_mode_radio = QRadioButton("Zw Mode (Kernel Mode)")
         self.zw_mode_radio.setToolTip("Use Zw prefix for syscalls (primarily used in kernel-mode drivers)")
         current_mode = self.settings.value('general/syscall_mode', 'Nt', str)
+        self.original_mode = current_mode
         if current_mode == 'Zw':
             self.zw_mode_radio.setChecked(True)
         else:
@@ -91,10 +93,19 @@ class GeneralTab(QWidget):
     def save_settings(self):
         self.settings.setValue('general/create_backup', self.create_backup.isChecked())
         self.settings.setValue('general/hash_stubs', self.hash_stubs.isChecked())
-        if self.zw_mode_radio.isChecked():
-            self.settings.setValue('general/syscall_mode', 'Zw')
-        else:
-            self.settings.setValue('general/syscall_mode', 'Nt')
+        new_mode = 'Zw' if self.zw_mode_radio.isChecked() else 'Nt'
+        mode_changed = new_mode != self.original_mode
+        self.settings.setValue('general/syscall_mode', new_mode)
+        if mode_changed:
+            QMessageBox.information(
+                self,
+                "SysCaller - Mode Changed",
+                f"The syscall mode has been changed from {self.original_mode} to {new_mode}.\n\n"
+                f"This change affects which files are processed:\n"
+                f"- Nt Mode: User mode files in SysCaller directory\n"
+                f"- Zw Mode: Kernel mode files in SysCallerK directory\n\n"
+                f"Some changes may take full effect after a restart."
+            )
         if self.create_backup.isChecked():
             paths = get_project_paths()
             backups_dir = paths['backups_dir']
@@ -151,15 +162,24 @@ class GeneralTab(QWidget):
         menu.exec_(self.mapToGlobal(self.sender().rect().bottomLeft()))
     
     def restore_default_files(self):
-        reply = QMessageBox.question(self, "SysCaller v1.1.0", 
-                                    "Are you sure you want to restore default files?\nThis will overwrite your current syscaller.asm and sysFunctions.h files.",
-                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        paths = get_project_paths()
+        is_kernel_mode = paths.get('is_kernel_mode', False)
+        mode_text = "kernel mode" if is_kernel_mode else "user mode"
+        file_path_text = "SysCallerK directory" if is_kernel_mode else "SysCaller directory"
+        header_name = "sysFunctions_k.h" if is_kernel_mode else "sysFunctions.h"
+        reply = QMessageBox.question(
+            self, 
+            "SysCaller v1.1.0", 
+            f"Are you sure you want to restore default {mode_text} files?\n"
+            f"This will overwrite your current syscaller.asm and {header_name} files in the {file_path_text}.",
+            QMessageBox.Yes | QMessageBox.No, 
+            QMessageBox.No
+        )
         if reply == QMessageBox.No:
             return
         try:
-            paths = get_project_paths()
-            default_asm_path = os.path.join(paths['default_dir'], 'syscaller.asm')
-            default_header_path = os.path.join(paths['default_dir'], 'sysFunctions.h')
+            default_asm_path = paths['default_asm_path']
+            default_header_path = paths['default_header_path']
             asm_path = paths['asm_path']
             header_path = paths['header_path']
             if not os.path.exists(default_asm_path) or not os.path.exists(default_header_path):
@@ -174,7 +194,7 @@ class GeneralTab(QWidget):
             shutil.copy2(default_asm_path, asm_path)
             shutil.copy2(default_header_path, header_path)
             QMessageBox.information(self, "SysCaller v1.1.0", 
-                                   "Default files have been restored successfully!")
+                                   f"Default {mode_text} files have been restored successfully!")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred while restoring default files: {str(e)}")
     

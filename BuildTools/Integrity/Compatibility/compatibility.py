@@ -129,16 +129,11 @@ def validate_syscalls(asm_file, dll_paths):
         dll_index = min(version, len(syscall_tables))
         syscall_numbers = syscall_tables[dll_index]
         if syscall['name'].startswith('SysK'):
-            base_name = syscall['name'][4:]
-            if syscall['version'] > 1:
-                base_name = base_name[:-len(str(syscall['version']))]
+            expected_name = 'Nt' + syscall['name'][4:]
         elif syscall['name'].startswith('Sys'):
-            base_name = syscall['name'][3:]
-            if syscall['version'] > 1:
-                base_name = base_name[:-len(str(syscall['version']))]
+            expected_name = 'Nt' + syscall['name'][3:]
         else:
-            base_name = syscall['name']
-        expected_name = "Nt" + base_name
+            expected_name = syscall['name']
         actual_offset = syscall_numbers.get(expected_name, 0)
         if syscall.get('duplicate_offset', False) or syscall.get('duplicate_name', False):
             duplicates += 1

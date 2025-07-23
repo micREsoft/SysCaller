@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                            QLineEdit)
 from PyQt5.QtCore import Qt
 
+# NOTE: this tab requires a QSettings instance.
+
 class IntegrityTab(QWidget):
     def __init__(self, settings):
         super().__init__()
