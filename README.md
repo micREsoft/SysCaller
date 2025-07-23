@@ -5,262 +5,197 @@
 </p>
 
 <p align="center">
-  <b>Windows Syscall SDK with dynamic offset resolution, validation, and obfuscation</b><br>
-  <i>Direct syscall access across Windows versions with ease</i>
+  <b>Direct Windows Syscalls. Dynamic offsets. Validation. Obfuscation.</b><br>
+  <i>Bypass user-mode hooks and work across Windows versions with a single SDK.</i>
 </p>
+
+---
 
 <p align="center">
-  <a href="#key-features">Features</a> •
-  <a href="#technical-overview">Overview</a> •
-  <a href="#installation">Installation</a> •
+  <a href="#features">Features</a> •
+  <a href="#installation">Install</a> •
   <a href="#usage">Usage</a> •
-  <a href="#documentation">Documentation</a> •
-  <a href="#considerations">Considerations</a> •
-  <a href="#contributing">Contributing</a> •
-  <a href="#license">License</a> •
-  <a href="#disclaimer">Disclaimer</a>
+  <a href="#buildtools">BuildTools</a> •
+  <a href="#documentation">Docs</a> •
+  <a href="#contributing">Contribute</a> •
+  <a href="#license">License</a>
 </p>
 
-## Key Features
+---
 
-- **Direct Syscall Access**: Bypass Windows API hooks by communicating directly with the NT kernel
-- **Dual Mode Operation**: Single code-base delivers two static libraries:
-  * **SysCaller** – user-mode (`Nt`/`Sys` prefix) 
-  * **SysCallerK** – kernel-mode (`Zw`/`SysK` prefix)
-- **Kernel Ready**: Build the *SysCallerK* variant with the Windows Driver Kit (WDK) and VS22 *Kernel Mode Driver* toolset (VS 2022 supported)
-- **Dynamic Offset Resolution**: Automatic syscall ID detection for compatibility across Windows versions
-- **Advanced Protection**: Optional obfuscation layer to conceal syscall patterns and evade detection
-- **Comprehensive GUI Tools**: Validate, verify, and protect syscalls through an intuitive interface
-- **Cross Version Compatible**: Fully tested on Windows 10 and 11 (x64)
-- **Multi Language Support**: Primary C++ implementation with planned bindings for Rust, GO, and more
+## Features
 
-## Technical Overview
+- **Direct Syscall Access:** Bypass Windows API hooks by calling NT kernel syscalls directly.
+- **Dual Mode:** Single codebase, two static libraries:
+  - `SysCaller` (user mode, `Nt`/`Sys` prefix)
+  - `SysCallerK` (kernel mode, `Zw`/`SysK` prefix)
+- **Dynamic Offset Resolution:** Automatically detects syscall IDs for compatibility across Windows 10/11 (x64).
+- **Obfuscation Layer:** Optional, randomized stub generation and anti pattern junk for stealth.
+- **Comprehensive GUI:** Validate, verify, and protect syscalls with a modern interface.
+- **Multi Language Ready:** C++ primary, with planned Rust/Go bindings.
+- **Modular Build System:** Visual Studio (MASM) and CMake support.
 
-SysCaller provides a thin abstraction layer over Windows NT system calls, allowing developers to:
+---
 
-1. **Bypass API Hooking**: Access syscalls directly without relying on hooked user-mode DLLs
-2. **Maximize Compatibility**: Dynamically resolve syscall IDs to work across different Windows versions
-3. **Enhance Security**: Apply obfuscation techniques to prevent static analysis and detection
-4. **Simplify Development**: Use a consistent API for syscalls across user-mode and kernel-mode applications
+## Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [SysCaller BuildTools](#buildtools)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+- [Disclaimer](#disclaimer)
 
-The SDK implements hundreds of Windows NT native functions with proper type definitions and parameter validation, making low level programming more accessible.
+---
 
 ## Installation
 
 ### Prerequisites
-
-- Windows 10+ (x64) operating system
-- Visual Studio with MASM support (2019 or newer recommended)
+- Windows 10 or 11 (x64)
+- Visual Studio 2019+ (with MASM)
 - Python 3.8+ (for build tools)
 
-### Option 1: Visual Studio
+### Quick Start (Visual Studio)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/WindowsAPI/SysCaller.git
-   cd SysCaller
-   ```
+```sh
+# Clone the repo
+$ git clone https://github.com/micREsoft/SysCaller.git
+$ cd SysCaller
 
-2. **Install Python dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Install Python dependencies
+$ pip install -r requirements.txt
 
-3. **Run the BuildTools GUI**
-   ```bash
-   cd BuildTools
-   python syscaller.py
-   ```
+# Launch the BuildTools GUI
+$ cd BuildTools
+$ python syscaller.py
+```
 
-4. **Run Integrity Checks**
-   - In the GUI, click "Validation Check" to update syscall offsets
-   - Run "Compatibility Check" and "Verification Check" to ensure full compatibility
-   - Optionally run "Obfuscation" to add protection layer
-   - (NOTE: Obfuscation is still heavily experimental! Sometimes it doesnt work, and you have to generate a new `SysCaller.lib`)
+- Use the GUI to run **Validation**, **Compatibility**, and **Verification** checks.
+- Optionally enable **Obfuscation** (experimental).
 
-    
-5. **Build the User Mode library** (SysCaller)
-   - Open **`SysCaller.sln`** in Visual Studio
-   - Select the *SysCaller* project
-   - Set **Configuration** to *Release* and **Platform** to *x64*
-   - Ensure the C++ standard is *17 or newer*
-   - Build → *Build SysCaller* → produces `x64/Release/SysCaller.lib`
+#### Build the User Mode Library
+- Open `SysCaller.sln` in Visual Studio
+- Select the **SysCaller** project
+- Set configuration to `Release | x64`
+- Build via GUI → *Build SysCaller* → outputs `x64/Release/SysCaller.lib`
 
-### Option 2: CMake (C++17 or newer)
+#### Build the Kernel Mode Library
+- Install the Windows Driver Kit (WDK)
+- In `SysCaller.sln`, select **SysCallerK**
+- Set configuration to `Release | x64`
+- Build via GUI → *Build SysCallerK* → outputs `x64/Release/SysCallerK.lib`
 
-1. **Run Integrity Checks**
+> **Note:** Kernel mode is experimental. Use a VM for testing. Driver signing or Secure Boot off may be required.
 
-   - In the GUI, click "Validation Check" to update syscall offsets
-   - Run "Compatibility Check" and "Verification Check" to ensure full compatibility
-   - Optionally run "Obfuscation" to add protection layer
-   - (NOTE: Obfuscation is still heavily experimental! Sometimes it doesnt work, and you have to generate a new `SysCaller.lib`)
+### CMake (Alternative)
 
-2. **Configure CMake**
-   ```bash
-   cd SysCaller/Wrapper
-   ```
+```sh
+# Run integrity checks in the GUI first
+$ cd SysCaller/Wrapper
+# Edit CMakeLists.txt to set your C++ standard (17/20/23)
+$ mkdir build && cd build
+$ cmake .. -A x64
+$ cmake --build . --config Release
+```
 
-3. **Update C++ standard in CMakeLists.txt**
-   Open `CMakeLists.txt` and set your C++ standard version (17, 20, or 23):
-   ```cmake
-   set(CMAKE_CXX_STANDARD #CHANGEME)  # Change to your required version
-   ```
+> **Note:** CMake script for Kernel mode does not exist, but it is planned.
 
-4. **Build the library**
-   ```bash
-   mkdir build && cd build
-   cmake .. -A x64
-   cmake --build . --config Release
-   ```
-
-### Building the Kernel Mode library (SysCallerK)
-
-The solution contains a second project named **SysCallerK**.  To compile it you need the WDK components that come with the *Kernel-Mode Driver* workload.
-
-1. Install the WDK (during VS installation setup choose *Windows Driver Kit* or install the *Kernel-Mode Driver, C++* workload).
-2. In **`SysCaller.sln`** change the *Startup Project* (or selection in *Solution Explorer*) to **SysCallerK**.
-3. Select the **`Release | x64`** configuration.
-4. Run the GUI/BuildTools to your liking. (make sure Kernel Mode is selected under settings)
-5. Build → *Build SysCallerK* → produces `x64/Release/SysCallerK.lib`.
-
-> ⚠️ CMake for Kernel Mode coming soon. Also note Kernel Mode is still super experimental I suggest using VM to test any kernel implementations using SysCaller.
-> 
-> ⚠️ Building kernel components usually requires **driver signing certificates** or disabling *Secure Boot / Driver Signature Enforcement* on the test machine. Follow the [Microsoft Docs](https://learn.microsoft.com/windows-hardware/drivers/install/) before loading code built with SysCallerK.
+---
 
 ## Usage
 
-### Integration
+### Integrate in Your Project
 
-1. **Add to your project**
-   - Include the `Wrapper/include` directory in your include paths
-   - Add the path and input for `SysCaller.lib` to your linker dependencies
-
-2. **Import the header**
+1. **Include headers:**
+   - Add `Wrapper/include` to your include paths
+   - Link against `SysCaller.lib` (user) or `SysCallerK.lib` (kernel)
+2. **Import the main header:**
    ```cpp
    #include "syscaller.h"
    ```
-
-3. **Use syscalls directly**
+3. **Call syscalls directly:**
    ```cpp
-   // user-mode syscall (Nt/Sys)
+   // User mode example
    NTSTATUS status = SysAllocateVirtualMemory(
-       processHandle,
-       &baseAddress,
-       0,
-       &regionSize,
-       MEM_COMMIT | MEM_RESERVE,
-       PAGE_READWRITE
-   );
-   
-   // kernel-mode syscall (Zw/SysK)
+       processHandle, &baseAddress, 0, &regionSize,
+       MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+   ```
+   ```cpp
+   // Kernel mode example
    NTSTATUS status = SysKAllocateVirtualMemory(
-       processHandle,
-       &baseAddress,
-       0,
-       &regionSize,
-       MEM_COMMIT | MEM_RESERVE,
-       PAGE_READWRITE
-   );
+       ZwCurrentProcess(), &base, 0, &regionSize,
+       MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
    ```
 
-### Example:
-
+#### Example: Write to Process Memory
 ```cpp
 #include "syscaller.h"
 
 bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data, SIZE_T size) {
     SIZE_T bytesWritten;
-    // direct syscall to write memory - bypasses potential hooks in WriteProcessMemory
     NTSTATUS status = SysWriteVirtualMemory(
-        processHandle,
-        targetAddress,
-        data,
-        size,
-        &bytesWritten
-    );
+        processHandle, targetAddress, data, size, &bytesWritten);
     return NT_SUCCESS(status) && (bytesWritten == size);
 }
 ```
 
-### Kernel Mode snippet:
-
-```cpp
-#include "syscaller.h"
-
-extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT driver, PUNICODE_STRING path) {
-    SIZE_T regionSize = 0x1000;
-    PVOID  base       = nullptr;
-
-    NTSTATUS st = SysKAllocateVirtualMemory(
-        ZwCurrentProcess(),
-        &base,
-        0,
-        &regionSize,
-        MEM_COMMIT | MEM_RESERVE,
-        PAGE_READWRITE);
-
-    return st;
-}
-```
-- For more examples look at the [Examples](https://github.com/micREsoft/SysCallerExamples) repo.
-
-### Advanced Features
-
-The SysCaller GUI provides additional tools for working with syscalls:
-
-- **Stub Mapper**: Create custom syscall mappings using predefined techniques to enhance obfuscation
-- **Hash Stubs**: Create Hashes for each Assembly Stub + Build Config
-- **Hash Compare**: Compare two or more files containing Stub Hashes
-- **Stub Craft**: Design and validate custom syscall stubs manually (WIP)
-- **Settings**: Configure global syscall behavior and protection options
-
-## Documentation
-
-### External Resources
-
-- [Windows NT Syscall Documentation](https://ntdoc.m417z.com/)
-- [Windows Kernel Reference](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/_kernel/)
-- [Windows API Reference](https://learn.microsoft.com/en-us/windows/win32/apiindex/windows-api-list)
-- [Windows NT Reference](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/)
-
-**For comprehensive documentation and guides, check out the [SysCaller Wiki](https://github.com/WindowsAPI/SysCaller/wiki).**
-
-### SysCaller API Reference
-
-The full API documentation is available in the header files:
-
-- `Wrapper/include/syscaller.h` - Main SDK header
-- `Wrapper/include/Sys/sysFunctions.h` - Syscall function declarations
-- `Wrapper/include/Sys/sysTypes.h` - Windows NT type definitions
-- `Wrapper/include/Sys/sysExternals.h` - External function references
-
-## Considerations
-
-SysCaller is intended for educational and legitimate security research. When using this library:
-
-- Ensure proper error handling for all syscalls
-- Be aware that direct syscalls may bypass security mechanisms
-- Test thoroughly in controlled environments before deployment
-
-## Contributing
-
-Contributions to SysCaller are welcome! Please feel free to submit pull requests, create issues, or suggest new features.
-
-If you've cloned or are enjoying this project, please consider [⭐ it on GitHub](https://github.com/WindowsAPI/SysCaller) to help others discover SysCaller!
-
-## License
-
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
-
-## Disclaimer
-
-- **Educational Purpose**: SysCaller is created for educational and research purposes.
-- **Legitimate Use**: While the library can be used to bypass certain security mechanisms, it is intended for legitimate security research, penetration testing, and software development.
-- **No Liability**: The authors are not responsible for any misuse of this library or any actions taken with it.
-- **Legal Compliance**: Users must ensure they comply with all applicable laws and regulations when using this software.
+> **Note:** For more usage demos & examples checkout [Examples](https://github.com/micREsoft/SysCallerExamples)!
 
 ---
 
+## BuildTools
+
+SysCaller includes a full featured BuildTools GUI with capabilities like:
+
+| Tool                | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| **Validation**      | Updates syscall offsets, checks for missing/invalid stubs                   |
+| **Compatibility**   | Analyzes syscall compatibility across Windows versions                      |
+| **Verification**    | Checks return/parameter types, offset ranges, and header consistency        |
+| **Obfuscation**     | Randomizes names/offsets, adds junk instructions for stealth, and more      |
+| **Stub Mapper**     | Custom obfuscation and mapping for individual syscalls                      |
+| **Hash Compare**    | Compare stub hashes across builds/files                                     |
+| **Global Profile**  | Import/Export SysCaller profiles via .ini config                            |
+| **Settings**        | Configure global syscall and protection options                             |
+
+- All tools are accessible via the BuildTools GUI (`python syscaller.py` in `BuildTools/`).
+
+---
+
+## Documentation
+
+- [SysCaller Wiki](https://github.com/micREsoft/SysCaller/wiki)
+- [SysCaller Nt Usage](https://github.com/micREsoft/SysCaller/tree/main/SysCaller/Wrapper/include)
+- [SysCaller Zw Usage](https://github.com/micREsoft/SysCaller/tree/main/SysCallerK/Wrapper/include)
+- [Windows NT Syscall Reference](https://ntdoc.m417z.com/)
+- [Windows Kernel Docs](https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/_kernel/)
+
+---
+
+## Contributing
+
+Pull requests, issues, and feature suggestions are welcome! Please:
+- Read the [CONTRIBUTING.md](https://github.com/micREsoft/SysCaller/blob/main/.github/CONTRIBUTING.md)
+- Follow the [GPLv3 license](LICENSE)
+- Use issues for bug reports and feature requests
+
+If you find SysCaller useful, consider starring the repo to help others discover it.
+
+---
+
+## License
+
+SysCaller is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
+
+---
+
+## Disclaimer
+
+> **Educational Use Only:** SysCaller is for research and educational purposes. Use responsibly and legally.
+> 
+> **No Warranty:** The authors are not liable for misuse or damages. Always test in controlled environments.
+
 <p align="center">
-  <i>SysCaller - Bridging the gap between user mode and kernel mode</i>
-</p> 
+  <i>SysCaller — Bridging the gap between user mode and kernel mode</i>
+</p>
