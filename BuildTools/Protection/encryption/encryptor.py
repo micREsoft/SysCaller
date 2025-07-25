@@ -1,8 +1,12 @@
+import sys
+import os
 import random
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
+from settings.utils import get_ini_path
 from PyQt5.QtCore import QSettings
 
 def get_encryption_method():
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     return settings.value('obfuscation/encryption_method', 1, int)
 
 def encrypt_offset(real_offset, method=1):
