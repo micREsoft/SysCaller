@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Direct Windows Syscalls. Dynamic offsets. Validation. Obfuscation.</b><br>
-  <i>Bypass user-mode hooks and work across Windows versions with a single SDK.</i>
+  <i>Bypass user mode hooks and work across Windows versions with a single SDK.</i>
 </p>
 
 ---
@@ -32,14 +32,31 @@
 - **Dynamic Offset Resolution:** Automatically detects syscall IDs for compatibility across Windows 10/11 (x64).
 - **Obfuscation Layer:** Optional, randomized stub generation and anti pattern junk for stealth.
 - **Comprehensive GUI:** Validate, verify, and protect syscalls with a modern interface.
-- **Multi Language Ready:** C++ primary, with planned Rust/Go bindings.
+- **Multi Language Ready:** Official bindings and examples for C, Rust, Python, and Go. Easily extendable to more languages.
 - **Modular Build System:** Visual Studio (MASM) and CMake support.
+
+---
+
+## Multi Language Bindings & Examples
+
+SysCaller is now not just for C++! The SDK now provides official bindings and ready to use DLL injection examples for:
+
+- **C++** ([C++ Example](https://github.com/micREsoft/SysCallerExamples/tree/main/Projects/SimpleInj))
+- **C** ([C Example](Bindings/Examples/C/))
+- **Rust** ([Rust Example](Bindings/Examples/Rust/))
+- **Python** ([Python Example](Bindings/Examples/Python/))
+- **Go** ([Go Example](Bindings/Examples/GO/))
+
+Each example demonstrates direct DLL injection using the SysCaller API, with full source and build instructions in each language’s folder. These are bare minimum examples meant to show simple usage, now you can expand syscalls and methodology.
+
+> Want to add support for another language? PRs and suggestions are welcome!
 
 ---
 
 ## Table of Contents
 - [Features](#features)
 - [Installation](#installation)
+- [How to Build and Use Bindings (All Languages)](#how-to-build-and-use-bindings-all-languages)
 - [Usage](#usage)
 - [SysCaller BuildTools](#buildtools)
 - [Documentation](#documentation)
@@ -100,6 +117,36 @@ $ cmake --build . --config Release
 ```
 
 > **Note:** CMake script for Kernel mode does not exist, but it is planned.
+
+---
+
+## How to Build and Use Bindings (All Languages)
+
+To use SysCaller from C, C++, Rust, Python, Go, or any other language that supports C bindings, follow these steps:
+
+1. **Launch the BuildTools GUI:**
+   ```sh
+   cd BuildTools
+   python syscaller.py
+   ```
+2. **Enable Bindings:**
+   - Go to the **Settings** tab in the GUI.
+   - Enable the **Bindings** option.
+   - Adjust any other settings you want (select syscalls, enable obfuscation, etc).
+
+3. **Run Validation:**
+   - In the GUI, run the **Validation** tool.
+   - This will generate a `SysCaller.def` file in `SysCaller/Wrapper/`.
+
+4. **Build the DLL:**
+   - Add `Wrapper/SysCaller.def` to your module definitions in your build system.
+   - Build the SysCaller project as a DLL (`SysCaller.dll`).
+
+5. **Use in Your Language of Choice:**
+   - Follow the language specific README in `Bindings/Examples/<language>/` for how to use the DLL in C, Rust, Python, Go, etc.
+
+> **Tip:**  
+> The language example folders contain minimal working injectors and build instructions for each language. Expand from there for your own projects!
 
 ---
 
@@ -179,6 +226,7 @@ Pull requests, issues, and feature suggestions are welcome! Please:
 - Read the [CONTRIBUTING.md](https://github.com/micREsoft/SysCaller/blob/main/.github/CONTRIBUTING.md)
 - Follow the [GPLv3 license](LICENSE)
 - Use issues for bug reports and feature requests
+- See the [Wiki](https://github.com/micREsoft/SysCaller/wiki) for contribution guidelines
 
 If you find SysCaller useful, consider starring the repo to help others discover it.
 

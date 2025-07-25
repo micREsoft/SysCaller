@@ -57,6 +57,25 @@ class GeneralTab(QWidget):
         syscall_mode_layout.addWidget(self.zw_mode_radio)
         syscall_mode_group.setLayout(syscall_mode_layout)
         layout.addWidget(syscall_mode_group)
+        bindings_group = QGroupBox("Bindings")
+        bindings_layout = QVBoxLayout()
+        bindings_desc = QLabel("Enable or disable automatic generation of SysCaller.def for bindings.")
+        bindings_desc.setWordWrap(True)
+        bindings_layout.addWidget(bindings_desc)
+        self.bindings_button_group = QButtonGroup(self)
+        self.bindings_enable_radio = QRadioButton("Enable")
+        self.bindings_disable_radio = QRadioButton("Disable")
+        self.bindings_button_group.addButton(self.bindings_enable_radio)
+        self.bindings_button_group.addButton(self.bindings_disable_radio)
+        bindings_layout.addWidget(self.bindings_enable_radio)
+        bindings_layout.addWidget(self.bindings_disable_radio)
+        bindings_group.setLayout(bindings_layout)
+        layout.addWidget(bindings_group)
+        bindings_enabled = self.settings.value('general/bindings_enabled', False, bool)
+        if bindings_enabled:
+            self.bindings_enable_radio.setChecked(True)
+        else:
+            self.bindings_disable_radio.setChecked(True)
         hash_stubs_group = QGroupBox("Hash Stubs")
         hash_stubs_layout = QVBoxLayout()
         description = QLabel("Optionally hash each stub/build with unique hash for future lookups.")
@@ -93,6 +112,7 @@ class GeneralTab(QWidget):
     def save_settings(self):
         self.settings.setValue('general/create_backup', self.create_backup.isChecked())
         self.settings.setValue('general/hash_stubs', self.hash_stubs.isChecked())
+        self.settings.setValue('general/bindings_enabled', self.bindings_enable_radio.isChecked())
         new_mode = 'Zw' if self.zw_mode_radio.isChecked() else 'Nt'
         mode_changed = new_mode != self.original_mode
         self.settings.setValue('general/syscall_mode', new_mode)
@@ -381,4 +401,4 @@ class GeneralTab(QWidget):
     
     def open_hash_compare(self):
         dialog = HashCompareDialog(self)
-        dialog.exec_() 
+        dialog.exec_()

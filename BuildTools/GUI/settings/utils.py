@@ -271,6 +271,12 @@ def save_stub_hashes(stub_hashes, timestamp=None):
         traceback.print_exc()
         return False, str(e) 
 
+def update_def_file(syscall_names, def_path):
+    with open(def_path, 'w', encoding='utf-8') as f:
+        f.write("LIBRARY SysCaller\nEXPORTS\n")
+        for name in syscall_names:
+            f.write(f"    {name}\n")
+
 def get_ini_path():
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     return os.path.join(project_root, 'SysCaller.ini')

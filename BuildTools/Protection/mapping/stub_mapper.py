@@ -6,9 +6,9 @@ from encryption.encryptor import get_encryption_method, encrypt_offset
 from stub.junkgen import generate_junk_instructions
 from stub.namer import generate_random_name, generate_random_offset_name, generate_random_offset
 from stub.stubgen import generate_masked_sequence, generate_chunked_sequence, generate_align_padding
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
-from settings.utils import get_ini_path
+from settings.utils import get_ini_path, update_def_file
+
 try:
     from PyQt5.QtCore import QSettings
 except ImportError:
@@ -386,6 +386,17 @@ def generate_custom_exports():
         f.writelines(cleaned_header_content)
     print(f"Generated {len(syscall_map)} unique syscalls with custom obfuscation settings")
     print(f"Applied stub_mapper settings to syscalls")
+    bindings_enabled = settings.value('general/bindings_enabled', False, bool)
+    if bindings_enabled and not is_kernel_mode:
+        def_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'SysCaller.def')
+        # Parse the generated asm file for all exported PROC names (obfuscated)
+        obfuscated_names = []
+        with open(asm_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                m = re.match(r'\s*([A-Za-z0-9_]+)\s+PROC', line)
+                if m:
+                    obfuscated_names.append(m.group(1))
+        update_def_file(obfuscated_names, def_path)
 
 if __name__ == "__main__":
     generate_custom_exports() 
