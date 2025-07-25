@@ -1,12 +1,16 @@
 import random
 import string
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
+from settings.utils import get_ini_path
 from PyQt5.QtCore import QSettings
 
 def generate_random_string(length=8):
     return ''.join(random.choices(string.ascii_lowercase, k=length))
 
 def generate_random_name(used_names, prefix_length=None, number_length=None):
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     if prefix_length is None:
         prefix_length = settings.value('obfuscation/syscall_prefix_length', 8, type=int)
     if number_length is None:
@@ -20,7 +24,7 @@ def generate_random_name(used_names, prefix_length=None, number_length=None):
             return name
 
 def generate_random_offset_name(used_names, length=None):
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     if length is None:
         length = settings.value('obfuscation/offset_name_length', 8, type=int)
     while True:
