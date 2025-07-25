@@ -6,8 +6,8 @@ This Go example demonstrates injecting a DLL into a target process using SysCall
 
 ## Requirements
 
-- Go 1.18 or later (tested with Go 1.23–1.24)
-- `SysCaller.dll` built with required exports and placed in the same directory
+- Go 1.18 (1.21+ recommended, tested with 1.23+)
+- `SysCaller.dll` present in the same directory and built with required exports
 
 ---
 
