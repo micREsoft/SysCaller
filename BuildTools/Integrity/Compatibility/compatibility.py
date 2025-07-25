@@ -1,7 +1,9 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
 import pefile
 import re
 import capstone
-import os
 
 try:
     from PyQt5.QtCore import QSettings
@@ -11,6 +13,7 @@ except ImportError:
             self.settings = {}
         def value(self, key, default, type):
             return default
+from settings.utils import get_ini_path
 
 class Colors:
     OKBLUE = '\033[94m'
@@ -113,7 +116,7 @@ def print_legend():
     print()
 
 def validate_syscalls(asm_file, dll_paths):
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     is_zw_mode = syscall_mode == 'Zw'
     mode_display = "Zw" if is_zw_mode else "Nt"
@@ -166,7 +169,7 @@ def validate_syscalls(asm_file, dll_paths):
 
 if __name__ == "__main__":
 
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     is_kernel_mode = syscall_mode == 'Zw'
     if is_kernel_mode:

@@ -1,11 +1,14 @@
 import random
 import os
+import sys
 import re
 from encryption.encryptor import get_encryption_method, encrypt_offset
 from stub.junkgen import generate_junk_instructions
 from stub.namer import generate_random_name, generate_random_offset_name, generate_random_offset
 from stub.stubgen import generate_masked_sequence, generate_chunked_sequence, generate_align_padding
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
+from settings.utils import get_ini_path
 try:
     from PyQt5.QtCore import QSettings
 except ImportError:
@@ -16,7 +19,7 @@ except ImportError:
             return default
 
 def apply_custom_syscall_settings(syscall_name, real_offset, settings=None):
-    global_settings = QSettings('SysCaller', 'BuildTools')
+    global_settings = QSettings(get_ini_path(), QSettings.IniFormat)
     if settings is None:
         syscall_settings = global_settings.value('stub_mapper/syscall_settings', {}, type=dict)
         if syscall_name in syscall_settings:
@@ -55,7 +58,7 @@ def generate_custom_exports():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
     
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     is_kernel_mode = syscall_mode == 'Zw'
     if is_kernel_mode:

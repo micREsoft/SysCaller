@@ -55,7 +55,19 @@ class SysCallerWindow(QMainWindow):
     def on_dll_paths_changed(self, paths):
         self.dll_paths = paths
 
+    def save_all_settings(self):
+        try:
+            from settings.dialogs.settings_dialog import SysCallerSettings
+            settings_dialog = SysCallerSettings(self)
+            settings_dialog.general_tab.save_settings()
+            settings_dialog.obfuscation_tab.save_settings()
+            settings_dialog.integrity_tab.save_settings()
+            settings_dialog.profile_tab.save_settings()
+        except Exception as e:
+            print(f"[WARNING] Could not save all settings: {e}")
+
     def run_validation(self):
+        self.save_all_settings()
         if self.worker is not None and self.worker.isRunning():
             return
         self.status_bar.update_status("Running Validation Check...", "working")
@@ -68,6 +80,7 @@ class SysCallerWindow(QMainWindow):
         self.worker.start()
 
     def run_compatibility(self):
+        self.save_all_settings()
         if self.worker is not None and self.worker.isRunning():
             return
         self.status_bar.update_status("Running Compatibility Check...", "working")
@@ -80,6 +93,7 @@ class SysCallerWindow(QMainWindow):
         self.worker.start()
 
     def run_verification(self):
+        self.save_all_settings()
         if self.worker is not None and self.worker.isRunning():
             return
         self.status_bar.update_status("Running Verification Check...", "working")
