@@ -1,11 +1,13 @@
 import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
 import re
-from dataclasses import dataclass
-from typing import List, Dict, Optional
 import pefile
 import capstone
 from concurrent.futures import ProcessPoolExecutor, as_completed
-import sys
+from dataclasses import dataclass
+from typing import List, Dict, Optional
+from settings.utils import get_ini_path
 
 class Colors:
     OKBLUE = '\033[94m'
@@ -93,7 +95,7 @@ class TypeDefinitionTracker:
     def parse_header_files(self):
         try:
             from PyQt5.QtCore import QSettings
-            settings = QSettings('SysCaller', 'BuildTools')
+            settings = QSettings(get_ini_path(), QSettings.IniFormat)
             syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
             is_kernel_mode = syscall_mode == 'Zw'
         except ImportError:
@@ -271,7 +273,7 @@ class SyscallVerification:
         base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..')
         try:
             from PyQt5.QtCore import QSettings
-            settings = QSettings('SysCaller', 'BuildTools')
+            settings = QSettings(get_ini_path(), QSettings.IniFormat)
             syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
             is_kernel_mode = syscall_mode == 'Zw'
         except ImportError:
@@ -343,7 +345,7 @@ class SyscallVerification:
         offsets = {}
         try:
             from PyQt5.QtCore import QSettings
-            settings = QSettings('SysCaller', 'BuildTools')
+            settings = QSettings(get_ini_path(), QSettings.IniFormat)
             syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
         except ImportError:
             syscall_mode = 'Nt'
@@ -705,4 +707,4 @@ if __name__ == "__main__":
         tester.run_tests()
         sys.stdout.flush()
         print()
-    run_verification()
+    run_verification() 
