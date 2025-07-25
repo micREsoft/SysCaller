@@ -43,7 +43,9 @@ SysCaller is now not just for C++! The SDK now provides official bindings and re
 
 - **C++** ([C++ Example](https://github.com/micREsoft/SysCallerExamples/tree/main/Projects/SimpleInj))
 - **C** ([C Example](Bindings/Examples/C/))
+- **C#** ([C# Example](Bindings/Examples/CSharp/))
 - **Rust** ([Rust Example](Bindings/Examples/Rust/))
+- **Nim** ([Nim Example](Bindings/Examples/Nim/))
 - **Python** ([Python Example](Bindings/Examples/Python/))
 - **Go** ([Go Example](Bindings/Examples/GO/))
 
