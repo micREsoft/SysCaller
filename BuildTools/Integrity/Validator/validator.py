@@ -1,7 +1,10 @@
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
 import pefile
 import re
 import capstone
-import os
+from settings.utils import get_ini_path
 try:
     from PyQt5.QtCore import QSettings
 except ImportError:
@@ -20,7 +23,7 @@ def update_syscalls(asm_file, syscall_tables):
         return
     print(f"Processing {num_tables} syscall table(s)...")
     updated_lines = []
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     selected_syscalls = settings.value('integrity/selected_syscalls', [], type=list)
     use_all_syscalls = len(selected_syscalls) == 0
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
@@ -107,7 +110,7 @@ def update_syscalls(asm_file, syscall_tables):
 
 def update_header_file(syscall_tables, selected_syscalls, use_all_syscalls):
     base_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     is_kernel_mode = syscall_mode == 'Zw'
     if is_kernel_mode:
@@ -317,8 +320,7 @@ def get_syscalls(dll_path):
     return syscall_numbers
 
 if __name__ == "__main__":
-
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     is_kernel_mode = syscall_mode == 'Zw'
     base_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
