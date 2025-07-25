@@ -1,8 +1,12 @@
+import sys
+import os
 import random
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
+from settings.utils import get_ini_path
 from PyQt5.QtCore import QSettings
 
 def generate_junk_instructions(min_inst=None, max_inst=None, use_advanced=None):
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     if min_inst is None:
         min_inst = settings.value('obfuscation/min_instructions', 2, int)
     if max_inst is None:
