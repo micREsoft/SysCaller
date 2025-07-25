@@ -1,13 +1,9 @@
-import random
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'GUI')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
+import pefile
 import re
-import mapping.stub_mapper as stub_mapper
-from encryption.encryptor import get_encryption_method, encrypt_offset
-from stub.junkgen import generate_junk_instructions
-from stub.namer import generate_random_name, generate_random_offset_name, generate_random_offset
-from stub.stubgen import generate_masked_sequence, generate_chunked_sequence, generate_align_padding
+import capstone
 from settings.utils import get_ini_path, update_def_file
 
 try:
@@ -19,281 +15,339 @@ except ImportError:
         def value(self, key, default, type):
             return default
 
-def extract_syscall_offset(line):
-    offset_part = line.split('mov eax,')[1].split(';')[0].strip()
-    return int(offset_part[:-1], 16)
-
-def generate_exports():
+def update_syscalls(asm_file, syscall_tables):
+    with open(asm_file, 'r') as file:
+        lines = file.readlines()
+    num_tables = len(syscall_tables)
+    if num_tables == 0:
+        print("No syscall tables provided. Aborting.")
+        return
+    print(f"Processing {num_tables} syscall table(s)...")
+    updated_lines = []
     settings = QSettings(get_ini_path(), QSettings.IniFormat)
-    syscall_settings = settings.value('stub_mapper/syscall_settings', {}, type=dict)
-    force_normal = settings.value('obfuscation/force_normal', False, type=bool)
-    force_stub_mapper = settings.value('obfuscation/force_stub_mapper', False, type=bool)
-    if force_stub_mapper or (syscall_settings and not force_normal):
-        try:
-            # DEBUG print("Using Stub Mapper obfuscation mode...")
-            stub_mapper.generate_custom_exports()
-            return
-        except Exception as e:
-            print(f"Warning: Error using stub_mapper: {e}")
-            print("Falling back to standard obfuscation.")
-    # DEBUG print("Using Normal obfuscation mode...")
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(os.path.dirname(script_dir))
-    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
-    is_kernel_mode = syscall_mode == 'Zw'
-    if is_kernel_mode:
-        asm_path = os.path.join(project_root, 'SysCallerK', 'Wrapper', 'src', 'syscaller.asm')
-        header_path = os.path.join(project_root, 'SysCallerK', 'Wrapper', 'include', 'SysK', 'sysFunctions_k.h')
-    else:
-        asm_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'src', 'syscaller.asm')
-        header_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
     selected_syscalls = settings.value('integrity/selected_syscalls', [], type=list)
     use_all_syscalls = len(selected_syscalls) == 0
     syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
     syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
-    used_names = set()
-    used_offsets = set()
-    used_offset_names = set()
-    offset_name_map = {}  # Maps fake offset to random name
-    syscall_map = {}  # Maps original syscall to random name
-    syscall_offsets = {}  # Maps original syscall to its offset
-    real_to_fake_offset = {}  # Maps real offset to fake offset
-    syscall_stubs = []
-    current_stub = []
-    with open(asm_path, 'r') as f:
-        content = f.readlines()
-        in_stub = False
-        current_syscall = None
-        for line in content:
-            proc_match = re.search(r"((?:SC|Sys|SysK)\w+)\s+PROC", line)
-            if proc_match:
-                current_syscall = proc_match.group(1)
-                if current_syscall.startswith("SC"):
-                    current_syscall = syscall_prefix + current_syscall[2:] 
-                in_stub = True
-                current_stub = [line]
-                if use_all_syscalls or current_syscall in selected_syscalls:
-                    if current_syscall not in syscall_map:
-                        syscall_map[current_syscall] = generate_random_name(used_names)
-            elif in_stub:
-                current_stub.append(line)
-                if 'mov eax,' in line and current_syscall:
-                    try:
-                        real_offset = extract_syscall_offset(line)
-                        syscall_offsets[current_syscall] = real_offset
-                        if real_offset not in real_to_fake_offset:
-                            real_to_fake_offset[real_offset] = generate_random_offset(used_offsets)
-                    except ValueError as e:
-                        print(f"Error parsing offset for {current_syscall}: {e}")
-                elif ' ENDP' in line:
-                    in_stub = False
-                    if use_all_syscalls or current_syscall in selected_syscalls:
-                        syscall_stubs.append((current_syscall, current_stub))
-    settings = QSettings(get_ini_path(), QSettings.IniFormat)
-    shuffle_sequence = settings.value('obfuscation/shuffle_sequence', True, bool)
-    if shuffle_sequence:
-        random.shuffle(syscall_stubs)
-    publics = []
-    aliases = []
-    for original, random_name in syscall_map.items():
-        publics.append(f'PUBLIC {random_name}')
-        aliases.append(f'ALIAS <{original}> = <{random_name}>')
-    new_content = []
-    data_section = ['.data\n']
-    data_section.append('ALIGN 8\n')
-    settings = QSettings(get_ini_path(), QSettings.IniFormat)
-    enable_encryption = settings.value('obfuscation/enable_encryption', True, bool)
-    enable_interleaved = settings.value('obfuscation/enable_interleaved', True, bool)
-    encryption_method = get_encryption_method()
-    encryption_data_map = {}
-    for real_offset, fake_offset in real_to_fake_offset.items():
-        offset_name = generate_random_offset_name(used_offset_names)
-        offset_name_map[fake_offset] = offset_name
-        if enable_encryption:
-            encrypted_offset, encryption_data = encrypt_offset(real_offset, encryption_method)
-            encryption_data_map[offset_name] = encryption_data
-            data_section.append(f'{offset_name} dd 0{encrypted_offset:X}h  ; Encrypted syscall ID (method {encryption_method})\n')
-        else:
-            data_section.append(f'{offset_name} dd 0{real_offset:X}h\n')
-    new_content.append('.code\n\n')
-    new_content.append('; Public declarations\n' + '\n'.join(publics) + '\n\n')
-    new_content.append('; Export aliases\n' + '\n'.join(aliases) + '\n\n')
-    for original_syscall, stub_lines in syscall_stubs:
-        if enable_interleaved:
-            new_content.append(generate_align_padding())
-        for line in stub_lines:
-            if ' PROC' in line or ' ENDP' in line:
-                syscall_match = re.search(r"((?:SC|Sys|SysK)\w+)\s+(?:PROC|ENDP)", line)
-                if syscall_match:
-                    syscall = syscall_match.group(1)
-                    if syscall.startswith("SC"):
-                        syscall = syscall_prefix + syscall[2:]
-                    if syscall in syscall_map:
-                        line = re.sub(r"(SC|Sys|SysK)(\w+)\s+(PROC|ENDP)", 
-                                     lambda m: f"{syscall_map[syscall]} {m.group(3)}", 
-                                     line)
-            elif 'mov eax,' in line and 'syscall' in ''.join(stub_lines):
-                for syscall, offset in syscall_offsets.items():
-                    if syscall == original_syscall:
-                        fake_offset = real_to_fake_offset[offset]
-                        offset_name = offset_name_map[fake_offset]
-                        encryption_data = encryption_data_map.get(offset_name) if enable_encryption else None
-                        line = generate_chunked_sequence(offset_name, encryption_data, encryption_method)
-                        break
-            new_content.append(line)
-        if enable_interleaved:
-            new_content.append(generate_align_padding())
-    new_content.append('\nend\n')
-    for i, line in enumerate(new_content):
-        if '.code' in line:
-            new_content[i:i] = data_section
-            break
-    with open(asm_path, 'w') as f:
-        f.writelines(new_content)
-    all_syscalls = []
-    all_header_lines = []
-    current_block = []
-    in_block = False
+    syscalls = {}
     current_syscall = None
-    with open(header_path, 'r') as f:
-        header_content = f.readlines()
-    new_header_content = []
-    skip_block = False
+    start_index = -1
+    for i, line in enumerate(lines):
+        proc_match = re.search(r"(SC\w+)\s+PROC", line)
+        if proc_match:
+            if current_syscall:
+                syscalls[current_syscall]['end'] = i - 1
+            current_syscall = proc_match.group(1)
+            syscalls[current_syscall] = {'start': i, 'end': -1, 'content': []}
+        elif current_syscall and "ENDP" in line:
+            syscalls[current_syscall]['end'] = i
+            current_syscall = None
+    if current_syscall:
+        syscalls[current_syscall]['end'] = len(lines) - 1
+    for syscall_name, indices in syscalls.items():
+        syscalls[syscall_name]['content'] = lines[indices['start']:indices['end']+1]
+    new_lines = []
+    skip_until = -1
+    for i, line in enumerate(lines):
+        if i <= skip_until:
+            continue
+        proc_match = re.search(r"(SC\w+)\s+PROC", line)
+        if proc_match:
+            original_name = proc_match.group(1)
+            base_name = original_name[2:]
+            syscall_name = syscall_prefix + base_name
+            if not use_all_syscalls and syscall_name not in selected_syscalls:
+                print(f"Skipping {syscall_name} (not selected in settings)")
+                skip_until = syscalls[original_name]['end']
+                continue
+            found_in_any = False
+            for table_idx, syscall_numbers in syscall_tables.items():
+                if syscall_mode == "Nt":
+                    expected_dll_name = "Nt" + base_name
+                    expected_alt_name = "Zw" + base_name
+                else:
+                    expected_dll_name = "Zw" + base_name
+                    expected_alt_name = "Nt" + base_name
+                syscall_id = syscall_numbers.get(expected_dll_name, syscall_numbers.get(expected_alt_name, None))
+                if syscall_id is not None:
+                    found_in_any = True
+                    version_suffix = "" if table_idx == 0 else str(table_idx + 1)
+                    versioned_syscall_name = f"{syscall_prefix}{base_name}{version_suffix}"
+                    proc_line = line.replace(original_name, versioned_syscall_name)
+                    new_lines.append(proc_line)
+                    for content_line in syscalls[original_name]['content'][1:-1]:
+                        if "<syscall_id>" in content_line:
+                            new_lines.append(content_line.replace("<syscall_id>", f"0{syscall_id:X}"))
+                        elif "SC" in content_line:
+                            new_lines.append(re.sub(r'\bSC(\w+)\b', fr'{syscall_prefix}\1{version_suffix}', content_line))
+                        else:
+                            new_lines.append(content_line)
+                    endp_line = syscalls[original_name]['content'][-1].replace(original_name, versioned_syscall_name)
+                    new_lines.append(endp_line)
+                    new_lines.append("\n")
+            if not found_in_any:
+                print(f"Removing {syscall_name} (not found in any ntdll.dll)")
+            skip_until = syscalls[original_name]['end']
+        else:
+            new_lines.append(line)
+    cleaned_lines = []
+    prev_empty = False
+    for line in new_lines:
+        if line.strip() == "":
+            if not prev_empty:
+                cleaned_lines.append(line)
+                prev_empty = True
+        else:
+            cleaned_lines.append(line)
+            prev_empty = False
+    if len(cleaned_lines) > 0 and not any(".code" in line for line in cleaned_lines):
+        cleaned_lines.insert(0, ".code\n\n")
+    if len(cleaned_lines) > 0 and not any("end" in line.lower() for line in cleaned_lines[-3:]):
+        cleaned_lines.append("\nend\n")
+    with open(asm_file, 'w') as file:
+        file.writelines(cleaned_lines)
+    update_header_file(syscall_tables, selected_syscalls, use_all_syscalls)
+    print(f"Updated syscalls written to {asm_file}")
+
+def update_header_file(syscall_tables, selected_syscalls, use_all_syscalls):
+    base_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    is_kernel_mode = syscall_mode == 'Zw'
+    if is_kernel_mode:
+        header_file_path = os.path.join(base_dir, 'SysCallerK', 'Wrapper', 'include', 'SysK', 'sysFunctions_k.h')
+    else:
+        header_file_path = os.path.join(base_dir, 'SysCaller', 'Wrapper', 'include', 'Sys', 'sysFunctions.h')
+    with open(header_file_path, 'r') as file:
+        lines = file.readlines()
+    updated_lines = []
+    header_part_ended = False
     ending_lines = []
-    for i in range(len(header_content)-1, -1, -1):
-        line = header_content[i].strip()
+    syscall_prefix = "Sys" if syscall_mode == "Nt" else "SysK"
+    func_decl_regex = re.compile(r'(?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK)\w+)\s*\(')
+    for i in range(len(lines)-1, -1, -1):
+        line = lines[i].strip()
         if line == "#endif" or line.startswith("#endif "):
-            ending_lines.insert(0, header_content[i])
+            ending_lines.insert(0, lines[i])
             j = i - 1
-            while j >= 0 and (header_content[j].strip() == "" or header_content[j].strip().startswith("//")):
-                ending_lines.insert(0, header_content[j])
+            while j >= 0 and (lines[j].strip() == "" or lines[j].strip().startswith("//")):
+                ending_lines.insert(0, lines[j])
                 j -= 1
             break
-    has_extern_c_block = False
-    for line in header_content:
-        if "#ifdef __cplusplus" in line and "extern" in line and "{" in line:
-            has_extern_c_block = True
-            break
-        if "#ifdef __cplusplus" in line and any("extern" in l and "{" in l for l in header_content[header_content.index(line)+1:header_content.index(line)+5]):
-            has_extern_c_block = True
-            break
-    header_part_ended = False
-    for i, line in enumerate(header_content):
+    function_declarations = {}
+    current_function = None
+    function_content = []
+    for i, line in enumerate(lines):
         if any(line == end_line for end_line in ending_lines):
             continue
-        if not header_part_ended and (
-            f'NTSTATUS {syscall_prefix}' in line or 
-            f'ULONG {syscall_prefix}' in line or
-            f'BOOLEAN {syscall_prefix}' in line or
-            f'VOID {syscall_prefix}' in line or
-            'NTSTATUS SC' in line or
-            'ULONG SC' in line or
-            'BOOLEAN SC' in line or
-            'VOID SC' in line or
-            "#ifdef __cplusplus" in line
-        ):
+        if not header_part_ended and func_decl_regex.search(line):
             header_part_ended = True
         if not header_part_ended:
             if "_WIN64" in line and "#ifdef" in line:
-                new_header_content.append(line)
-                new_header_content.append("\n")
+                updated_lines.append(line)
+                updated_lines.append("\n")
                 continue
-            new_header_content.append(line)
+            updated_lines.append(line)
             continue
-        if "#ifdef __cplusplus" in line or 'extern "C"' in line or line.strip() == "{" or line.strip() == "}" or "#endif" in line:
-            continue
-        if (
-            'NTSTATUS SC' in line or 
-            'ULONG SC' in line or
-            'BOOLEAN SC' in line or
-            'VOID SC' in line or
-            f'NTSTATUS {syscall_prefix}' in line or 
-            f'ULONG {syscall_prefix}' in line or
-            f'BOOLEAN {syscall_prefix}' in line or
-            f'VOID {syscall_prefix}' in line
-        ):
-            match = re.search(rf'extern "C" (?:NTSTATUS|ULONG|BOOLEAN|VOID) ((?:SC|{syscall_prefix})\w+)\(', line)
-            if not match:
-                match = re.search(rf'(?:NTSTATUS|ULONG|BOOLEAN|VOID) ((?:SC|{syscall_prefix})\w+)\(', line)
+        if func_decl_regex.search(line):
+            if current_function and function_content:
+                function_declarations[current_function] = function_content
+                function_content = []
+            match = func_decl_regex.search(line)
             if match:
                 original_name = match.group(1)
                 if original_name.startswith("SC"):
-                    current_syscall = syscall_prefix + original_name[2:]
+                    base_name = original_name[2:]
+                    syscall_name = syscall_prefix + base_name
+                elif original_name.startswith("Sys"):
+                    if syscall_prefix == "Sys":
+                        base_name = original_name[3:]
+                        syscall_name = original_name
+                    else:
+                        base_name = original_name[3:]
+                        syscall_name = syscall_prefix + base_name
+                elif original_name.startswith("SysK"):
+                    if syscall_prefix == "SysK":
+                        base_name = original_name[4:]
+                        syscall_name = original_name
+                    else:
+                        base_name = original_name[4:]
+                        syscall_name = syscall_prefix + base_name
+                if use_all_syscalls or syscall_name in selected_syscalls:
+                    current_function = syscall_name
+                    modified_line = re.sub(r'\b' + re.escape(original_name) + r'\b', syscall_name, line)
+                    function_content.append(modified_line)
                 else:
-                    current_syscall = original_name
-                if use_all_syscalls or current_syscall in selected_syscalls:
-                    skip_block = False
-                    if current_syscall in syscall_map:
-                        line = line.replace(original_name, syscall_map[current_syscall])
-                    line = re.sub(r'extern\s+"C"\s+', '', line)
-                    new_header_content.append(line)
-                else:
-                    skip_block = True
-                continue
-        if not skip_block:
+                    current_function = None
+        elif current_function:
             if "SC" in line:
-                updated_line = re.sub(r'\bSC(\w+)\b', fr'{syscall_prefix}\1', line)
-                new_header_content.append(updated_line)
+                modified_line = line
+                sc_matches = re.finditer(r'\bSC(\w+)\b', line)
+                for match in sc_matches:
+                    sc_name = match.group(0)
+                    base_name = match.group(1)
+                    sys_name = f"{syscall_prefix}{base_name}"
+                    modified_line = modified_line.replace(sc_name, sys_name)
+                function_content.append(modified_line)
             else:
-                new_header_content.append(line)
-        elif line.strip() == ");":
-            skip_block = False
-    function_part_start = None
-    function_part_end = None
-    for i, line in enumerate(new_header_content):
-        if any(t in line for t in ["NTSTATUS", "ULONG", "BOOLEAN", "VOID"]) and "(" in line:
-            if function_part_start is None:
-                function_part_start = i             
-        if line.strip() == ");" and function_part_start is not None:
-            function_part_end = i
-    if function_part_start is not None and function_part_end is not None:
-        new_header_content.insert(function_part_start, "\n")
-        new_header_content.insert(function_part_start, "#ifdef __cplusplus\nextern \"C\" {\n#endif\n")
-        function_part_end += 4
-        new_header_content.insert(function_part_end + 1, "\n#ifdef __cplusplus\n}\n#endif\n")
-    new_header_content.append("\n// Syscall name mappings\n")
-    for original, random_name in syscall_map.items():
-        new_header_content.append(f"#define {original} {random_name}\n")
-    cleaned_header_content = []
-    prev_empty = False
-    for line in new_header_content:
-        if line.strip() == "":
-            if not prev_empty:
-                cleaned_header_content.append(line)
-                prev_empty = True
+                function_content.append(line)
+            if line.strip() == ");":
+                function_declarations[current_function] = function_content
+                function_content = []
+                current_function = None
+    if current_function and function_content:
+        function_declarations[current_function] = function_content
+    num_tables = len(syscall_tables)
+    for func_name, content in function_declarations.items():
+        if func_name.startswith(syscall_prefix):
+            base_name = func_name[len(syscall_prefix):]
         else:
-            cleaned_header_content.append(line)
-            prev_empty = False
-    if ending_lines:
-        if cleaned_header_content and cleaned_header_content[-1].strip() != "":
-            cleaned_header_content.append("\n")
-        non_empty_ending_found = False
-        filtered_ending_lines = []
-        for line in ending_lines:
-            if line.strip() != "" or non_empty_ending_found:
-                filtered_ending_lines.append(line)
-                non_empty_ending_found = True
-            else:
+            base_name = func_name
+        # DEBUG print(f"Checking function: {func_name} -> base_name: {base_name}")
+        found_in_any_table = False
+        for table_idx in range(num_tables):
+            if table_idx not in syscall_tables:
                 continue
-        cleaned_header_content.extend(filtered_ending_lines)
-    if cleaned_header_content and not cleaned_header_content[-1].endswith('\n'):
-        cleaned_header_content[-1] += '\n'
-    with open(header_path, 'w') as f:
-        f.writelines(cleaned_header_content)
-    print(f"Generated {len(syscall_map)} unique syscalls with obfuscated names, offsets, and junk instructions")
-    if shuffle_sequence:
-        print("Syscall sequence has been randomized")
-    bindings_enabled = settings.value('general/bindings_enabled', False, bool)
-    if bindings_enabled and not is_kernel_mode:
-        def_path = os.path.join(project_root, 'SysCaller', 'Wrapper', 'SysCaller.def')
-        # Parse the generated asm file for all exported PROC names (obfuscated)
-        obfuscated_names = []
-        with open(asm_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                m = re.match(r'\s*([A-Za-z0-9_]+)\s+PROC', line)
-                if m:
-                    obfuscated_names.append(m.group(1))
-        update_def_file(obfuscated_names, def_path)
+            if syscall_mode == "Nt":
+                expected_dll_name = "Nt" + base_name
+                expected_alt_name = "Zw" + base_name
+            else:
+                expected_dll_name = "Zw" + base_name
+                expected_alt_name = "Nt" + base_name
+            syscall_id = syscall_tables[table_idx].get(expected_dll_name, syscall_tables[table_idx].get(expected_alt_name, None))
+            if syscall_id is not None:
+                print(f"  Found {expected_dll_name} in table {table_idx} with ID {syscall_id}")
+                found_in_any_table = True
+                break
+            else:
+                print(f"  Not found: {expected_dll_name} or {expected_alt_name} in table {table_idx}")
+        if not found_in_any_table:
+            print(f"Removing {func_name} from header (not found in any ntdll.dll)")
+            continue
+        if 0 in syscall_tables:
+            if syscall_mode == "Nt":
+                expected_dll_name = "Nt" + base_name
+                expected_alt_name = "Zw" + base_name
+            else:
+                expected_dll_name = "Zw" + base_name
+                expected_alt_name = "Nt" + base_name
+            syscall_id = syscall_tables[0].get(expected_dll_name, syscall_tables[0].get(expected_alt_name, None))
+            if syscall_id is not None:
+                for line in content:
+                    updated_lines.append(line)
+                updated_lines.append("\n")
+        for table_idx in range(1, num_tables):
+            if table_idx not in syscall_tables:
+                continue
+            if syscall_mode == "Nt":
+                expected_dll_name = "Nt" + base_name
+                expected_alt_name = "Zw" + base_name
+            else:
+                expected_dll_name = "Zw" + base_name
+                expected_alt_name = "Nt" + base_name
+            syscall_id = syscall_tables[table_idx].get(expected_dll_name, syscall_tables[table_idx].get(expected_alt_name, None))
+            if syscall_id is not None:
+                for line in content:
+                    versioned_name = f"{func_name}{table_idx+1}"
+                    versioned_line = re.sub(
+                        r'\b' + re.escape(func_name) + r'\b', 
+                        versioned_name, 
+                        line
+                    )
+                    updated_lines.append(versioned_line)
+                updated_lines.append("\n")
+    if updated_lines and updated_lines[-1].strip() != "":
+        updated_lines.append("\n")
+
+    def extern_close_missing(buf):
+        search_window = 50 if len(buf) > 50 else len(buf)
+        tail = "".join(buf[-search_window:])
+        return not re.search(r"#ifdef\s+__cplusplus[\s\S]*?\}\s*\n\s*#endif", tail)
+
+    if extern_close_missing(updated_lines):
+        updated_lines.append("#ifdef __cplusplus\n")
+        updated_lines.append("}\n")
+        updated_lines.append("#endif\n\n")
+    extern_open_idx = None
+    for idx, line in enumerate(updated_lines):
+        if line.strip().startswith("extern \"C\" {"):
+            extern_open_idx = idx
+            break
+    if extern_open_idx is not None:
+        found_close = False
+        for look_ahead in range(1, 6):
+            if extern_open_idx + look_ahead < len(updated_lines):
+                if updated_lines[extern_open_idx + look_ahead].strip().startswith("#endif"):
+                    found_close = True
+                    break
+        if not found_close:
+            insertion_idx = extern_open_idx + 1
+            updated_lines.insert(insertion_idx, "#endif\n\n")
+    non_empty_ending_found = False
+    filtered_ending_lines = []
+    for line in ending_lines:
+        if line.strip() != "" or non_empty_ending_found:
+            filtered_ending_lines.append(line)
+            non_empty_ending_found = True
+        else:
+            continue
+    updated_lines.extend(filtered_ending_lines)
+    if updated_lines and not updated_lines[-1].endswith('\n'):
+        updated_lines[-1] += '\n'
+    with open(header_file_path, 'w') as file:
+        file.writelines(updated_lines)
+    print(f"Updated header file with versioned syscall declarations")
+
+def get_syscalls(dll_path):
+    pe = pefile.PE(dll_path)
+    syscall_numbers = {}
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
+    for export in pe.DIRECTORY_ENTRY_EXPORT.symbols:
+        if not export.name:
+            continue
+        func_name = export.name.decode()
+        func_rva = export.address
+        func_bytes = pe.get_data(func_rva, 16)
+        for instruction in md.disasm(func_bytes, func_rva):
+            if instruction.mnemonic == 'mov' and ('eax' in instruction.op_str or 'rax' in instruction.op_str):
+                parts = instruction.op_str.split(',')
+                if len(parts) == 2:
+                    try:
+                        syscall_id = int(parts[1].strip(), 16)
+                        syscall_numbers[func_name] = syscall_id
+                        break
+                    except ValueError:
+                        continue
+    return syscall_numbers
 
 if __name__ == "__main__":
-    generate_exports()
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
+    syscall_mode = settings.value('general/syscall_mode', 'Nt', str)
+    is_kernel_mode = syscall_mode == 'Zw'
+    base_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+    if is_kernel_mode:
+        asm_file = os.path.join(base_dir, 'SysCallerK', 'Wrapper', 'src', 'syscaller.asm')
+    else:
+        asm_file = os.path.join(base_dir, 'SysCaller', 'Wrapper', 'src', 'syscaller.asm')
+    main_dll_path = os.getenv('NTDLL_PATH', "C:\\Windows\\System32\\ntdll.dll")
+    dll_path_count = int(os.getenv('NTDLL_PATH_COUNT', '1'))
+    syscall_tables = {}
+    print(f"Processing primary ntdll: {main_dll_path}")
+    syscall_tables[0] = get_syscalls(main_dll_path)
+    for i in range(2, dll_path_count + 1):
+        additional_dll_path = os.getenv(f'NTDLL_PATH_{i}')
+        if additional_dll_path:
+            print(f"Processing additional ntdll {i-1}: {additional_dll_path}")
+            syscall_tables[i-1] = get_syscalls(additional_dll_path)
+    update_syscalls(asm_file, syscall_tables)
+    bindings_enabled = settings.value('general/bindings_enabled', False, bool)
+    if bindings_enabled and not is_kernel_mode:
+        # Parse the generated asm file for Sys* PROC
+        syscall_names = []
+        with open(asm_file, 'r', encoding='utf-8') as f:
+            for line in f:
+                m = re.match(r'\s*(Sys\w+)\s+PROC', line)
+                if m:
+                    syscall_names.append(m.group(1))
+        def_path = os.path.join(base_dir, 'SysCaller', 'Wrapper', 'SysCaller.def')
+        update_def_file(syscall_names, def_path)
