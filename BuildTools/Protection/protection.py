@@ -1,11 +1,14 @@
 import random
 import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'GUI')))
 import re
 import mapping.stub_mapper as stub_mapper
 from encryption.encryptor import get_encryption_method, encrypt_offset
 from stub.junkgen import generate_junk_instructions
 from stub.namer import generate_random_name, generate_random_offset_name, generate_random_offset
 from stub.stubgen import generate_masked_sequence, generate_chunked_sequence, generate_align_padding
+from settings.utils import get_ini_path
 
 try:
     from PyQt5.QtCore import QSettings
@@ -21,7 +24,7 @@ def extract_syscall_offset(line):
     return int(offset_part[:-1], 16)
 
 def generate_exports():
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     syscall_settings = settings.value('stub_mapper/syscall_settings', {}, type=dict)
     force_normal = settings.value('obfuscation/force_normal', False, type=bool)
     force_stub_mapper = settings.value('obfuscation/force_stub_mapper', False, type=bool)
@@ -86,7 +89,7 @@ def generate_exports():
                     in_stub = False
                     if use_all_syscalls or current_syscall in selected_syscalls:
                         syscall_stubs.append((current_syscall, current_stub))
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     shuffle_sequence = settings.value('obfuscation/shuffle_sequence', True, bool)
     if shuffle_sequence:
         random.shuffle(syscall_stubs)
@@ -98,7 +101,7 @@ def generate_exports():
     new_content = []
     data_section = ['.data\n']
     data_section.append('ALIGN 8\n')
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     enable_encryption = settings.value('obfuscation/enable_encryption', True, bool)
     enable_interleaved = settings.value('obfuscation/enable_interleaved', True, bool)
     encryption_method = get_encryption_method()
