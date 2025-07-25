@@ -1,11 +1,15 @@
+import sys
+import os
 import random
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'GUI')))
+from settings.utils import get_ini_path
 from PyQt5.QtCore import QSettings
 from encryption.encryptor import generate_decryption_sequence
 from stub.junkgen import generate_junk_instructions
 from stub.namer import generate_random_label
 
 def generate_masked_sequence(offset_name, encryption_data=None, method=1):
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     enable_encryption = settings.value('obfuscation/enable_encryption', True, bool)
     mov_r10_rcx_variants = [
         "    lea r10, [rcx]\n",
@@ -34,7 +38,7 @@ def generate_masked_sequence(offset_name, encryption_data=None, method=1):
     return ''.join(sequence)
 
 def generate_chunked_sequence(offset_name, encryption_data=None, method=1):
-    settings = QSettings('SysCaller', 'BuildTools')
+    settings = QSettings(get_ini_path(), QSettings.IniFormat)
     enable_chunking = settings.value('obfuscation/enable_chunking', True, bool)
     enable_encryption = settings.value('obfuscation/enable_encryption', True, bool)
     if not enable_chunking:
