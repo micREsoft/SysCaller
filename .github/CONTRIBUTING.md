@@ -1,8 +1,8 @@
 # Contributing to SysCaller
 
-Thank you for your interest in contributing to **SysCaller**! A syscall SDK for stealthy, cross version Windows development with a focus on obfuscation, offset validation, and low level control.
+Thank you for your interest in contributing to **SysCaller**!
 
-I'm currently in *active development*, especially around the **GUI/BuildTools**, so some parts of the repo are open for contributions, while others are in a "suggestions only" phase.
+SysCaller has evolved significantly through v1.0.0, v1.1.0, and v1.2.0. The project is now in a more mature state with a complete C++ Qt based GUI (Bind), comprehensive multi language bindings, and a stable core architecture.
 
 ---
 
@@ -10,59 +10,119 @@ I'm currently in *active development*, especially around the **GUI/BuildTools**,
 
 I welcome PRs and improvements for the following:
 
+### Core SysCaller SDK
 - **Syscall Constants & Definitions**  
-  Add new constants or improve existing ones in the constants header (`Wrapper/include/Sys/sysConstants.h`) or other definitions in related header files.
+  Add new constants or improve existing ones in the constants headers (`SysCaller/Wrapper/include/Sys/sysConstants.h`, `SysCallerK/Wrapper/include/SysK/sysConstants_k.h`) or other definitions in related header files.
 
+- **New Syscalls**  
+  Add support for additional Windows syscalls that aren't currently implemented.
+
+- **Kernel Mode Enhancements**  
+  Improve the SysCallerK kernel mode library functionality and compatibility.
+  
+### Bind (GUI) Contributions
+With v1.2.0, the GUI has been completely rewritten in C++ Qt and is now much more stable. I'm now accepting:
+
+- **Bug Fixes** for the Bind GUI
+
+- **Performance Optimizations**
+
+- **Minor UI/UX Improvements** (layout tweaks, accessibility improvements)
+
+- **New Features** that align with the existing design patterns
+
+### Examples & Bindings
 - **Examples**  
-  Add usage examples (in `Examples/`) for different use cases:
-  - Custom shellcode runners
-  - Process hollowing
-  - Kernel mode use
+  Add usage examples (in `Bindings/Examples/`) for different use cases:
+  - Kernel Mode use
   - Driver safe syscall usage
-  - Anything that is an example SysCaller is lacking
+  - Any use case that demonstrates SysCaller's capabilities
 
-- **Docs**  
-  Improvements to `README.md`, inline comments, or new markdown files (such as guides or other explanations).
+- **Language Bindings**  
+  Create binding examples for additional programming languages beyond the current C, C++, C#, Rust, Python, Go, and Nim support.
+  > Tip: Any language with C bindings is SysCaller compatible!
+
+### Documentation & Guides
+- **Documentation**  
+  Improvements to `README.md` or the `Wiki`, inline comments, or new markdown files (such as guides, tutorials, or technical explanations).
 
 - **Translations**  
-  If you want to contribute to different translations for SysCaller outside of english I am all for it.
+  If you want to contribute translations for SysCaller outside of English, I'm all for it.
 
-- **Bindings**
-  If you know another language like Rust, GO, Python etc then making Bindings for SysCaller to work with other languages is totally possible! 
+### Build System & Infrastructure
+- **CMake Improvements**  
+  Enhance the CMake build system, especially for kernel mode and GUI builds.
+
+- **CI/CD Pipeline**  
+  Help set up automated testing, building, and deployment workflows.
 
 ---
 
 ## What I'm *Not* Accepting (Yet)
 
-### GUI Contributions (for now)
+### Major GUI Redesigns
+While Bind is now stable, major architectural changes to the GUI are not currently needed. The current Qt based design serves the project well.
 
-The **BuildTools GUI** is under fast and iterative development. UI elements, modes, and backend logic are changing frequently.
-
-> That said, **GUI suggestions and feature ideas are more than welcome**!  
-Feel free to open a **Discussion** or GitHub Issue with:
-- UX ideas or layout improvements
-- Feature requests (e.g. “Add an offset diffing view” or “Support custom junk stub patterns”)
-- Bug reports
-
-Once the GUI reaches a more stable design, GUI contributions will be opened up via issues labeled `GUI: Help Wanted`.
+### Experimental Features
+Features that would significantly change the core API or break existing functionality are not currently being accepted.
 
 ---
 
-## General Guidelines
+## Development Guidelines
 
-- Fork the repo and make your changes in a dedicated branch.
-- Keep pull requests focused on a single fix or feature.
-- Format your code consistently.
-- Document your changes when appropriate.
-- Make sure your changes **build cleanly** on Windows 10/11 x64 (Visual Studio or CMake).
+### Code Style
+- Follow the existing code style in the respective directories
+- Add appropriate comments for complex logic
+- Ensure all code builds cleanly on Windows 10/11 x64
+
+### Pull Request Process
+1. Fork the repo and create a feature branch
+2. Make your changes with clear and focused commits
+3. Test your changes thoroughly
+4. Update documentation if needed
+5. Submit a PR with a clear description of what was changed and why
+
+### Testing Requirements
+- Ensure your changes work with both user mode (SysCaller) and kernel mode (SysCallerK) where applicable
+- Test with the Bind GUI if your changes affect the build process
+- Verify that existing examples still work correctly
+
+---
+
+## Getting Started
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/micREsoft/SysCaller.git
+   cd SysCaller
+   ```
+
+2. **Set up your development environment:**
+Building Bind:
+   - Install Visual Studio 2019+ with MSVC v142 toolset
+   - Install Qt 5.12 for Bind development
+   - Install vcpkg and required dependencies (`cmark`, `pe-parse`)
+   - C++ 20
+
+Building SysCaller/SysCallerK:
+   - Install Visual Studio 2022
+   - Install Windows SDK for SysCaller
+   - Install Windows WDK for SysCallerK
+   - C++ 17+
+
+3. **Build the project:**
+   - Open `SysCaller.sln` for core libraries
+   - Open `Bind/Bind.sln` for the GUI
+
+4. **Choose an area to contribute** from the sections above
 
 ---
 
 ## Thank You
 
-SysCaller is a passion project, and your contributions help make it better. Even if you're not submitting code, opening issues, discussions, or suggesting syscall improvements is incredibly valuable!
+SysCaller has grown from a simple syscall library to a comprehensive SDK with a modern GUI and multi language support. Your contributions help make it even better for the community!
 
-If you're unsure whether something is worth contributing, just ask in the [Discussions](https://github.com/WindowsAPI/SysCaller/discussions) I'm open to ideas and collaboration!
+Even if you're not submitting code, opening issues, discussions, or suggesting improvements is incredibly valuable. If you're unsure whether something is worth contributing, just ask in the [Discussions](https://github.com/micREsoft/SysCaller/discussions) - I'm open to ideas and collaboration!
 
 ---
 
