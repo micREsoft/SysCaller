@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>src/Res/Icons/validation.svg</file>
+        <file>src/Res/Icons/compatibility.svg</file>
+        <file>src/Res/Icons/verification.svg</file>
+        <file>src/Res/Icons/obfuscation.svg</file>
+        <file>src/Res/Icons/settings.svg</file>
+        <file>src/Res/Icons/syscaller.png</file>
+        <file>src/Res/Icons/logo.ico</file>
+        <file>src/Res/Icons/export.svg</file>
+        <file>src/Res/Icons/refresh.svg</file>
+        <file>src/Res/Fonts/ibmplexmono.ttf</file>
+    </qresource>
+</RCC> 
