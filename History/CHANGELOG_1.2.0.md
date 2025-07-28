@@ -1,6 +1,6 @@
 # v1.2.0 – Changelog
 
-Released: **July 29, 2025**
+Released: **July 28, 2025**
 
 ---
 
