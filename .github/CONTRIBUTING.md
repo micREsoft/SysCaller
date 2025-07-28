@@ -53,9 +53,6 @@ With v1.2.0, the GUI has been completely rewritten in C++ Qt and is now much mor
 - **CMake Improvements**  
   Enhance the CMake build system, especially for kernel mode and GUI builds.
 
-- **CI/CD Pipeline**  
-  Help set up automated testing, building, and deployment workflows.
-
 ---
 
 ## What I'm *Not* Accepting (Yet)
@@ -80,7 +77,9 @@ Features that would significantly change the core API or break existing function
 2. Make your changes with clear and focused commits
 3. Test your changes thoroughly
 4. Update documentation if needed
-5. Submit a PR with a clear description of what was changed and why
+5. Submit a PR with:
+   - A clear title
+   - A concise description of what was changed and why
 
 ### Testing Requirements
 - Ensure your changes work with both user mode (SysCaller) and kernel mode (SysCallerK) where applicable
@@ -90,6 +89,8 @@ Features that would significantly change the core API or break existing function
 ---
 
 ## Getting Started
+
+> Note: SysCaller targets Windows 10/11 x64. Other platforms/architectures (like ARM or Linux) wont be supported.
 
 1. **Clone the repository:**
    ```sh
@@ -102,13 +103,13 @@ Building Bind:
    - Install Visual Studio 2019+ with MSVC v142 toolset
    - Install Qt 5.12 for Bind development
    - Install vcpkg and required dependencies (`cmark`, `pe-parse`)
-   - C++ 20
+   - requires **C++ 20**
 
 Building SysCaller/SysCallerK:
    - Install Visual Studio 2022
    - Install Windows SDK for SysCaller
    - Install Windows WDK for SysCallerK
-   - C++ 17+
+   - requires **C++ 17 or later**
 
 3. **Build the project:**
    - Open `SysCaller.sln` for core libraries
