@@ -15,7 +15,7 @@
   <a href="#features">Features</a> •
   <a href="#installation">Install</a> •
   <a href="#usage">Usage</a> •
-  <a href="#buildtools">BuildTools</a> •
+  <a href="#bind">Bind (BuildTools)</a> •
   <a href="#documentation">Docs</a> •
   <a href="#contributing">Contribute</a> •
   <a href="#license">License</a>
@@ -60,7 +60,7 @@ Each example demonstrates direct DLL injection using the SysCaller API, with ful
 - [Installation](#installation)
 - [How to Build and Use Bindings (All Languages)](#how-to-build-and-use-bindings-all-languages)
 - [Usage](#usage)
-- [SysCaller BuildTools](#buildtools)
+- [Bind (BuildTools)](#bind)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
@@ -70,40 +70,48 @@ Each example demonstrates direct DLL injection using the SysCaller API, with ful
 
 ## Installation
 
-### Prerequisites
+### SysCaller Prerequisites
 - Windows 10 or 11 (x64)
-- Visual Studio 2019+ (with MASM)
-- Python 3.8+ (for build tools)
+- Visual Studio 2019+ (with MASM for building SysCaller)
+- C++ 17+ 
+
+---
+
+### Bind Prerequisites
+- Windows 10 or 11 (x64)
+- Visual Studio 2019+ (with MSVC v142 toolset for building Bind)
+- C++20
+- Qt 5.12
+- [vcpkg](https://github.com/microsoft/vcpkg)
+- Install `cmark` and `pe-parse` via vcpkg
 
 ### Quick Start (Visual Studio)
 
-```sh
-# Clone the repo
-$ git clone https://github.com/micREsoft/SysCaller.git
-$ cd SysCaller
+1. **Clone the SysCaller repo:**
+   ```sh
+   git clone https://github.com/micREsoft/SysCaller.git
+   cd SysCaller
+   ```
+2. **Download the latest Bind release zip** from the [Releases](https://github.com/micREsoft/SysCaller/releases) page.
+3. **Replace the Bind directory:**
+   - Delete the existing `Bind` directory in your cloned repo.
+   - Extract the downloaded Bind zip into the repo root (so `Bind/` is restored with the new files).
+4. **Run Bind:**
+   - Launch the Bind executable from the `Bind` directory.
 
-# Install Python dependencies
-$ pip install -r requirements.txt
+### Building Bind (BuildTools) from Source
 
-# Launch the BuildTools GUI
-$ cd BuildTools
-$ python syscaller.py
-```
+If you want to build Bind yourself:
 
-- Use the GUI to run **Validation**, **Compatibility**, and **Verification** checks.
-- Optionally enable **Obfuscation** (experimental).
-
-#### Build the User Mode Library
-- Open `SysCaller.sln` in Visual Studio
-- Select the **SysCaller** project
-- Set configuration to `Release | x64`
-- Build via GUI → *Build SysCaller* → outputs `x64/Release/SysCaller.lib`
-
-#### Build the Kernel Mode Library
-- Install the Windows Driver Kit (WDK)
-- In `SysCaller.sln`, select **SysCallerK**
-- Set configuration to `Release | x64`
-- Build via GUI → *Build SysCallerK* → outputs `x64/Release/SysCallerK.lib`
+1. **Install prerequisites** (see above).
+2. **Install dependencies with vcpkg:**
+   ```sh
+   vcpkg install cmark pe-parse
+   ```
+3. **Setup Qt 5.12 and ensure it's in your PATH.**
+4. **Generate MOC files** (Qt's meta object compiler, usually handled by CMake or qmake).
+5. **Open `Bind.sln` in Visual Studio.**
+6. **Build the project** (Release | x64).
 
 > **Note:** Kernel mode is experimental. Use a VM for testing. Driver signing or Secure Boot off may be required.
 
@@ -126,11 +134,8 @@ $ cmake --build . --config Release
 
 To use SysCaller from C, C++, Rust, Python, Go, or any other language that supports C bindings, follow these steps:
 
-1. **Launch the BuildTools GUI:**
-   ```sh
-   cd BuildTools
-   python syscaller.py
-   ```
+1. **Launch the Bind GUI:**
+   - Run the Bind executable from the `Bind` directory (see Installation above).
 2. **Enable Bindings:**
    - Go to the **Settings** tab in the GUI.
    - Enable the **Bindings** option.
@@ -193,9 +198,9 @@ bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data,
 
 ---
 
-## BuildTools
+## Bind
 
-SysCaller includes a full featured BuildTools GUI with capabilities like:
+SysCaller includes full featured GUI "Bind" (formerly BuildTools) with capabilities like:
 
 | Tool                | Description                                                                 |
 |---------------------|-----------------------------------------------------------------------------|
@@ -208,7 +213,8 @@ SysCaller includes a full featured BuildTools GUI with capabilities like:
 | **Global Profile**  | Import/Export SysCaller profiles via .ini config                            |
 | **Settings**        | Configure global syscall and protection options                             |
 
-- All tools are accessible via the BuildTools GUI (`python syscaller.py` in `BuildTools/`).
+- All tools are accessible via the Bind GUI (see Installation above).
+- Bind is a native C++ Qt application. The Python buildtools have been Deprecated.
 
 ---
 
