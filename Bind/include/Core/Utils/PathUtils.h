@@ -10,7 +10,6 @@
 class PathUtils {
 public:
     static QString getProjectRoot();
-    static QString getBuildToolsPath();
     static QString getBackupsPath();
     static QString getDefaultPath();
     static QString getSysCallerPath();
