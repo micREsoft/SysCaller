@@ -214,7 +214,7 @@ void GeneralTab::restoreDefaultFiles() {
         QString headerPath = PathUtils::getSysFunctionsPath(isKernelMode);
         if (!QFile::exists(defaultAsmPath) || !QFile::exists(defaultHeaderPath)) {
             QMessageBox::warning(this, "Bind - v1.2.0", 
-                               "Default files not found in BuildTools/Default directory.");
+                               "Default files not found in Default directory.");
             return;
         }
         if (createBackup->isChecked()) {
