@@ -22,10 +22,6 @@ QString PathUtils::getProjectRoot() {
     return s_projectRoot;
 }
 
-QString PathUtils::getBuildToolsPath() {
-    return getProjectRoot() + "/BuildTools";
-}
-
 QString PathUtils::getBackupsPath() {
     return getProjectRoot() + "/Backups";
 }
@@ -35,7 +31,7 @@ QString PathUtils::getHashBackupsPath() {
 }
 
 QString PathUtils::getDefaultPath() {
-    return getBuildToolsPath() + "/Default";
+    return getProjectRoot() + "/Default";
 }
 
 QString PathUtils::getSysCallerPath() {
@@ -138,7 +134,6 @@ bool PathUtils::isProjectRoot(const QString& path) {
     QStringList requiredItems = {
         "SysCaller",
         "SysCallerK",
-        "BuildTools",
         "Backups",
         "Bindings"
     };
@@ -151,7 +146,7 @@ bool PathUtils::isProjectRoot(const QString& path) {
             qDebug() << "Missing Project Root Item:" << item;
         }
     }
-    bool isValid = (foundItems >= 4);
+    bool isValid = (foundItems >= 3);
     qDebug() << "Project Root Validation Result:" << isValid << "(" << foundItems << "/" << requiredItems.size() << " Items Found)";
     return isValid;
 }
@@ -160,7 +155,6 @@ void PathUtils::debugPathDetection() {
     qDebug() << "=== PathUtils Debug Information ===";
     qDebug() << "Application Directory:" << QApplication::applicationDirPath();
     qDebug() << "Project Root:" << getProjectRoot();
-    qDebug() << "BuildTools Path:" << getBuildToolsPath();
     qDebug() << "Backups Path:" << getBackupsPath();
     qDebug() << "Hash Backups Path:" << getHashBackupsPath();
     qDebug() << "Default Path:" << getDefaultPath();
