@@ -11,6 +11,11 @@
 
 ---
 
+<img width="1919" height="1030" alt="image" src="https://github.com/user-attachments/assets/d84aecd0-bbea-49d8-981f-eba1f2bfda83" />
+
+
+---
+
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#installation">Install</a> •
@@ -28,7 +33,7 @@
 - **Direct Syscall Access:** Bypass Windows API hooks by calling NT kernel syscalls directly.
 - **Dual Mode:** Single codebase, two static libraries:
   - `SysCaller` (user mode, `Nt`/`Sys` prefix)
-  - `SysCallerK` (kernel mode, `Zw`/`SysK` prefix)
+  - `SysCallerK` (kernel mode, `Zw`/`SysK` prefix (EXPERIMENTAL)
 - **Dynamic Offset Resolution:** Automatically detects syscall IDs for compatibility across Windows 10/11 (x64).
 - **Obfuscation Layer:** Optional, randomized stub generation and anti pattern junk for stealth.
 - **Comprehensive GUI:** Validate, verify, and protect syscalls with a modern interface.
@@ -152,8 +157,7 @@ To use SysCaller from C, C++, Rust, Python, Go, or any other language that suppo
 5. **Use in Your Language of Choice:**
    - Follow the language specific README in `Bindings/Examples/<language>/` for how to use the DLL in C, Rust, Python, Go, etc.
 
-> **Tip:**  
-> The language example folders contain minimal working injectors and build instructions for each language. Expand from there for your own projects!
+> **Tip:**  The language example folders contain minimal working injectors and build instructions for each language. Expand from there for your own projects!
 
 ---
 
@@ -238,7 +242,6 @@ Pull requests, issues, and feature suggestions are welcome! Please:
 - Read the [CONTRIBUTING.md](https://github.com/micREsoft/SysCaller/blob/main/.github/CONTRIBUTING.md)
 - Follow the [GPLv3 license](LICENSE)
 - Use issues for bug reports and feature requests
-- See the [Wiki](https://github.com/micREsoft/SysCaller/wiki) for contribution guidelines
 
 If you find SysCaller useful, consider starring the repo to help others discover it.
 
