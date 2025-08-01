@@ -4,6 +4,7 @@
 #include "include/Core/Obfuscation/Encryption/Encryptor.h"
 #include "include/Core/Obfuscation/Stub/StubGenerator.h"
 #include "include/Core/Obfuscation/Mapping/StubMapper.h"
+#include "include/Core/Obfuscation/ControlFlow/ControlFlow.h"
 #include "include/Core/Utils/PathUtils.h"
 #include <QFile>
 #include <QTextStream>
@@ -187,9 +188,21 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     }
     QStringList publics;
     QStringList aliases;
+    bool enableControlFlow = settings->value("obfuscation/control_flow_enabled", false).toBool();
+    QMap<QString, QString> functionSuffixes; // store suffixes for each function
+    if (enableControlFlow) {
+        for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
+            QString suffix = QString::number(QRandomGenerator::global()->bounded(100000, 999999));
+            functionSuffixes[it.key()] = suffix;
+        }
+    }
     for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
-        publics << QString("PUBLIC %1").arg(it.value());
-        aliases << QString("ALIAS <%1> = <%2>").arg(it.key()).arg(it.value());
+        QString obfuscatedName = it.value();
+        if (enableControlFlow && functionSuffixes.contains(it.key())) {
+            obfuscatedName = QString("%1_%2").arg(obfuscatedName).arg(functionSuffixes[it.key()]);
+        }
+        publics << QString("PUBLIC %1").arg(obfuscatedName);
+        aliases << QString("ALIAS <%1> = <%2>").arg(it.key()).arg(obfuscatedName);
     }
     QStringList newContent;
     newContent << ".data";
@@ -228,10 +241,24 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     newContent << "";
     bool enableInterleaved = settings->value("obfuscation/enable_interleaved", true).toBool();
     StubGenerator stubGen(settings);
+    ControlFlow controlFlow(settings);
     for (const auto& stubPair : syscallStubs) {
         QString originalSyscall = stubPair.first;
         QStringList stubLines = stubPair.second;
         bool skipRest = false;  // flag to skip lines after mov eax
+        QString functionSuffix; // store the random suffix for this function
+        if (enableControlFlow && functionSuffixes.contains(originalSyscall)) {
+            functionSuffix = functionSuffixes[originalSyscall];
+        }
+        if (enableControlFlow) {
+            QString labelPrefix;
+            if (syscallMap.contains(originalSyscall)) {
+                labelPrefix = QString("%1_").arg(syscallMap.value(originalSyscall));
+            } else {
+                labelPrefix = QString("%1_").arg(originalSyscall);
+            }
+            stubLines = controlFlow.wrapWithControlFlow(stubLines, labelPrefix);
+        }
         if (enableInterleaved) {
             newContent << stubGen.generateAlignPadding();
         }
@@ -248,7 +275,11 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
                             syscall = syscallPrefix + syscall.mid(2);
                         }
                         if (syscallMap.contains(syscall)) {
-                            line = line.replace(match.captured(1), syscallMap.value(syscall));
+                            QString obfuscatedName = syscallMap.value(syscall);
+                            if (enableControlFlow && !functionSuffix.isEmpty()) {
+                                obfuscatedName = QString("%1_%2").arg(obfuscatedName).arg(functionSuffix);
+                            }
+                            line = line.replace(match.captured(1), obfuscatedName);
                         }
                     }
                     newContent << line;
@@ -266,7 +297,11 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
                         syscall = syscallPrefix + syscall.mid(2);
                     }
                     if (syscallMap.contains(syscall)) {
-                        line = line.replace(match.captured(1), syscallMap.value(syscall));
+                        QString obfuscatedName = syscallMap.value(syscall);
+                        if (enableControlFlow && !functionSuffix.isEmpty()) {
+                            obfuscatedName = QString("%1_%2").arg(obfuscatedName).arg(functionSuffix);
+                        }
+                        line = line.replace(match.captured(1), obfuscatedName);
                     }
                 }
             } else if (line.contains("mov eax,") && stubLines.join("").contains("syscall")) {
@@ -383,7 +418,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     QTextStream out(&outAsmFile);
     out << cleanedContent.join("\n");
     outAsmFile.close();
-    if (!updateHeaderFile(headerPath, syscallMap)) {
+    if (!updateHeaderFile(headerPath, syscallMap, functionSuffixes)) {
         logMessage(Colors::FAIL() + "Failed to update Header File" + Colors::ENDC());
         return false;
     }
@@ -408,7 +443,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     return true;
 }
 
-bool Obfuscation::updateHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap) {
+bool Obfuscation::updateHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap, const QMap<QString, QString>& functionSuffixes) {
     QFile headerFile(headerPath);
     if (!headerFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         logMessage(Colors::FAIL() + QString("Failed to open Header File: %1").arg(headerPath) + Colors::ENDC());
@@ -419,6 +454,7 @@ bool Obfuscation::updateHeaderFile(const QString& headerPath, const QMap<QString
     headerFile.close();
     QStringList selectedSyscalls = settings->value("integrity/selected_syscalls", QStringList()).toStringList();
     bool useAllSyscalls = selectedSyscalls.isEmpty();
+    bool enableControlFlow = settings->value("obfuscation/control_flow_enabled", false).toBool();
     QString syscallPrefix = getSyscallPrefix();
     QStringList newHeaderContent;
     bool headerPartEnded = false;
@@ -476,7 +512,11 @@ bool Obfuscation::updateHeaderFile(const QString& headerPath, const QMap<QString
                     skipBlock = false;
                     if (syscallMap.contains(currentSyscall)) {
                         QString newLine = line;
-                        newLine = newLine.replace(originalName, syscallMap.value(currentSyscall));
+                        QString obfuscatedName = syscallMap.value(currentSyscall);
+                        if (enableControlFlow && functionSuffixes.contains(currentSyscall)) {
+                            obfuscatedName = QString("%1_%2").arg(obfuscatedName).arg(functionSuffixes[currentSyscall]);
+                        }
+                        newLine = newLine.replace(originalName, obfuscatedName);
                         newLine = newLine.replace("extern \"C\" ", "");
                         newHeaderContent << newLine;
                     }
@@ -502,7 +542,11 @@ bool Obfuscation::updateHeaderFile(const QString& headerPath, const QMap<QString
     newHeaderContent << "";
     newHeaderContent << "// Syscall Name Mappings";
     for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
-        newHeaderContent << QString("#define %1 %2").arg(it.key()).arg(it.value());
+        QString obfuscatedName = it.value();
+        if (enableControlFlow && functionSuffixes.contains(it.key())) {
+            obfuscatedName = QString("%1_%2").arg(obfuscatedName).arg(functionSuffixes[it.key()]);
+        }
+        newHeaderContent << QString("#define %1 %2").arg(it.key()).arg(obfuscatedName);
     }
     QStringList cleanedHeaderContent;
     bool prevEmpty = false;
