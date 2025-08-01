@@ -33,6 +33,12 @@ private:
     QComboBox* encryptionMethod;
     QCheckBox* enableChunking;
     QCheckBox* enableInterleaved;
+    QCheckBox* enableControlFlow;
+    QCheckBox* opaquePredicates;
+    QCheckBox* bogusControlFlow;
+    QCheckBox* indirectJumps;
+    QCheckBox* conditionalBranches;
+    QSpinBox* controlFlowComplexity;
 };
 
 #endif
