@@ -117,10 +117,33 @@ void StubMapperDialog::initUI() {
     offsetNameLength->setValue(8);
     connect(offsetNameLength, QOverload<int>::of(&QSpinBox::valueChanged), this, &StubMapperDialog::onSettingChanged);
     nameLayout->addRow("Offset Name Length:", offsetNameLength);
+    QWidget* controlFlowTab = new QWidget();
+    QFormLayout* controlFlowLayout = new QFormLayout(controlFlowTab);
+    enableControlFlow = new QCheckBox("Enable Control Flow");
+    connect(enableControlFlow, &QCheckBox::stateChanged, this, &StubMapperDialog::onSettingChanged);
+    controlFlowLayout->addRow(enableControlFlow);
+    opaquePredicates = new QCheckBox("Opaque Predicates");
+    connect(opaquePredicates, &QCheckBox::stateChanged, this, &StubMapperDialog::onSettingChanged);
+    controlFlowLayout->addRow(opaquePredicates);
+    bogusControlFlow = new QCheckBox("Bogus Control Flow");
+    connect(bogusControlFlow, &QCheckBox::stateChanged, this, &StubMapperDialog::onSettingChanged);
+    controlFlowLayout->addRow(bogusControlFlow);    
+    indirectJumps = new QCheckBox("Indirect Jumps");
+    connect(indirectJumps, &QCheckBox::stateChanged, this, &StubMapperDialog::onSettingChanged);
+    controlFlowLayout->addRow(indirectJumps);    
+    conditionalBranches = new QCheckBox("Conditional Branches");
+    connect(conditionalBranches, &QCheckBox::stateChanged, this, &StubMapperDialog::onSettingChanged);
+    controlFlowLayout->addRow(conditionalBranches);    
+    controlFlowComplexity = new QSpinBox();
+    controlFlowComplexity->setRange(1, 10);
+    controlFlowComplexity->setValue(2);
+    connect(controlFlowComplexity, QOverload<int>::of(&QSpinBox::valueChanged), this, &StubMapperDialog::onSettingChanged);
+    controlFlowLayout->addRow("Complexity Level:", controlFlowComplexity);    
     settingsTabs->addTab(junkTab, "Junk Instructions");
     settingsTabs->addTab(encryptionTab, "Encryption");
     settingsTabs->addTab(structureTab, "Structure");
     settingsTabs->addTab(nameTab, "Name Randomization");
+    settingsTabs->addTab(controlFlowTab, "Control Flow");
     settingsLayout->addWidget(settingsTabs);
     settingsGroup->setLayout(settingsLayout);
     rightLayout->addWidget(settingsGroup);
@@ -296,52 +319,56 @@ void StubMapperDialog::onSyscallSelected(QListWidgetItem* current, QListWidgetIt
 void StubMapperDialog::loadSyscallSpecificSettings(const QString& syscallName) {
     if (syscallSettings.contains(syscallName)) {
         QMap<QString, QVariant> settings = syscallSettings[syscallName].toMap();
-        // junk instructions
         enableJunk->setChecked(settings.value("enable_junk", false).toBool());
         minInstructions->setValue(settings.value("min_instructions", 2).toInt());
         maxInstructions->setValue(settings.value("max_instructions", 8).toInt());
         useAdvancedJunk->setChecked(settings.value("use_advanced_junk", false).toBool());
-        // encryption
         enableEncryption->setChecked(settings.value("enable_encryption", false).toBool());
         int encryptionMethodValue = settings.value("encryption_method", 1).toInt();
         int index = encryptionMethod->findData(encryptionMethodValue);
         if (index >= 0) {
             encryptionMethod->setCurrentIndex(index);
         }
-        // structure
         enableChunking->setChecked(settings.value("enable_chunking", false).toBool());
         enableInterleaved->setChecked(settings.value("enable_interleaved", false).toBool());
         shuffleSequence->setChecked(settings.value("shuffle_sequence", false).toBool());
-        // name randomization
         syscallPrefixLength->setValue(settings.value("syscall_prefix_length", 8).toInt());
         syscallNumberLength->setValue(settings.value("syscall_number_length", 6).toInt());
         offsetNameLength->setValue(settings.value("offset_name_length", 8).toInt());
+        enableControlFlow->setChecked(settings.value("control_flow_enabled", false).toBool());
+        opaquePredicates->setChecked(settings.value("control_flow_opaque_predicates", false).toBool());
+        bogusControlFlow->setChecked(settings.value("control_flow_bogus_flow", false).toBool());
+        indirectJumps->setChecked(settings.value("control_flow_indirect_jumps", false).toBool());
+        conditionalBranches->setChecked(settings.value("control_flow_conditional_branches", false).toBool());
+        controlFlowComplexity->setValue(settings.value("control_flow_complexity", 2).toInt());
     } else {
         loadGlobalSettings();
     }
 }
 
 void StubMapperDialog::loadGlobalSettings() {
-    // junk instructions
     enableJunk->setChecked(true);
     minInstructions->setValue(settings->value("obfuscation/min_instructions", 2).toInt());
     maxInstructions->setValue(settings->value("obfuscation/max_instructions", 8).toInt());
     useAdvancedJunk->setChecked(settings->value("obfuscation/use_advanced_junk", false).toBool());
-    // encryption
     enableEncryption->setChecked(settings->value("obfuscation/enable_encryption", true).toBool());
     int encryptionMethodValue = settings->value("obfuscation/encryption_method", 1).toInt();
     int index = encryptionMethod->findData(encryptionMethodValue);
     if (index >= 0) {
         encryptionMethod->setCurrentIndex(index);
     }
-    // structure
     enableChunking->setChecked(settings->value("obfuscation/enable_chunking", true).toBool());
     enableInterleaved->setChecked(settings->value("obfuscation/enable_interleaved", true).toBool());
     shuffleSequence->setChecked(settings->value("obfuscation/shuffle_sequence", true).toBool());
-    // name randomization
     syscallPrefixLength->setValue(settings->value("obfuscation/syscall_prefix_length", 8).toInt());
     syscallNumberLength->setValue(settings->value("obfuscation/syscall_number_length", 6).toInt());
     offsetNameLength->setValue(settings->value("obfuscation/offset_name_length", 8).toInt());
+    enableControlFlow->setChecked(settings->value("obfuscation/control_flow_enabled", false).toBool());
+    opaquePredicates->setChecked(settings->value("obfuscation/control_flow_opaque_predicates", false).toBool());
+    bogusControlFlow->setChecked(settings->value("obfuscation/control_flow_bogus_flow", false).toBool());
+    indirectJumps->setChecked(settings->value("obfuscation/control_flow_indirect_jumps", false).toBool());
+    conditionalBranches->setChecked(settings->value("obfuscation/control_flow_conditional_branches", false).toBool());
+    controlFlowComplexity->setValue(settings->value("obfuscation/control_flow_complexity", 2).toInt());
 }
 
 void StubMapperDialog::useGlobalSettings() {
@@ -376,6 +403,12 @@ void StubMapperDialog::resetCurrentSettings() {
         syscallPrefixLength->setValue(8);
         syscallNumberLength->setValue(6);
         offsetNameLength->setValue(8);
+        enableControlFlow->setChecked(false);
+        opaquePredicates->setChecked(false);
+        bogusControlFlow->setChecked(false);
+        indirectJumps->setChecked(false);
+        conditionalBranches->setChecked(false);
+        controlFlowComplexity->setValue(2);
     }
 }
 
@@ -390,22 +423,24 @@ void StubMapperDialog::onSettingChanged() {
 
 void StubMapperDialog::saveCurrentSyscallSettings(const QString& syscallName) {
     QMap<QString, QVariant> settings;
-    // junk instructions
     settings["enable_junk"] = enableJunk->isChecked();
     settings["min_instructions"] = minInstructions->value();
     settings["max_instructions"] = maxInstructions->value();
     settings["use_advanced_junk"] = useAdvancedJunk->isChecked();
-    // encryption
     settings["enable_encryption"] = enableEncryption->isChecked();
     settings["encryption_method"] = encryptionMethod->currentData();
-    // structure
     settings["enable_chunking"] = enableChunking->isChecked();
     settings["enable_interleaved"] = enableInterleaved->isChecked();
     settings["shuffle_sequence"] = shuffleSequence->isChecked();
-    // name randomization
     settings["syscall_prefix_length"] = syscallPrefixLength->value();
     settings["syscall_number_length"] = syscallNumberLength->value();
     settings["offset_name_length"] = offsetNameLength->value();
+    settings["control_flow_enabled"] = enableControlFlow->isChecked();
+    settings["control_flow_opaque_predicates"] = opaquePredicates->isChecked();
+    settings["control_flow_bogus_flow"] = bogusControlFlow->isChecked();
+    settings["control_flow_indirect_jumps"] = indirectJumps->isChecked();
+    settings["control_flow_conditional_branches"] = conditionalBranches->isChecked();
+    settings["control_flow_complexity"] = controlFlowComplexity->value();
     syscallSettings[syscallName] = QVariant::fromValue(settings);
 }
 
