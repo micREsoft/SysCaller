@@ -61,6 +61,12 @@ private:
     QSpinBox* syscallPrefixLength;
     QSpinBox* syscallNumberLength;
     QSpinBox* offsetNameLength;
+    QCheckBox* enableControlFlow;
+    QCheckBox* opaquePredicates;
+    QCheckBox* bogusControlFlow;
+    QCheckBox* indirectJumps;
+    QCheckBox* conditionalBranches;
+    QSpinBox* controlFlowComplexity;
     QPushButton* useGlobalBtn;
     QPushButton* resetBtn;
     QSettings* settings;
