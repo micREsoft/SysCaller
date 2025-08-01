@@ -26,6 +26,6 @@ private:
     bool isKernelMode();
     QString getSyscallPrefix();
     bool processAssemblyFile(const QString& asmPath, const QString& headerPath);
-    bool updateHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap);
+    bool updateHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap, const QMap<QString, QString>& functionSuffixes);
     bool updateDefFile(const QString& defPath, const QStringList& obfuscatedNames);
-}; 
+};
