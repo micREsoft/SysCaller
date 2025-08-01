@@ -91,6 +91,35 @@ void ObfuscationTab::initUI() {
     interleavedLayout->addRow(enableInterleaved);
     interleavedGroup->setLayout(interleavedLayout);
     layout->addWidget(interleavedGroup);
+    QGroupBox* controlFlowGroup = new QGroupBox("Control Flow");
+    QFormLayout* controlFlowLayout = new QFormLayout();
+    enableControlFlow = new QCheckBox("Enable Control Flow");
+    enableControlFlow->setChecked(settings->value("obfuscation/control_flow_enabled", false).toBool());
+    enableControlFlow->setToolTip("Enable control flow obfuscation techniques");
+    controlFlowLayout->addRow(enableControlFlow);    
+    opaquePredicates = new QCheckBox("Opaque Predicates");
+    opaquePredicates->setChecked(settings->value("obfuscation/control_flow_opaque_predicates", false).toBool());
+    opaquePredicates->setToolTip("Add conditional statements that always evaluate to true/false");
+    controlFlowLayout->addRow(opaquePredicates);    
+    bogusControlFlow = new QCheckBox("Bogus Control Flow");
+    bogusControlFlow->setChecked(settings->value("obfuscation/control_flow_bogus_flow", false).toBool());
+    bogusControlFlow->setToolTip("Add fake conditional branches that never execute");
+    controlFlowLayout->addRow(bogusControlFlow);    
+    indirectJumps = new QCheckBox("Indirect Jumps");
+    indirectJumps->setChecked(settings->value("obfuscation/control_flow_indirect_jumps", false).toBool());
+    indirectJumps->setToolTip("Use indirect addressing for jump instructions");
+    controlFlowLayout->addRow(indirectJumps);    
+    conditionalBranches = new QCheckBox("Conditional Branches");
+    conditionalBranches->setChecked(settings->value("obfuscation/control_flow_conditional_branches", false).toBool());
+    conditionalBranches->setToolTip("Add conditional branches");
+    controlFlowLayout->addRow(conditionalBranches);    
+    controlFlowComplexity = new QSpinBox();
+    controlFlowComplexity->setRange(1, 10);
+    controlFlowComplexity->setValue(settings->value("obfuscation/control_flow_complexity", 2).toInt());
+    controlFlowComplexity->setToolTip("Number of control flow elements to add");
+    controlFlowLayout->addRow("Complexity Level:", controlFlowComplexity);    
+    controlFlowGroup->setLayout(controlFlowLayout);
+    layout->addWidget(controlFlowGroup);    
     layout->addStretch();
 }
 
@@ -106,4 +135,10 @@ void ObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/encryption_method", encryptionMethod->currentData().toInt());
     settings->setValue("obfuscation/enable_chunking", enableChunking->isChecked());
     settings->setValue("obfuscation/enable_interleaved", enableInterleaved->isChecked());
-} 
+    settings->setValue("obfuscation/control_flow_enabled", enableControlFlow->isChecked());
+    settings->setValue("obfuscation/control_flow_opaque_predicates", opaquePredicates->isChecked());
+    settings->setValue("obfuscation/control_flow_bogus_flow", bogusControlFlow->isChecked());
+    settings->setValue("obfuscation/control_flow_indirect_jumps", indirectJumps->isChecked());
+    settings->setValue("obfuscation/control_flow_conditional_branches", conditionalBranches->isChecked());
+    settings->setValue("obfuscation/control_flow_complexity", controlFlowComplexity->value());
+}
