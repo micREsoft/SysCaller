@@ -176,6 +176,7 @@
     <ClCompile Include="src\Core\Integrity\Compatibility\Compatibility.cpp" />
     <ClCompile Include="src\Core\Integrity\Validator\Validator.cpp" />
     <ClCompile Include="src\Core\Integrity\Verification\Verification.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\ControlFlow\ControlFlow.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Obfuscation.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Stub\JunkGenerator.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Stub\NameGenerator.cpp" />
@@ -391,6 +392,7 @@
     <Font Include="src\Res\Fonts\ibmplexmono.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Core\Obfuscation\ControlFlow\ControlFlow.h" />
     <ClInclude Include="include\Core\Utils\PathUtils.h" />
     <ClInclude Include="include\Core\Utils\Utils.h" />
     <ClInclude Include="include\GUI\Themes\Colors.h" />

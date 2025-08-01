@@ -186,6 +186,9 @@
     <ClCompile Include="src\Core\Utils\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\ControlFlow\ControlFlow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GUI\Bars\ProgressBar.h">
@@ -242,6 +245,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Utils\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\ControlFlow\ControlFlow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
