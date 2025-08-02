@@ -20,6 +20,9 @@
 #include <QSettings>
 #include <QMap>
 #include <QVariant>
+#include <QMouseEvent>
+
+class SettingsTitleBar;
 
 class StubMapperDialog : public QDialog {
     Q_OBJECT
@@ -39,6 +42,9 @@ private slots:
 
 private:
     void initUI();
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
     void loadSyscalls();
     void loadSyscallSpecificSettings(const QString& syscallName);
     void loadGlobalSettings();
@@ -69,7 +75,10 @@ private:
     QSpinBox* controlFlowComplexity;
     QPushButton* useGlobalBtn;
     QPushButton* resetBtn;
+    SettingsTitleBar* titleBar;
     QSettings* settings;
+    bool m_dragging = false;
+    QPoint m_dragPosition;
     QMap<QString, QVariant> syscallSettings;
     bool validateStubSettings(const QMap<QString, QVariant>& settings, QString& errorMessage);
     void showValidationError(const QString& message);

@@ -5,6 +5,9 @@
 #include <QMap>
 #include <QString>
 #include <QVariant>
+#include <QMouseEvent>
+
+class SettingsTitleBar;
 
 class QListWidget;
 class QTableWidget;
@@ -29,6 +32,9 @@ private slots:
 
 private:
     void initUI();
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
     void updateHashTable();
     void displayComparison(const QStringList& files);
     QString extractHash(const QString& hashValue, const QString& hashType);
@@ -43,7 +49,10 @@ private:
     QComboBox* hashTypeCombo;
     QCheckBox* showOnlyDifferences;
     QSplitter* splitter;
+    SettingsTitleBar* titleBar;
     QStringList hashFiles;
+    bool m_dragging = false;
+    QPoint m_dragPosition;
     QMap<QString, QVariantMap> hashData;
     QString hashType;
 };
