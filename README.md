@@ -118,8 +118,6 @@ If you want to build Bind yourself:
 5. **Open `Bind.sln` in Visual Studio.**
 6. **Build the project** (Release | x64).
 
-> **Note:** Kernel mode is experimental. Use a VM for testing. Driver signing or Secure Boot off may be required.
-
 ### CMake (Alternative)
 
 ```sh
@@ -199,6 +197,8 @@ bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data,
 ```
 
 > **Note:** For more usage demos & examples checkout [Examples](https://github.com/micREsoft/SysCallerExamples)!
+
+> **Note:** Kernel mode is experimental. Use a VM for testing. Driver signing or Secure Boot off may be required.
 
 ---
 
