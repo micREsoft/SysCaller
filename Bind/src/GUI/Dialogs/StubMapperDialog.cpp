@@ -1,5 +1,6 @@
 #include "include/GUI/Dialogs/StubMapperDialog.h"
 #include "include/Core/Utils/PathUtils.h"
+#include "include/GUI/Bars/SettingsTitleBar.h"
 #include <QFile>
 #include <QTextStream>
 #include <QRegularExpression>
@@ -7,14 +8,16 @@
 #include <QFont>
 #include <QPalette>
 #include <QApplication>
+#include <QMouseEvent>
 
 StubMapperDialog::StubMapperDialog(QWidget* parent)
     : QDialog(parent)
     , settings(new QSettings(PathUtils::getIniPath(), QSettings::IniFormat))
 {
-    setWindowTitle("Bind - Stub Mapper");
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setMinimumWidth(800);
     setMinimumHeight(600);
+    titleBar = new SettingsTitleBar("Stub Mapper", this);
     loadSyscallSettings();
     initUI();
 }
@@ -25,6 +28,9 @@ StubMapperDialog::~StubMapperDialog() {
 
 void StubMapperDialog::initUI() {
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(titleBar);
     QSplitter* splitter = new QSplitter(Qt::Horizontal);
     QWidget* leftPanel = new QWidget();
     QVBoxLayout* leftLayout = new QVBoxLayout(leftPanel);
@@ -152,6 +158,8 @@ void StubMapperDialog::initUI() {
     splitter->setSizes({300, 500});
     layout->addWidget(splitter);
     QHBoxLayout* buttonLayout = new QHBoxLayout();
+    buttonLayout->setSpacing(10);
+    buttonLayout->setContentsMargins(20, 10, 20, 10);
     useGlobalBtn = new QPushButton("Use Global Settings");
     connect(useGlobalBtn, &QPushButton::clicked, this, &StubMapperDialog::useGlobalSettings);
     resetBtn = new QPushButton("Reset");
@@ -169,10 +177,12 @@ void StubMapperDialog::initUI() {
     buttonLayout->addWidget(saveBtn);
     buttonLayout->addWidget(cancelBtn);
     layout->addLayout(buttonLayout);
+    connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::reject);
     setStyleSheet(R"(
         QDialog {
             background: #252525;
             color: white;
+            border-radius: 15px;
         }
         QTabWidget::pane {
             border: 1px solid #333333;
@@ -192,14 +202,15 @@ void StubMapperDialog::initUI() {
         QGroupBox {
             border: 1px solid #333333;
             border-radius: 5px;
-            margin-top: 10px;
-            padding-top: 15px;
+            margin-top: 5px;
+            padding-top: 10px;
             color: white;
         }
         QGroupBox::title {
             subcontrol-origin: margin;
             left: 10px;
             padding: 0 5px;
+            margin-top: -10px;
         }
         QSpinBox {
             background: #333333;
@@ -254,6 +265,28 @@ void StubMapperDialog::initUI() {
         }
     )");
     enableControls(false);
+}
+
+void StubMapperDialog::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void StubMapperDialog::mouseMoveEvent(QMouseEvent* event) {
+    if (event->buttons() & Qt::LeftButton && m_dragging) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void StubMapperDialog::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = false;
+        event->accept();
+    }
 }
 
 void StubMapperDialog::loadSyscalls() {

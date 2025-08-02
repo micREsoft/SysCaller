@@ -1,5 +1,6 @@
 #include "include/GUI/Dialogs/HashCompareDialog.h"
 #include "include/Core/Utils/PathUtils.h"
+#include "include/GUI/Bars/SettingsTitleBar.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QListWidget>
@@ -27,13 +28,15 @@
 #include <QSet>
 
 HashCompareDialog::HashCompareDialog(QWidget* parent) : QDialog(parent), hashType("MD5") {
-    setWindowTitle("Bind - Hash Compare");
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setMinimumSize(900, 600);
     setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
+    titleBar = new SettingsTitleBar("Hash Compare", this);
     setStyleSheet(
         "QDialog {"
         " background: #252525;"
         " color: white;"
+        " border-radius: 15px;"
         "}"
         "QSplitter::handle {"
         " background: #444444;"
@@ -66,6 +69,7 @@ HashCompareDialog::HashCompareDialog(QWidget* parent) : QDialog(parent), hashTyp
         "}"
         "QLabel {"
         " color: white;"
+        " background: transparent;"
         "}"
         "QListWidget, QTableWidget {"
         " background: #333333;"
@@ -107,13 +111,19 @@ HashCompareDialog::HashCompareDialog(QWidget* parent) : QDialog(parent), hashTyp
 
 void HashCompareDialog::initUI() {
     auto* layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(titleBar);
     auto* topLayout = new QHBoxLayout();
+    topLayout->setContentsMargins(20, 10, 20, 10);
     refreshBtn = new QPushButton("Refresh");
     refreshBtn->setIcon(QIcon(":/src/Res/Icons/refresh.svg"));
     connect(refreshBtn, &QPushButton::clicked, this, &HashCompareDialog::loadHashFiles);
     topLayout->addWidget(refreshBtn);
+    topLayout->addSpacing(20);
     auto* hashTypeLayout = new QHBoxLayout();
     auto* hashTypeLabel = new QLabel("Hash Type:");
+    hashTypeLabel->setStyleSheet("color: white; background: transparent;");
     hashTypeLayout->addWidget(hashTypeLabel);
     hashTypeCombo = new QComboBox();
     hashTypeCombo->addItems({"MD5", "SHA-256"});
@@ -167,6 +177,29 @@ void HashCompareDialog::initUI() {
     connect(closeBtn, &QPushButton::clicked, this, &QDialog::reject);
     buttonLayout->addWidget(closeBtn);
     layout->addLayout(buttonLayout);
+    connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::reject);
+}
+
+void HashCompareDialog::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void HashCompareDialog::mouseMoveEvent(QMouseEvent* event) {
+    if (event->buttons() & Qt::LeftButton && m_dragging) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void HashCompareDialog::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = false;
+        event->accept();
+    }
 }
 
 void HashCompareDialog::loadHashFiles() {
