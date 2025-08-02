@@ -1,5 +1,6 @@
 #include "include/Core/Integrity/Validator/Validator.h"
 #include "include/Core/Utils/PathUtils.h"
+#include "include/Core/Utils/Utils.h"
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
@@ -173,6 +174,11 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
     bool useAllSyscalls = selectedSyscalls.isEmpty();
     QString syscallMode = settings.value("general/syscall_mode", "Nt").toString();
     QString syscallPrefix = (syscallMode == "Nt") ? "Sys" : "SysK";
+    bool inlineAssemblyMode = settings.value("general/inline_assembly", false).toBool();
+    if (inlineAssemblyMode && syscallMode == "Nt") {
+        syscallPrefix = "SysInline";
+        outputProgress(Colors::OKBLUE() + "Using SysInline prefix" + Colors::ENDC());
+    }
     QMap<QString, SyscallInfo> scStubs;
     QString currentStub;
     int startIndex = -1;
@@ -214,7 +220,10 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
             qDebug() << "  " << it.key() << "(" << it.value().content.size() << " lines)";
         }
     }
-    // process the assembly line by line replacing SC* with Sys* and updating syscall IDs
+    if (inlineAssemblyMode && syscallMode == "Zw") {
+        outputProgress(Colors::WARNING() + "Inline assembly mode is not supported in kernel mode, disabling." + Colors::ENDC());
+        inlineAssemblyMode = false;
+    }
     QStringList newLines;
     int skipUntil = -1;
     for (int i = 0; i < lines.size(); ++i) {
@@ -229,7 +238,12 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
             QString baseName = match.captured(1);
             QString originalFuncName = "SC" + baseName;
             QString syscallName = syscallPrefix + baseName;
-            if (!useAllSyscalls && !selectedSyscalls.contains(syscallName)) {
+            QString checkName = syscallName;
+            if (inlineAssemblyMode && syscallName.startsWith("SysInline")) {
+            // convert back to Sys prefix for checking against selectedSyscalls
+                checkName = "Sys" + syscallName.mid(9);
+            }
+            if (!useAllSyscalls && !selectedSyscalls.contains(checkName)) {
                 outputProgress(Colors::WARNING() + QString("Skipping %1 (not selected in Settings)").arg(syscallName) + Colors::ENDC());
                 if (scStubs.contains(originalFuncName)) {
                     skipUntil = scStubs[originalFuncName].end;
@@ -258,22 +272,28 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
                     foundInAny = true;
                     QString versionSuffix = (tableIdx == 0) ? "" : QString(QChar('A' + tableIdx - 1));
                     QString versionedSyscallName = syscallPrefix + baseName + versionSuffix;
-                    QString procLine = QString("%1 PROC").arg(versionedSyscallName);
-                    newLines.append(procLine);
-                    if (scStubs.contains(originalFuncName)) {
-                        QStringList content = scStubs[originalFuncName].content;
-                        for (int j = 1; j < content.size() - 1; ++j) {
-                            QString contentLine = content[j];
-                            if (contentLine.contains("<syscall_id>")) {
-                                contentLine = contentLine.replace("<syscall_id>", QString("0%1").arg(syscallId, 0, 16).toUpper());
-                            }
-                            QRegularExpression scRegex(R"(\bSC(\w+)\b)");
-                            contentLine.replace(scRegex, syscallPrefix + "\\1" + versionSuffix);
-                            newLines.append(contentLine);
-                        }
-                        QString endpLine = content.last().replace(originalFuncName, versionedSyscallName);
-                        newLines.append(endpLine);
+                    if (inlineAssemblyMode) {
+                        QString inlineStub = InlineAssemblyConverter::convertStubToInline(versionedSyscallName, syscallId);
+                        newLines.append(inlineStub);
                         newLines.append("");
+                    } else {
+                        QString procLine = QString("%1 PROC").arg(versionedSyscallName);
+                        newLines.append(procLine);
+                        if (scStubs.contains(originalFuncName)) {
+                            QStringList content = scStubs[originalFuncName].content;
+                            for (int j = 1; j < content.size() - 1; ++j) {
+                                QString contentLine = content[j];
+                                if (contentLine.contains("<syscall_id>")) {
+                                    contentLine = contentLine.replace("<syscall_id>", QString("0%1").arg(syscallId, 0, 16).toUpper());
+                                }
+                                QRegularExpression scRegex(R"(\bSC(\w+)\b)");
+                                contentLine.replace(scRegex, syscallPrefix + "\\1" + versionSuffix);
+                                newLines.append(contentLine);
+                            }
+                            QString endpLine = content.last().replace(originalFuncName, versionedSyscallName);
+                            newLines.append(endpLine);
+                            newLines.append("");
+                        }
                     }
                 }
             }
@@ -343,6 +363,14 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
     bool headerPartEnded = false;
     QStringList endingLines;
     QString syscallPrefix = (syscallMode == "Nt") ? "Sys" : "SysK";
+    bool inlineAssemblyMode = settings.value("general/inline_assembly", false).toBool();
+    if (inlineAssemblyMode && syscallMode == "Zw") {
+        inlineAssemblyMode = false;
+    }
+    if (inlineAssemblyMode) {
+        syscallPrefix = "SysInline";
+        outputProgress(Colors::OKBLUE() + "Using SysInline prefix for header file generation" + Colors::ENDC());
+    }
     for (int i = lines.size() - 1; i >= 0; --i) {
         QString line = lines[i].trimmed();
         if (line == "#endif" || line.startsWith("#endif ")) {
@@ -369,7 +397,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
         }
         if (isEndingLine) continue;
         if (!headerPartEnded) {
-            QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK)\w+)\()");
+            QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK|SysInline)\w+)\()");
             if (funcDeclRegex.match(line).hasMatch()) {
                 headerPartEnded = true;
             }
@@ -388,7 +416,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
             updatedLines.append(line);
             continue;
         }
-        QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK)\w+)\()");
+        QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK|SysInline)\w+)\()");
         QRegularExpressionMatch match = funcDeclRegex.match(line);
         if (match.hasMatch()) {
             if (!currentFunction.isEmpty() && !functionContent.isEmpty()) {
@@ -400,6 +428,14 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
             if (originalName.startsWith("SC")) {
                 QString baseName = originalName.mid(2);
                 syscallName = syscallPrefix + baseName;
+            } else if (originalName.startsWith("SysInline")) {
+                if (syscallPrefix == "SysInline") {
+                    QString baseName = originalName.mid(9);
+                    syscallName = originalName;
+                } else {
+                    QString baseName = originalName.mid(9);
+                    syscallName = syscallPrefix + baseName;
+                }
             } else if (originalName.startsWith("Sys")) {
                 if (syscallPrefix == "Sys") {
                     QString baseName = originalName.mid(3);
@@ -417,7 +453,12 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
                     syscallName = syscallPrefix + baseName;
                 }
             }
-            if (useAllSyscalls || selectedSyscalls.contains(syscallName)) {
+            QString checkName = syscallName;
+            if (inlineAssemblyMode && syscallName.startsWith("SysInline")) {
+                // convert back to Sys prefix for checking against selectedSyscalls
+                checkName = "Sys" + syscallName.mid(9);
+            }
+            if (useAllSyscalls || selectedSyscalls.contains(checkName)) {
                 currentFunction = syscallName;
                 QString modifiedLine = line;
                 modifiedLine.replace(QRegularExpression(QString(R"(\b%1\b)").arg(QRegularExpression::escape(originalName))), syscallName);
@@ -451,6 +492,10 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
     if (!currentFunction.isEmpty() && !functionContent.isEmpty()) {
         functionDeclarations[currentFunction] = functionContent;
     }
+    qDebug() << "Function declarations found:" << functionDeclarations.size();
+    for (auto it = functionDeclarations.begin(); it != functionDeclarations.end(); ++it) {
+        qDebug() << "  Function:" << it.key();
+    }
     int numTables = syscallTables.size();
     for (auto funcIt = functionDeclarations.begin(); funcIt != functionDeclarations.end(); ++funcIt) {
         QString funcName = funcIt.key();
@@ -458,6 +503,8 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
         QString baseName;
         if (funcName.startsWith(syscallPrefix)) {
             baseName = funcName.mid(syscallPrefix.length());
+        } else if (funcName.startsWith("SysInline")) {
+            baseName = funcName.mid(9);
         } else {
             baseName = funcName;
         }
