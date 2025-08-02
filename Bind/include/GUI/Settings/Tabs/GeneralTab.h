@@ -47,6 +47,7 @@ private:
     QGroupBox* bindingsGroup;
     QCheckBox* hashStubs;
     QCheckBox* createBackup;
+    QCheckBox* inlineAssembly;
 };
 
 #endif
