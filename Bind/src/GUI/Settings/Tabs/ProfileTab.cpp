@@ -10,10 +10,42 @@ ProfileTab::ProfileTab(QSettings* settings, QWidget* parent)
 
 void ProfileTab::initUI() {
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->addSpacing(20);
     QPushButton* exportBtn = new QPushButton("Export Profile (.ini)");
+    exportBtn->setMinimumHeight(40);
+    exportBtn->setStyleSheet(
+        "QPushButton {"
+        " background: rgba(255, 255, 255, 0.1);"
+        " border: 1px solid rgba(255, 255, 255, 0.2);"
+        " border-radius: 5px;"
+        " padding: 8px 15px;"
+        " color: white;"
+        " font-weight: bold;"
+        "}"
+        "QPushButton:hover {"
+        " background: rgba(255, 255, 255, 0.15);"
+        " border: 1px solid rgba(255, 255, 255, 0.3);"
+        "}"
+    );
     connect(exportBtn, &QPushButton::clicked, this, &ProfileTab::exportProfile);
     layout->addWidget(exportBtn);
+    layout->addSpacing(10);
     QPushButton* importBtn = new QPushButton("Import Profile (.ini)");
+    importBtn->setMinimumHeight(40);
+    importBtn->setStyleSheet(
+        "QPushButton {"
+        " background: rgba(255, 255, 255, 0.1);"
+        " border: 1px solid rgba(255, 255, 255, 0.2);"
+        " border-radius: 5px;"
+        " padding: 8px 15px;"
+        " color: white;"
+        " font-weight: bold;"
+        "}"
+        "QPushButton:hover {"
+        " background: rgba(255, 255, 255, 0.15);"
+        " border: 1px solid rgba(255, 255, 255, 0.3);"
+        "}"
+    );
     connect(importBtn, &QPushButton::clicked, this, &ProfileTab::importProfile);
     layout->addWidget(importBtn);
     layout->addStretch();

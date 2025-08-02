@@ -101,7 +101,6 @@ void GeneralTab::initUI() {
     resetLayout->addWidget(createBackup);
     resetGroup->setLayout(resetLayout);
     layout->addWidget(resetGroup);
-    layout->addStretch();
     onModeChanged();
 }
 

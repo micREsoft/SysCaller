@@ -119,8 +119,7 @@ void ObfuscationTab::initUI() {
     controlFlowComplexity->setToolTip("Number of control flow elements to add");
     controlFlowLayout->addRow("Complexity Level:", controlFlowComplexity);    
     controlFlowGroup->setLayout(controlFlowLayout);
-    layout->addWidget(controlFlowGroup);    
-    layout->addStretch();
+    layout->addWidget(controlFlowGroup);
 }
 
 void ObfuscationTab::saveSettings() {
@@ -141,4 +140,4 @@ void ObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/control_flow_indirect_jumps", indirectJumps->isChecked());
     settings->setValue("obfuscation/control_flow_conditional_branches", conditionalBranches->isChecked());
     settings->setValue("obfuscation/control_flow_complexity", controlFlowComplexity->value());
-}
+} 
