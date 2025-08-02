@@ -7,12 +7,13 @@
 #include <QTabWidget>
 #include <QPushButton>
 #include <QSettings>
+#include <QMouseEvent>
 
+class SettingsTitleBar;
 class GeneralTab;
 class ObfuscationTab;
 class IntegrityTab;
 class ProfileTab;
-
 class SettingsDialog : public QDialog {
     Q_OBJECT
 
@@ -26,12 +27,18 @@ private slots:
 private:
     void initUI();
     void setupStylesheet();
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
     QSettings* settings;
     QTabWidget* tabs;
+    SettingsTitleBar* titleBar;
     GeneralTab* generalTab;
     ObfuscationTab* obfuscationTab;
     IntegrityTab* integrityTab;
     ProfileTab* profileTab;
+    bool m_dragging = false;
+    QPoint m_dragPosition;
 };
 
 #endif
