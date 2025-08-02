@@ -191,6 +191,7 @@
     <ClCompile Include="src\GUI\Bars\StatusBar.cpp" />
     <ClCompile Include="src\GUI\Buttons\BindButton.cpp" />
     <ClCompile Include="src\GUI\Bars\TitleBar.cpp" />
+    <ClCompile Include="src\GUI\Bars\SettingsTitleBar.cpp" />
     <ClCompile Include="src\GUI\MainWindow.cpp" />
     <ClCompile Include="src\GUI\Panels\LeftPanel.cpp" />
     <ClCompile Include="src\GUI\Panels\OutputPanel.cpp" />
@@ -210,6 +211,7 @@
     <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" />
     <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
     <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" />
     <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" />
     <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" />
     <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" />
@@ -251,6 +253,12 @@
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="include\GUI\Bars\TitleBar.h">
+      <FileType>Document</FileType>
+      <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
+      <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="include\GUI\Bars\SettingsTitleBar.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
