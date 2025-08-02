@@ -21,7 +21,8 @@ GeneralTab::GeneralTab(QSettings* settings, QWidget* parent)
       bindingsEnableRadio(nullptr),
       bindingsDisableRadio(nullptr),
       hashStubs(nullptr),
-      createBackup(nullptr) {
+      createBackup(nullptr),
+      inlineAssembly(nullptr) {
     initUI();
 }
 
@@ -101,6 +102,17 @@ void GeneralTab::initUI() {
     resetLayout->addWidget(createBackup);
     resetGroup->setLayout(resetLayout);
     layout->addWidget(resetGroup);
+    QGroupBox* inlineAssemblyGroup = new QGroupBox("Inline Assembly Mode");
+    QVBoxLayout* inlineAssemblyLayout = new QVBoxLayout();
+    QLabel* inlineDesc = new QLabel("Enable inline assembly mode to generate MASM compatible db based stubs instead of traditional instruction mnemonics.");
+    inlineDesc->setWordWrap(true);
+    inlineAssemblyLayout->addWidget(inlineDesc);
+    inlineAssembly = new QCheckBox("Enable Inline Assembly Mode");
+    inlineAssembly->setChecked(settings->value("general/inline_assembly", false).toBool());
+    inlineAssembly->setToolTip("If checked, will generate inline db based stubs (user mode only)");
+    inlineAssemblyLayout->addWidget(inlineAssembly);
+    inlineAssemblyGroup->setLayout(inlineAssemblyLayout);
+    layout->addWidget(inlineAssemblyGroup);
     onModeChanged();
 }
 
@@ -110,12 +122,19 @@ void GeneralTab::onModeChanged() {
     if (isKernelMode && bindingsEnableRadio->isChecked()) {
         bindingsDisableRadio->setChecked(true);
     }
+    if (inlineAssembly) {
+        inlineAssembly->setEnabled(!isKernelMode);
+        if (isKernelMode && inlineAssembly->isChecked()) {
+            inlineAssembly->setChecked(false);
+        }
+    }
 }
 
 void GeneralTab::saveSettings() {
     settings->setValue("general/create_backup", createBackup->isChecked());
     settings->setValue("general/hash_stubs", hashStubs->isChecked());
     settings->setValue("general/bindings_enabled", bindingsEnableRadio->isChecked());
+    settings->setValue("general/inline_assembly", inlineAssembly->isChecked());
     QString newMode = zwModeRadio->isChecked() ? "Zw" : "Nt";
     bool modeChanged = newMode != originalMode;
     settings->setValue("general/syscall_mode", newMode);
