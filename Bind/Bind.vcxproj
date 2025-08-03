@@ -176,13 +176,13 @@
     <ClCompile Include="src\Core\Integrity\Compatibility\Compatibility.cpp" />
     <ClCompile Include="src\Core\Integrity\Validator\Validator.cpp" />
     <ClCompile Include="src\Core\Integrity\Verification\Verification.cpp" />
-    <ClCompile Include="src\Core\Obfuscation\ControlFlow\ControlFlow.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\Direct\ControlFlow\ControlFlow.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Obfuscation.cpp" />
-    <ClCompile Include="src\Core\Obfuscation\Stub\JunkGenerator.cpp" />
-    <ClCompile Include="src\Core\Obfuscation\Stub\NameGenerator.cpp" />
-    <ClCompile Include="src\Core\Obfuscation\Stub\StubGenerator.cpp" />
-    <ClCompile Include="src\Core\Obfuscation\Encryption\Encryptor.cpp" />
-    <ClCompile Include="src\Core\Obfuscation\Mapping\StubMapper.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\Direct\Stub\JunkGenerator.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\Direct\Stub\NameGenerator.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\Direct\Stub\StubGenerator.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\Direct\Encryption\Encryptor.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\Direct\Mapping\StubMapper.cpp" />
     <ClCompile Include="src\Core\Utils\Utils.cpp" />
     <ClCompile Include="src\GUI\Threads\VerificationThread.cpp" />
     <ClCompile Include="src\GUI\Threads\CompatibilityThread.cpp" />
@@ -200,11 +200,11 @@
     <ClCompile Include="src\GUI\Dialogs\HashCompareDialog.cpp" />
     <ClCompile Include="src\GUI\Dialogs\ObfuscationSelectionDialog.cpp" />
     <ClCompile Include="src\GUI\Dialogs\StubMapperDialog.cpp" />
-    <ClCompile Include="src\GUI\Settings\SettingsDialog.cpp" />
-    <ClCompile Include="src\GUI\Settings\tabs\GeneralTab.cpp" />
-    <ClCompile Include="src\GUI\Settings\tabs\ObfuscationTab.cpp" />
-    <ClCompile Include="src\GUI\Settings\tabs\IntegrityTab.cpp" />
-    <ClCompile Include="src\GUI\Settings\tabs\ProfileTab.cpp" />
+    <ClCompile Include="src\GUI\Dialogs\SettingsDialog.cpp" />
+    <ClCompile Include="src\GUI\Settings\Tabs\GeneralTab.cpp" />
+    <ClCompile Include="src\GUI\Settings\Tabs\ObfuscationTab.cpp" />
+    <ClCompile Include="src\GUI\Settings\Tabs\IntegrityTab.cpp" />
+    <ClCompile Include="src\GUI\Settings\Tabs\ProfileTab.cpp" />
     <ClCompile Include="src\Core\Utils\PathUtils.cpp" />
     <ClCompile Include="src\GUI\Threads\ValidatorThread.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" />
@@ -312,7 +312,7 @@
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
     </QtMoc>
-    <QtMoc Include="include\GUI\Settings\SettingsDialog.h">
+    <QtMoc Include="include\GUI\Dialogs\SettingsDialog.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -400,16 +400,16 @@
     <Font Include="src\Res\Fonts\ibmplexmono.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Core\Obfuscation\ControlFlow\ControlFlow.h" />
+    <ClInclude Include="include\Core\Obfuscation\Direct\ControlFlow\ControlFlow.h" />
     <ClInclude Include="include\Core\Utils\PathUtils.h" />
     <ClInclude Include="include\Core\Utils\Utils.h" />
     <ClInclude Include="include\GUI\Themes\Colors.h" />
     <ClInclude Include="include\Core\Obfuscation\Obfuscation.h" />
-    <ClInclude Include="include\Core\Obfuscation\Stub\JunkGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Stub\NameGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Stub\StubGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Encryption\Encryptor.h" />
-    <ClInclude Include="include\Core\Obfuscation\Mapping\StubMapper.h" />
+    <ClInclude Include="include\Core\Obfuscation\Direct\Stub\JunkGenerator.h" />
+    <ClInclude Include="include\Core\Obfuscation\Direct\Stub\NameGenerator.h" />
+    <ClInclude Include="include\Core\Obfuscation\Direct\Stub\StubGenerator.h" />
+    <ClInclude Include="include\Core\Obfuscation\Direct\Encryption\Encryptor.h" />
+    <ClInclude Include="include\Core\Obfuscation\Direct\Mapping\StubMapper.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

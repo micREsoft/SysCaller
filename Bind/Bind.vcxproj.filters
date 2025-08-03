@@ -51,19 +51,19 @@
     <ClCompile Include="src\GUI\Dialogs\HashCompareDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\SettingsDialog.cpp">
+    <ClCompile Include="src\GUI\Dialogs\SettingsDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\GeneralTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\GeneralTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\ObfuscationTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\ObfuscationTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\IntegrityTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\IntegrityTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\ProfileTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\ProfileTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Utils\PathUtils.cpp">
@@ -296,7 +296,7 @@
     <QtMoc Include="include\GUI\Dialogs\HashCompareDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="include\GUI\Settings\SettingsDialog.h">
+    <QtMoc Include="include\GUI\Dialogs\SettingsDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="include\GUI\Settings\Tabs\GeneralTab.h">
