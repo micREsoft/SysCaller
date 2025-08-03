@@ -20,6 +20,8 @@ GeneralTab::GeneralTab(QSettings* settings, QWidget* parent)
       bindingsButtonGroup(nullptr),
       bindingsEnableRadio(nullptr),
       bindingsDisableRadio(nullptr),
+      bindingsGroup(nullptr),
+      inlineAssemblyGroup(nullptr),
       hashStubs(nullptr),
       createBackup(nullptr),
       inlineAssembly(nullptr) {
@@ -72,6 +74,17 @@ void GeneralTab::initUI() {
     } else {
         bindingsDisableRadio->setChecked(true);
     }
+    inlineAssemblyGroup = new QGroupBox("Inline Assembly Mode");
+    QVBoxLayout* inlineAssemblyLayout = new QVBoxLayout();
+    QLabel* inlineDesc = new QLabel("Enable inline assembly mode to generate MASM compatible db based stubs instead of traditional instruction mnemonics.");
+    inlineDesc->setWordWrap(true);
+    inlineAssemblyLayout->addWidget(inlineDesc);
+    inlineAssembly = new QCheckBox("Enable Inline Assembly Mode");
+    inlineAssembly->setChecked(settings->value("general/inline_assembly", false).toBool());
+    inlineAssembly->setToolTip("If checked, will generate inline db based stubs (user mode only)");
+    inlineAssemblyLayout->addWidget(inlineAssembly);
+    inlineAssemblyGroup->setLayout(inlineAssemblyLayout);
+    layout->addWidget(inlineAssemblyGroup);
     QGroupBox* hashStubsGroup = new QGroupBox("Hash Stubs");
     QVBoxLayout* hashStubsLayout = new QVBoxLayout();
     QLabel* hashDesc = new QLabel("Optionally hash each stub/build with unique hash for future lookups.");
@@ -102,23 +115,13 @@ void GeneralTab::initUI() {
     resetLayout->addWidget(createBackup);
     resetGroup->setLayout(resetLayout);
     layout->addWidget(resetGroup);
-    QGroupBox* inlineAssemblyGroup = new QGroupBox("Inline Assembly Mode");
-    QVBoxLayout* inlineAssemblyLayout = new QVBoxLayout();
-    QLabel* inlineDesc = new QLabel("Enable inline assembly mode to generate MASM compatible db based stubs instead of traditional instruction mnemonics.");
-    inlineDesc->setWordWrap(true);
-    inlineAssemblyLayout->addWidget(inlineDesc);
-    inlineAssembly = new QCheckBox("Enable Inline Assembly Mode");
-    inlineAssembly->setChecked(settings->value("general/inline_assembly", false).toBool());
-    inlineAssembly->setToolTip("If checked, will generate inline db based stubs (user mode only)");
-    inlineAssemblyLayout->addWidget(inlineAssembly);
-    inlineAssemblyGroup->setLayout(inlineAssemblyLayout);
-    layout->addWidget(inlineAssemblyGroup);
     onModeChanged();
 }
 
 void GeneralTab::onModeChanged() {
     bool isKernelMode = zwModeRadio->isChecked();
     bindingsGroup->setVisible(!isKernelMode);
+    inlineAssemblyGroup->setVisible(!isKernelMode);
     if (isKernelMode && bindingsEnableRadio->isChecked()) {
         bindingsDisableRadio->setChecked(true);
     }
@@ -462,4 +465,4 @@ bool GeneralTab::restoreFileWithRetry(const QString& sourcePath, const QString& 
         }
     }
     return false;
-} 
+}
