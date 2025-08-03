@@ -151,12 +151,10 @@ QList<Compatibility::SyscallInfo> Compatibility::readSyscalls(const QString& asm
             bool ok1, ok2;
             int low = lowByte.toInt(&ok1, 16);
             int high = highByte.toInt(&ok2, 16);
-            
             if (ok1 && ok2) {
                 int offset = low | (high << 8);
                 currentSyscall.offset = offset;
                 QString offsetKey = QString("%1_%2").arg(offset).arg(currentSyscall.version);
-                
                 if (uniqueOffsets.contains(offsetKey)) {
                     currentSyscall.duplicateOffset = true;
                     currentSyscall.duplicateOffsetWith = uniqueOffsets[offsetKey];
