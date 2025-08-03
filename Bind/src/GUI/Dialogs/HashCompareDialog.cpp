@@ -29,8 +29,7 @@
 
 HashCompareDialog::HashCompareDialog(QWidget* parent) : QDialog(parent), hashType("MD5") {
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    setMinimumSize(900, 600);
-    setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
+    setMinimumSize(950, 400);
     titleBar = new SettingsTitleBar("Hash Compare", this);
     setStyleSheet(
         "QDialog {"
@@ -639,4 +638,3 @@ void HashCompareDialog::exportAsHtml(const QString& exportPath, const QStringLis
 QString HashCompareDialog::getProjectPaths() {
     return PathUtils::getProjectRoot();
 }
- 
