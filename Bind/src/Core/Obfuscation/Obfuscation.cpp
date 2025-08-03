@@ -1,10 +1,10 @@
 #include "include/Core/Obfuscation/Obfuscation.h"
-#include "include/Core/Obfuscation/Stub/JunkGenerator.h"
-#include "include/Core/Obfuscation/Stub/NameGenerator.h"
-#include "include/Core/Obfuscation/Encryption/Encryptor.h"
-#include "include/Core/Obfuscation/Stub/StubGenerator.h"
-#include "include/Core/Obfuscation/Mapping/StubMapper.h"
-#include "include/Core/Obfuscation/ControlFlow/ControlFlow.h"
+#include "include/Core/Obfuscation/Direct/Stub/JunkGenerator.h"
+#include "include/Core/Obfuscation/Direct/Stub/NameGenerator.h"
+#include "include/Core/Obfuscation/Direct/Encryption/Encryptor.h"
+#include "include/Core/Obfuscation/Direct/Stub/StubGenerator.h"
+#include "include/Core/Obfuscation/Direct/Mapping/StubMapper.h"
+#include "include/Core/Obfuscation/Direct/ControlFlow/ControlFlow.h"
 #include "include/Core/Utils/PathUtils.h"
 #include <QFile>
 #include <QTextStream>
