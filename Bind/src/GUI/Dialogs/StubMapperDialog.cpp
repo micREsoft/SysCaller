@@ -15,8 +15,7 @@ StubMapperDialog::StubMapperDialog(QWidget* parent)
     , settings(new QSettings(PathUtils::getIniPath(), QSettings::IniFormat))
 {
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    setMinimumWidth(800);
-    setMinimumHeight(600);
+    setMinimumSize(850, 400);
     titleBar = new SettingsTitleBar("Stub Mapper", this);
     loadSyscallSettings();
     initUI();
