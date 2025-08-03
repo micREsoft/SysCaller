@@ -15,8 +15,8 @@ TitleBar::TitleBar(QWidget* parent) : QFrame(parent) {
         "}"
     );
     auto* layout = new QHBoxLayout(this);
-    layout->setContentsMargins(20, 0, 20, 0);
-    auto* title = new QLabel("1.2.0", this);
+    layout->setContentsMargins(0, 0, 5, 0);
+    auto* title = new QLabel("", this);
     title->setStyleSheet("color: white; font-size: 16px; font-weight: bold;");
     layout->addWidget(title);
     auto* controlsLayout = new QHBoxLayout();
