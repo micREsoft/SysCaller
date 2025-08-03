@@ -62,10 +62,10 @@ QList<Compatibility::SyscallInfo> Compatibility::readSyscalls(const QString& asm
         if (lineCount <= 10) {
             qDebug() << "Debug: Line" << lineCount << ":" << line.trimmed();
         }
-        QRegularExpression procMatch("((Sys|SysK)\\w+)\\s+PROC");
+        QRegularExpression procMatch("((Sys|SysK|SysInline)\\w+)\\s+PROC");
         QRegularExpressionMatch match = procMatch.match(line.trimmed());
-        if (line.trimmed().contains("PROC") && (line.trimmed().startsWith("Sys") || line.trimmed().startsWith("SysK"))) {
-            qDebug() << "Debug: Line contains PROC and starts with Sys/SysK:" << line.trimmed();
+        if (line.trimmed().contains("PROC") && (line.trimmed().startsWith("Sys") || line.trimmed().startsWith("SysK") || line.trimmed().startsWith("SysInline"))) {
+            qDebug() << "Debug: Line contains PROC and starts with Sys/SysK/SysInline:" << line.trimmed();
             if (!match.hasMatch()) {
                 qDebug() << "Debug: But Regex didn't match!";
             }
@@ -80,10 +80,10 @@ QList<Compatibility::SyscallInfo> Compatibility::readSyscalls(const QString& asm
             QString syscallName = match.captured(1);
             QString baseName;
             int version = 1;
-            QRegularExpression versionMatch(R"((Sys|SysK)(\w+?)([A-Z])?$)");
+            QRegularExpression versionMatch(R"((Sys|SysK|SysInline)(\w+?)([A-Z])?$)");
             QRegularExpressionMatch vMatch = versionMatch.match(syscallName);
             if (vMatch.hasMatch()) {
-                QString prefix = vMatch.captured(1); // "Sys" or "SysK"
+                QString prefix = vMatch.captured(1); // "Sys", "SysK", or "SysInline"
                 QString namePart = vMatch.captured(2); // the actual function name
                 QString versionPart = vMatch.captured(3); // the version letter
                 baseName = prefix + namePart;
@@ -131,6 +131,29 @@ QList<Compatibility::SyscallInfo> Compatibility::readSyscalls(const QString& asm
             }
             
             if (ok) {
+                currentSyscall.offset = offset;
+                QString offsetKey = QString("%1_%2").arg(offset).arg(currentSyscall.version);
+                
+                if (uniqueOffsets.contains(offsetKey)) {
+                    currentSyscall.duplicateOffset = true;
+                    currentSyscall.duplicateOffsetWith = uniqueOffsets[offsetKey];
+                } else {
+                    currentSyscall.duplicateOffset = false;
+                    uniqueOffsets[offsetKey] = currentSyscall.name;
+                }
+            }
+        }
+        QRegularExpression dbMatch(R"(db\s+04Ch,\s*08Bh,\s*0D1h,\s*0B8h,\s*0([0-9A-Fa-f]+)h,\s*0([0-9A-Fa-f]+)h)");
+        QRegularExpressionMatch dbOMatch = dbMatch.match(line);
+        if (hasCurrentSyscall && dbOMatch.hasMatch() && !line.trimmed().startsWith(";")) {
+            QString lowByte = dbOMatch.captured(1);
+            QString highByte = dbOMatch.captured(2);
+            bool ok1, ok2;
+            int low = lowByte.toInt(&ok1, 16);
+            int high = highByte.toInt(&ok2, 16);
+            
+            if (ok1 && ok2) {
+                int offset = low | (high << 8);
                 currentSyscall.offset = offset;
                 QString offsetKey = QString("%1_%2").arg(offset).arg(currentSyscall.version);
                 
@@ -214,10 +237,16 @@ void Compatibility::validateSyscalls(const QString& asmFile, const QStringList& 
         QString expectedName;
         if (baseName.startsWith("SysK")) {
             expectedName = "Nt" + baseName.mid(4);
+        } else if (baseName.startsWith("SysInline")) {
+            expectedName = "Nt" + baseName.mid(9);
         } else if (baseName.startsWith("Sys")) {
             expectedName = "Nt" + baseName.mid(3);
         } else {
             expectedName = baseName;
+        }
+        if (expectedName.endsWith("A") || expectedName.endsWith("B") || expectedName.endsWith("C") || 
+            expectedName.endsWith("D") || expectedName.endsWith("E") || expectedName.endsWith("F")) {
+            expectedName = expectedName.left(expectedName.length() - 1);
         }
         int actualOffset = syscallNumbers.value(expectedName, 0);
         // check for duplicates only within same table

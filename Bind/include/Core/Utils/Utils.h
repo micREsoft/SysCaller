@@ -20,3 +20,8 @@ public:
     static QVariantMap generateStubHashes(const QString& asmFilePath, const QString& headerFilePath, const QString& obfuscationMethod = QString());
     static QPair<bool, QString> saveStubHashes(const QVariantMap& stubHashes, const QString& timestamp = QString());
 };
+
+class InlineAssemblyConverter {
+public:
+    static QString convertStubToInline(const QString& stubName, int syscallId);
+};
