@@ -45,6 +45,7 @@ private:
     QRadioButton* bindingsEnableRadio;
     QRadioButton* bindingsDisableRadio;
     QGroupBox* bindingsGroup;
+    QGroupBox* inlineAssemblyGroup;
     QCheckBox* hashStubs;
     QCheckBox* createBackup;
     QCheckBox* inlineAssembly;
