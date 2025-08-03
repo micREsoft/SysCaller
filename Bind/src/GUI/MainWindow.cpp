@@ -4,7 +4,7 @@
 #include "include/GUI/Panels/RightPanel.h"
 #include "include/GUI/Panels/OutputPanel.h"
 #include "include/GUI/Bars/StatusBar.h"
-#include "include/GUI/Settings/SettingsDialog.h"
+#include "include/GUI/Dialogs/SettingsDialog.h"
 #include "include/GUI/Threads/ValidatorThread.h"
 #include "include/GUI/Threads/CompatibilityThread.h"
 #include "include/GUI/Threads/VerificationThread.h"
