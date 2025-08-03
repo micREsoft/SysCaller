@@ -23,7 +23,7 @@ void SettingsTitleBar::initTitleBar(const QString& title) {
         "}"
     );
     auto* layout = new QHBoxLayout(this);
-    layout->setContentsMargins(20, 0, 20, 0);
+    layout->setContentsMargins(5, 0, 5, 0);
     auto* titleLabel = new QLabel(title, this);
     titleLabel->setStyleSheet("color: white; font-size: 16px; font-weight: bold;");
     layout->addWidget(titleLabel);
