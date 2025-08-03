@@ -38,6 +38,7 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
     logoLabel = new QLabel("SysCaller: Bind", this);
     logoLabel->setStyleSheet(
         "color: #0077d4;"
+        "font-weight: bold;"
         "padding: 10px;"
         "background: rgba(72, 128, 168, 0.2);"
         "border-radius: 10px;"
@@ -313,7 +314,3 @@ void LeftPanel::showChangelogDialog() {
     ChangelogDialog dialog(this);
     dialog.exec();
 }
-
-
-
- 
