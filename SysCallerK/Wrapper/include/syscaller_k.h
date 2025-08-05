@@ -1,7 +1,8 @@
 #pragma once
+
 /*
  * SysCaller Kernel SDK
- * Copyright (c) 2025 WindowsAPI
+ * Copyright (c) 2025 micREsoft
  *
  * License: GPLv3
  *
