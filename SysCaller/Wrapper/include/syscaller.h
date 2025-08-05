@@ -1,7 +1,8 @@
 #pragma once
+
 /*
  * SysCaller SDK
- * Copyright (c) 2025 WindowsAPI
+ * Copyright (c) 2025 micREsoft
  *
  * License: GPLv3
  *
@@ -42,5 +43,3 @@
 #include "Sys/sysTypes.h"
 #include "Sys/sysExternals.h"
 #include "Sys/sysFunctions.h"
-
-#define SYSCALLER_ENABLE_DYNAMIC_LOADER
