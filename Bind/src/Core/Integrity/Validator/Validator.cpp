@@ -78,6 +78,7 @@ int Validator::runWithDllPaths(const QStringList& dllPaths) {
     updateSyscalls(asmFile, syscallTables);
     qDebug() << QString("updateSyscalls completed");
     bool bindingsEnabled = settings.value("general/bindings_enabled", false).toBool();
+    bool indirectAssemblyMode = settings.value("general/indirect_assembly", false).toBool();
     if (bindingsEnabled && !isKernelMode) {
         qDebug() << QString("Bindings enabled, parsing updated ASM file for Sys* PROC patterns...");
         QStringList syscallNames;
@@ -95,6 +96,12 @@ int Validator::runWithDllPaths(const QStringList& dllPaths) {
                 }
             }
             file.close();
+        }
+        if (indirectAssemblyMode && syscallMode == "Nt") {
+            syscallNames.append("GetSyscallNumber");
+            syscallNames.append("InitializeResolver");
+            syscallNames.append("CleanupResolver");
+            qDebug() << "Added resolver functions to DEF file";
         }
         qDebug() << QString("Found %1 Syscalls for DEF File").arg(syscallNames.size());
         QString defPath = getDefFilePath();
@@ -137,7 +144,6 @@ QMap<QString, Validator::SyscallInfo> Validator::parseAsmFile(const QString& asm
     if (!currentSyscall.isEmpty()) {
         syscalls[currentSyscall].end = lines.size() - 1;
     }
-    // extract content for each syscall
     for (auto it = syscalls.begin(); it != syscalls.end(); ++it) {
         int start = it.value().start;
         int end = it.value().end;
@@ -175,9 +181,13 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
     QString syscallMode = settings.value("general/syscall_mode", "Nt").toString();
     QString syscallPrefix = (syscallMode == "Nt") ? "Sys" : "SysK";
     bool inlineAssemblyMode = settings.value("general/inline_assembly", false).toBool();
+    bool indirectAssemblyMode = settings.value("general/indirect_assembly", false).toBool();
     if (inlineAssemblyMode && syscallMode == "Nt") {
         syscallPrefix = "SysInline";
         outputProgress(Colors::OKBLUE() + "Using SysInline prefix" + Colors::ENDC());
+    } else if (indirectAssemblyMode && syscallMode == "Nt") {
+        syscallPrefix = "SysIndirect";
+        outputProgress(Colors::OKBLUE() + "Using SysIndirect prefix" + Colors::ENDC());
     }
     QMap<QString, SyscallInfo> scStubs;
     QString currentStub;
@@ -242,6 +252,9 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
             if (inlineAssemblyMode && syscallName.startsWith("SysInline")) {
             // convert back to Sys prefix for checking against selectedSyscalls
                 checkName = "Sys" + syscallName.mid(9);
+            } else if (indirectAssemblyMode && syscallName.startsWith("SysIndirect")) {
+            // convert back to Sys prefix for checking against selectedSyscalls
+                checkName = "Sys" + syscallName.mid(11);
             }
             if (!useAllSyscalls && !selectedSyscalls.contains(checkName)) {
                 outputProgress(Colors::WARNING() + QString("Skipping %1 (not selected in Settings)").arg(syscallName) + Colors::ENDC());
@@ -275,6 +288,10 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
                     if (inlineAssemblyMode) {
                         QString inlineStub = InlineAssemblyConverter::convertStubToInline(versionedSyscallName, syscallId);
                         newLines.append(inlineStub);
+                        newLines.append("");
+                    } else if (indirectAssemblyMode) {
+                        QString indirectStub = generateIndirectStub(versionedSyscallName, syscallId);
+                        newLines.append(indirectStub);
                         newLines.append("");
                     } else {
                         QString procLine = QString("%1 PROC").arg(versionedSyscallName);
@@ -324,6 +341,10 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
         cleanedLines.insert(0, ".code");
         cleanedLines.insert(1, "");
     }
+    if (indirectAssemblyMode && syscallMode == "Nt") {
+        cleanedLines.insert(0, "extern GetSyscallNumber:PROC");
+        cleanedLines.insert(1, "");
+    }
     if (!cleanedLines.isEmpty() && !cleanedLines.last().contains("end", Qt::CaseInsensitive)) {
         cleanedLines.append("");
         cleanedLines.append("end");
@@ -364,12 +385,16 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
     QStringList endingLines;
     QString syscallPrefix = (syscallMode == "Nt") ? "Sys" : "SysK";
     bool inlineAssemblyMode = settings.value("general/inline_assembly", false).toBool();
+    bool indirectAssemblyMode = settings.value("general/indirect_assembly", false).toBool();
     if (inlineAssemblyMode && syscallMode == "Zw") {
         inlineAssemblyMode = false;
     }
     if (inlineAssemblyMode) {
         syscallPrefix = "SysInline";
         outputProgress(Colors::OKBLUE() + "Using SysInline prefix for header file generation" + Colors::ENDC());
+    } else if (indirectAssemblyMode && syscallMode == "Nt") {
+        syscallPrefix = "SysIndirect";
+        outputProgress(Colors::OKBLUE() + "Using SysIndirect prefix for header file generation" + Colors::ENDC());
     }
     for (int i = lines.size() - 1; i >= 0; --i) {
         QString line = lines[i].trimmed();
@@ -397,7 +422,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
         }
         if (isEndingLine) continue;
         if (!headerPartEnded) {
-            QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK|SysInline)\w+)\()");
+            QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK|SysInline|SysIndirect)\w+)\()");
             if (funcDeclRegex.match(line).hasMatch()) {
                 headerPartEnded = true;
             }
@@ -416,7 +441,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
             updatedLines.append(line);
             continue;
         }
-        QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK|SysInline)\w+)\()");
+        QRegularExpression funcDeclRegex(R"((?:extern\s+"C"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID)\s+((?:SC|Sys|SysK|SysInline|SysIndirect)\w+)\()");
         QRegularExpressionMatch match = funcDeclRegex.match(line);
         if (match.hasMatch()) {
             if (!currentFunction.isEmpty() && !functionContent.isEmpty()) {
@@ -452,11 +477,22 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
                     QString baseName = originalName.mid(4);
                     syscallName = syscallPrefix + baseName;
                 }
+            } else if (originalName.startsWith("SysIndirect")) {
+                if (syscallPrefix == "SysIndirect") {
+                    QString baseName = originalName.mid(11);
+                    syscallName = originalName;
+                } else {
+                    QString baseName = originalName.mid(11);
+                    syscallName = syscallPrefix + baseName;
+                }
             }
             QString checkName = syscallName;
             if (inlineAssemblyMode && syscallName.startsWith("SysInline")) {
                 // convert back to Sys prefix for checking against selectedSyscalls
                 checkName = "Sys" + syscallName.mid(9);
+            } else if (indirectAssemblyMode && syscallName.startsWith("SysIndirect")) {
+                // convert back to Sys prefix for checking against selectedSyscalls
+                checkName = "Sys" + syscallName.mid(11);
             }
             if (useAllSyscalls || selectedSyscalls.contains(checkName)) {
                 currentFunction = syscallName;
@@ -505,6 +541,8 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
             baseName = funcName.mid(syscallPrefix.length());
         } else if (funcName.startsWith("SysInline")) {
             baseName = funcName.mid(9);
+        } else if (funcName.startsWith("SysIndirect")) {
+            baseName = funcName.mid(11);
         } else {
             baseName = funcName;
         }
@@ -549,7 +587,6 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
                 expectedDllName = "Zw" + baseName;
                 expectedAltName = "Nt" + baseName;
             }
-            
             int syscallId = -1;
             if (table0.contains(expectedDllName)) {
                 syscallId = table0[expectedDllName];
@@ -695,4 +732,58 @@ QString Validator::getAsmFilePath(bool isKernelMode) {
 
 QString Validator::getDefFilePath() {
     return PathUtils::getProjectRoot() + "/SysCaller/Wrapper/SysCaller.def";
+}
+
+QString Validator::generateIndirectStub(const QString& stubName, int syscallId) {
+    QString baseName = stubName.mid(11);
+    QString ntName = "Nt" + baseName;
+    QString indirectStub = QString("%1 PROC\n"
+                                   "    ; Save non volatile registers\n"
+                                   "    push rbx\n"
+                                   "    push rsi\n"
+                                   "    push rdi\n"
+                                   "    push r12\n"
+                                   "    push r13\n"
+                                   "    push r14\n"
+                                   "    push r15\n"
+                                   "\n"
+                                   "    ; Save original parameters\n"
+                                   "    mov rbx, rcx\n"
+                                   "    mov rsi, rdx\n"
+                                   "    mov rdi, r8\n"
+                                   "    mov r12, r9\n"
+                                   "\n"
+                                   "    ; Call C++ resolver to get syscall number\n"
+                                   "    lea rcx, [%2_str]\n"
+                                   "    sub rsp, 32\n"
+                                   "    call GetSyscallNumber\n"
+                                   "    add rsp, 32\n"
+                                   "\n"
+                                   "    ; Remove this later\n"
+                                   "\n"
+                                   "    ; Restore original parameters\n"
+                                   "    mov rcx, rbx\n"
+                                   "    mov rdx, rsi\n"
+                                   "    mov r8, rdi\n"
+                                   "    mov r9, r12\n"
+                                   "\n"
+                                   "    ; Restore non volatile registers\n"
+                                   "    pop r15\n"
+                                   "    pop r14\n"
+                                   "    pop r13\n"
+                                   "    pop r12\n"
+                                   "    pop rdi\n"
+                                   "    pop rsi\n"
+                                   "    pop rbx\n"
+                                   "\n"
+                                   "    ; Execute syscall\n"
+                                   "    mov r10, rcx\n"
+                                   "    syscall\n"
+                                   "    ret\n"
+                                   "%1 ENDP\n"
+                                   "\n"
+                                   "%2_str db \"%2\", 0")
+                                   .arg(stubName)
+                                   .arg(ntName);
+    return indirectStub;
 }
