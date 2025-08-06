@@ -85,6 +85,17 @@ void GeneralTab::initUI() {
     inlineAssemblyLayout->addWidget(inlineAssembly);
     inlineAssemblyGroup->setLayout(inlineAssemblyLayout);
     layout->addWidget(inlineAssemblyGroup);
+    indirectAssemblyGroup = new QGroupBox("Indirect Assembly Mode");
+    QVBoxLayout* indirectAssemblyLayout = new QVBoxLayout();
+    QLabel* indirectDesc = new QLabel("Enable indirect assembly mode to generate runtime syscall resolution stubs.");
+    indirectDesc->setWordWrap(true);
+    indirectAssemblyLayout->addWidget(indirectDesc);
+    indirectAssembly = new QCheckBox("Enable Indirect Assembly Mode");
+    indirectAssembly->setChecked(settings->value("general/indirect_assembly", false).toBool());
+    indirectAssembly->setToolTip("If checked, will generate indirect syscall stubs with runtime resolution (user mode only)");
+    indirectAssemblyLayout->addWidget(indirectAssembly);
+    indirectAssemblyGroup->setLayout(indirectAssemblyLayout);
+    layout->addWidget(indirectAssemblyGroup);
     QGroupBox* hashStubsGroup = new QGroupBox("Hash Stubs");
     QVBoxLayout* hashStubsLayout = new QVBoxLayout();
     QLabel* hashDesc = new QLabel("Optionally hash each stub/build with unique hash for future lookups.");
@@ -122,6 +133,7 @@ void GeneralTab::onModeChanged() {
     bool isKernelMode = zwModeRadio->isChecked();
     bindingsGroup->setVisible(!isKernelMode);
     inlineAssemblyGroup->setVisible(!isKernelMode);
+    indirectAssemblyGroup->setVisible(!isKernelMode);
     if (isKernelMode && bindingsEnableRadio->isChecked()) {
         bindingsDisableRadio->setChecked(true);
     }
@@ -131,6 +143,12 @@ void GeneralTab::onModeChanged() {
             inlineAssembly->setChecked(false);
         }
     }
+    if (indirectAssembly) {
+        indirectAssembly->setEnabled(!isKernelMode);
+        if (isKernelMode && indirectAssembly->isChecked()) {
+            indirectAssembly->setChecked(false);
+        }
+    }
 }
 
 void GeneralTab::saveSettings() {
@@ -138,6 +156,7 @@ void GeneralTab::saveSettings() {
     settings->setValue("general/hash_stubs", hashStubs->isChecked());
     settings->setValue("general/bindings_enabled", bindingsEnableRadio->isChecked());
     settings->setValue("general/inline_assembly", inlineAssembly->isChecked());
+    settings->setValue("general/indirect_assembly", indirectAssembly->isChecked());
     QString newMode = zwModeRadio->isChecked() ? "Zw" : "Nt";
     bool modeChanged = newMode != originalMode;
     settings->setValue("general/syscall_mode", newMode);
