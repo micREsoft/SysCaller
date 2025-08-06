@@ -37,6 +37,7 @@ private:
     void updateSyscalls(const QString& asmFile, const QMap<int, QMap<QString, int>>& syscallTables);
     void updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTables, const QStringList& selectedSyscalls, bool useAllSyscalls);
     void updateDefFile(const QStringList& syscallNames, const QString& defPath);
+    QString generateIndirectStub(const QString& stubName, int syscallId);
     QString getIniPath();
     QString getHeaderFilePath(bool isKernelMode);
     QString getAsmFilePath(bool isKernelMode);
