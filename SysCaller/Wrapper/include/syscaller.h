@@ -43,3 +43,4 @@
 #include "Sys/sysTypes.h"
 #include "Sys/sysExternals.h"
 #include "Sys/sysFunctions.h"
+#include "Resolver/Resolver.h"
