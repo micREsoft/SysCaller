@@ -13,9 +13,11 @@ void IndirectObfuscationTab::initUI() {
     setupJunkInstructionsGroup();
     setupResolverObfuscationGroup();
     setupEncryptionGroup();
+    setupControlFlowGroup();
     if (junkGroup) layout->addWidget(junkGroup);
     if (resolverGroup) layout->addWidget(resolverGroup);
     if (encryptionGroup) layout->addWidget(encryptionGroup);
+    if (controlFlowGroup) layout->addWidget(controlFlowGroup);
     loadSettings();
 }
 
@@ -52,8 +54,8 @@ void IndirectObfuscationTab::setupResolverObfuscationGroup() {
     resolverLayout->addRow(indirectObfuscateCalls);
     indirectResolverMethod = new QComboBox();
     indirectResolverMethod->addItem("Random Pattern", "random");
-    indirectResolverMethod->addItem("Register-based (Safest)", "register");
-    indirectResolverMethod->addItem("Stack-based (Aligned)", "stack");
+    indirectResolverMethod->addItem("Register Based (Safest)", "register");
+    indirectResolverMethod->addItem("Stack Based (Aligned)", "stack");
     indirectResolverMethod->addItem("Indirect Data", "indirect");
     indirectResolverMethod->addItem("Register Shuffle", "shuffle");
     QString savedMethod = settings->value("obfuscation/indirect_resolver_method", "random").toString();
@@ -76,6 +78,29 @@ void IndirectObfuscationTab::setupEncryptionGroup() {
     encryptionGroup->setLayout(encryptionLayout);
 }
 
+void IndirectObfuscationTab::setupControlFlowGroup() {
+    controlFlowGroup = new QGroupBox("Control Flow Obfuscation");
+    QFormLayout* controlFlowLayout = new QFormLayout();
+    indirectEnableControlFlow = new QCheckBox("Enable Control Flow Obfuscation");
+    indirectEnableControlFlow->setChecked(settings->value("obfuscation/indirect_enable_control_flow", false).toBool());
+    indirectEnableControlFlow->setToolTip("Enable control flow obfuscation for indirect stubs");
+    controlFlowLayout->addRow(indirectEnableControlFlow);
+    indirectControlFlowMethod = new QComboBox();
+    indirectControlFlowMethod->addItem("Random Pattern", "random");
+    indirectControlFlowMethod->addItem("Register Based (Safest)", "register");
+    indirectControlFlowMethod->addItem("Value Based", "value");
+    indirectControlFlowMethod->addItem("Flag Based", "flag");
+    indirectControlFlowMethod->addItem("Mixed Junk Code", "mixed");
+    QString savedMethod = settings->value("obfuscation/indirect_control_flow_method", "random").toString();
+    int index = indirectControlFlowMethod->findData(savedMethod);
+    if (index >= 0) {
+        indirectControlFlowMethod->setCurrentIndex(index);
+    }
+    indirectControlFlowMethod->setToolTip("Choose the control flow obfuscation method");
+    controlFlowLayout->addRow("Control Flow Method:", indirectControlFlowMethod);
+    controlFlowGroup->setLayout(controlFlowLayout);
+}
+
 void IndirectObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/indirect_min_instructions", indirectMinInstructions->value());
     settings->setValue("obfuscation/indirect_max_instructions", indirectMaxInstructions->value());
@@ -84,7 +109,9 @@ void IndirectObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/indirect_obfuscate_calls", indirectObfuscateCalls->isChecked());
     settings->setValue("obfuscation/indirect_resolver_method", indirectResolverMethod->currentData().toString());
     settings->setValue("obfuscation/indirect_encrypt_syscalls", indirectEncryptSyscalls->isChecked());
+    settings->setValue("obfuscation/indirect_enable_control_flow", indirectEnableControlFlow->isChecked());
+    settings->setValue("obfuscation/indirect_control_flow_method", indirectControlFlowMethod->currentData().toString());
 }
 
 void IndirectObfuscationTab::loadSettings() {
-} 
+}
