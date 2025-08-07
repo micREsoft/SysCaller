@@ -15,14 +15,9 @@ public:
     void setOutputCallback(std::function<void(const QString&)> callback);
     bool generateIndirectObfuscation();
     bool processIndirectAssemblyFile(const QString& asmPath, const QString& headerPath);
-    QString generateObfuscatedResolver();
-    QString generateObfuscatedHashTable();
-    QString generateObfuscatedFunctionPointers();
-    QString generateJunkCodeForIndirect();
     QString generateEncryptedSyscallNumbers();
     QString obfuscateResolverCall(const QString& originalCall);
-    QString obfuscateHashComputation(const QString& functionName);
-    QString obfuscateFunctionPointerLookup(const QString& functionName);
+    QString generateRegisterSafeJunk();
     
 private:
     void logMessage(const QString& message);
