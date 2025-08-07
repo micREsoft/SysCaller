@@ -12,8 +12,10 @@ void IndirectObfuscationTab::initUI() {
     QVBoxLayout* layout = new QVBoxLayout(this);
     setupJunkInstructionsGroup();
     setupResolverObfuscationGroup();
+    setupEncryptionGroup();
     if (junkGroup) layout->addWidget(junkGroup);
     if (resolverGroup) layout->addWidget(resolverGroup);
+    if (encryptionGroup) layout->addWidget(encryptionGroup);
     loadSettings();
 }
 
@@ -46,9 +48,32 @@ void IndirectObfuscationTab::setupResolverObfuscationGroup() {
     QFormLayout* resolverLayout = new QFormLayout();
     indirectObfuscateCalls = new QCheckBox("Obfuscate Resolver Calls");
     indirectObfuscateCalls->setChecked(settings->value("obfuscation/indirect_obfuscate_calls", true).toBool());
-    indirectObfuscateCalls->setToolTip("Obfuscate calls to the syscall resolver function");
+    indirectObfuscateCalls->setToolTip("Obfuscate calls to the syscall resolver function using function pointers");
     resolverLayout->addRow(indirectObfuscateCalls);
+    indirectResolverMethod = new QComboBox();
+    indirectResolverMethod->addItem("Random Pattern", "random");
+    indirectResolverMethod->addItem("Register-based (Safest)", "register");
+    indirectResolverMethod->addItem("Stack-based (Aligned)", "stack");
+    indirectResolverMethod->addItem("Indirect Data", "indirect");
+    indirectResolverMethod->addItem("Register Shuffle", "shuffle");
+    QString savedMethod = settings->value("obfuscation/indirect_resolver_method", "random").toString();
+    int index = indirectResolverMethod->findData(savedMethod);
+    if (index >= 0) {
+        indirectResolverMethod->setCurrentIndex(index);
+    }
+    indirectResolverMethod->setToolTip("Choose the function pointer obfuscation method for resolver calls");
+    resolverLayout->addRow("Resolver Method:", indirectResolverMethod);
     resolverGroup->setLayout(resolverLayout);
+}
+
+void IndirectObfuscationTab::setupEncryptionGroup() {
+    encryptionGroup = new QGroupBox("Encrypted Syscall Numbers");
+    QFormLayout* encryptionLayout = new QFormLayout();
+    indirectEncryptSyscalls = new QCheckBox("Encrypt Syscall Numbers");
+    indirectEncryptSyscalls->setChecked(settings->value("obfuscation/indirect_encrypt_syscalls", false).toBool());
+    indirectEncryptSyscalls->setToolTip("Encrypt the syscall numbers in the generated shellcode");
+    encryptionLayout->addRow(indirectEncryptSyscalls);
+    encryptionGroup->setLayout(encryptionLayout);
 }
 
 void IndirectObfuscationTab::saveSettings() {
@@ -57,6 +82,8 @@ void IndirectObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/indirect_use_advanced_junk", indirectUseAdvancedJunk->isChecked());
     settings->setValue("obfuscation/indirect_enable_junk", indirectEnableJunk->isChecked());
     settings->setValue("obfuscation/indirect_obfuscate_calls", indirectObfuscateCalls->isChecked());
+    settings->setValue("obfuscation/indirect_resolver_method", indirectResolverMethod->currentData().toString());
+    settings->setValue("obfuscation/indirect_encrypt_syscalls", indirectEncryptSyscalls->isChecked());
 }
 
 void IndirectObfuscationTab::loadSettings() {
