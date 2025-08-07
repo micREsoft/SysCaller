@@ -18,6 +18,7 @@ public:
     QString generateEncryptedSyscallNumbers();
     QString obfuscateResolverCall(const QString& originalCall);
     QString generateRegisterSafeJunk();
+    QString generateControlFlowObfuscation();
     
 private:
     void logMessage(const QString& message);
