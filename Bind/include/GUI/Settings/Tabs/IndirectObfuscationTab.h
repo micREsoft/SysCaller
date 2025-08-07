@@ -15,11 +15,14 @@ private:
     QSettings* settings;
     QGroupBox* junkGroup;
     QGroupBox* resolverGroup;
+    QGroupBox* encryptionGroup;
     QSpinBox* indirectMinInstructions;
     QSpinBox* indirectMaxInstructions;
     QCheckBox* indirectUseAdvancedJunk;
     QCheckBox* indirectEnableJunk;
     QCheckBox* indirectObfuscateCalls;
+    QComboBox* indirectResolverMethod;
+    QCheckBox* indirectEncryptSyscalls;
 
 public:
     IndirectObfuscationTab(QSettings* settings, QWidget* parent = nullptr);
@@ -30,4 +33,5 @@ private:
     void initUI();
     void setupJunkInstructionsGroup();
     void setupResolverObfuscationGroup();
-}; 
+    void setupEncryptionGroup();
+};
