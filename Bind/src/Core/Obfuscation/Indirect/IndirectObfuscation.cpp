@@ -113,6 +113,17 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
                 if (line.contains("call GetSyscallNumber")) {
                     obfuscatedLine = obfuscateResolverCall(line);
                 }
+                if (settings->value("obfuscation/indirect_enable_control_flow", false).toBool()) {
+                    QString controlFlowCode = generateControlFlowObfuscation();
+                    if (!controlFlowCode.isEmpty()) {
+                        QStringList controlFlowLines = controlFlowCode.split('\n');
+                        for (const QString& flowLine : controlFlowLines) {
+                            if (!flowLine.trimmed().isEmpty()) {
+                                obfuscatedStub << "    " + flowLine.trimmed();
+                            }
+                        }
+                    }
+                }
             }
             obfuscatedStub << obfuscatedLine;
         }
@@ -169,24 +180,28 @@ QString IndirectObfuscation::obfuscateResolverCall(const QString& originalCall) 
         int pattern = methodMap.value(method, 0);
         switch (pattern) {
             case 0:
-                return "    ; Register based function pointer obfuscation\n"
+                // Pattern 1: Register pointer call via R10
+                return "    ; RegPtr_R10_Call\n"
                        "    lea r10, [GetSyscallNumber]\n"
                        "    call r10";
             case 1:
-                return "    ; Stack based function pointer with proper alignment\n"
-                       "    sub rsp, 16\n"                    
+                // Pattern 2: Stack indirect call (16 byte aligned)
+                return "    ; StackIndirect_Aligned\n"
+                       "    sub rsp, 16\n"                    // Align stack to 16 byte boundary
                        "    lea rax, [GetSyscallNumber]\n"
                        "    mov [rsp], rax\n"
                        "    call qword ptr [rsp]\n"
-                       "    add rsp, 16";                     
+                       "    add rsp, 16";                     // Restore stack
             case 2:
-                return "    ; Indirect call through data section\n"
+                // Pattern 3: Stack scratch space indirect call
+                return "    ; StackScratchIndirect\n"
                        "    lea rax, [GetSyscallNumber]\n"
                        "    mov [rsp-8], rax\n"
                        "    lea rax, [rsp-8]\n"
                        "    call qword ptr [rax]";
             case 3:
-                return "    ; Register shuffle obfuscation\n"
+                // Pattern 4: Register shuffle call via R10
+                return "    ; RegShuffle_R10_Call\n"
                        "    push r10\n"
                        "    lea r10, [GetSyscallNumber]\n"
                        "    call r10\n"
@@ -201,9 +216,9 @@ QString IndirectObfuscation::generateEncryptedSyscallNumbers() {
     int encryptionKey = QRandomGenerator::global()->bounded(1, 256);
     encryptedCode = QString("    ; Encrypted syscall number handling\n"
                            "    ; Key: 0x%1\n"
-                           "    mov rax, [rsp+%2]\n"  // get syscall number from stack
-                           "    xor rax, 0x%3\n"       // decrypt with key
-                           "    mov [rsp+%2], rax\n"   // store decrypted number back
+                           "    mov rax, [rsp+%2]\n"  // Get syscall number from stack
+                           "    xor rax, 0x%3\n"       // Decrypt with key
+                           "    mov [rsp+%2], rax\n"   // Store decrypted number back
                            "    ; Continue with normal syscall\n")
                            .arg(encryptionKey, 2, 16, QChar('0'))
                            .arg(QRandomGenerator::global()->bounded(8, 32))
@@ -211,12 +226,77 @@ QString IndirectObfuscation::generateEncryptedSyscallNumbers() {
     return encryptedCode;
 }
 
+QString IndirectObfuscation::generateControlFlowObfuscation() {
+    QString method = settings->value("obfuscation/indirect_control_flow_method", "random").toString();
+    int pattern;
+    if (method == "random") {
+        pattern = QRandomGenerator::global()->bounded(4);
+    } else {
+        QMap<QString, int> methodMap;
+        methodMap["register"] = 0;
+        methodMap["value"] = 1;
+        methodMap["flag"] = 2;
+        methodMap["mixed"] = 3;
+        pattern = methodMap.value(method, 0);
+    }
+    QStringList controlFlowPatterns = {
+        // Pattern 0: Register Based
+        QString("    ; Opaque Predicate - Register Based\n"
+                "    test r11, r11\n"           // r11 is always 0, so test sets ZF=1
+                "    jnz fake_branch_%1\n"      // Never taken (ZF=1, so jnz fails)
+                "    ; Real code continues here\n"
+                "    jmp real_code_%1\n"
+                "fake_branch_%1:\n"
+                "    nop\n"                      // Dead code
+                "    xor r13, r13\n"            // Dead code
+                "    add r14, 0\n"              // Dead code
+                "real_code_%1:\n")
+                .arg(QRandomGenerator::global()->bounded(100000, 999999)),
+        // Pattern 1: Value Based
+        QString("    ; Opaque Predicate - Value Based\n"
+                "    mov r15, 0\n"              // Set r15 to 0
+                "    cmp r15, 1\n"              // Compare 0 with 1 (always false)
+                "    je fake_branch_%1\n"       // Never taken
+                "    ; Real code continues here\n"
+                "    jmp real_code_%1\n"
+                "fake_branch_%1:\n"
+                "    push r11\n"                // Dead code
+                "    pop r11\n"                 // Dead code
+                "    test r13, r13\n"           // Dead code
+                "real_code_%1:\n")
+                .arg(QRandomGenerator::global()->bounded(100000, 999999)),
+        // Pattern 2: Flag Based
+        QString("    ; Opaque Predicate - Flag Based\n"
+                "    clc\n"                     // Clear carry flag
+                "    jc fake_branch_%1\n"       // Never taken (CF=0)
+                "    ; Real code continues here\n"
+                "    jmp real_code_%1\n"
+                "fake_branch_%1:\n"
+                "    lea r11, [r11]\n"         // Dead code
+                "    mov r13, r13\n"            // Dead code
+                "    xchg r14, r14\n"          // Dead code
+                "real_code_%1:\n")
+                .arg(QRandomGenerator::global()->bounded(100000, 999999)),
+        // Pattern 3: Mixed Junk Code
+        QString("    ; Opaque Predicate - Mixed Junk Code\n"
+                "    xor r11, r11\n"            // r11 = 0
+                "    or r11, 0\n"               // r11 still = 0
+                "    test r11, r11\n"           // Test 0 (always zero)
+                "    jnz fake_branch_%1\n"      // Never taken
+                "    ; Real code continues here\n"
+                "    jmp real_code_%1\n"
+                "fake_branch_%1:\n"
+                "    pushfq\n"                  // Dead code
+                "    popfq\n"                   // Dead code
+                "    fnop\n"                    // Dead code
+                "    pause\n"                   // Dead code
+                "real_code_%1:\n")
+                .arg(QRandomGenerator::global()->bounded(100000, 999999))
+    };
+    return controlFlowPatterns[pattern];
+}
+
 QString IndirectObfuscation::generateRegisterSafeJunk() {
-    // for indirect stubs we need to be careful about register usage:
-    // rcx, rdx, r8, r9 are function parameters dont touch those!
-    // rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9 dont touch those!
-    // r10 is used for function pointer dont touch this!
-    // we can ONLY safely use r11, r13, r14, r15, rax
     QStringList safeJunkInstructions = {
         "    nop\n",
         "    xchg r11, r11\n",
