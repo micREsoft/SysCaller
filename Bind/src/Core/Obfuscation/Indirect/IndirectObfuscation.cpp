@@ -1,8 +1,5 @@
 #include "include/Core/Obfuscation/Indirect/IndirectObfuscation.h"
 #include "include/Core/Utils/PathUtils.h"
-#include "include/Core/Obfuscation/Direct/Stub/JunkGenerator.h"
-#include "include/Core/Obfuscation/Direct/Stub/NameGenerator.h"
-#include "include/Core/Obfuscation/Direct/Encryption/Encryptor.h"
 #include <QFile>
 #include <QTextStream>
 #include <QRegularExpression>
@@ -86,6 +83,11 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
     for (auto it = indirectStubs.begin(); it != indirectStubs.end(); ++it) {
         QStringList obfuscatedStub;
         bool inProcBlock = false;
+        bool pendingEncString = false;
+        QByteArray pendingEncBytes;
+        int pendingPlainLen = 0;
+        quint8 pendingKey = 0;
+        bool encAdjustActive = false; // when true, convert next add rsp,32 to add rsp,64
         for (const QString& line : it.value()) {
             QString obfuscatedLine = line;
             if (line.contains(" PROC")) {
@@ -95,6 +97,9 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
             }
             if (line.contains(" ENDP")) {
                 inProcBlock = false;
+                pendingEncString = false;
+                pendingEncBytes.clear();
+                pendingPlainLen = 0;
                 obfuscatedStub << line;
                 continue;
             }
@@ -109,6 +114,79 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
                             }
                         }
                     }
+                }
+                if (settings->value("obfuscation/indirect_encrypt_strings", false).toBool()) {
+                    QRegularExpression strRx(R"(^\s*lea\s+rcx,\s*\[(\w+)_str\]\s*$)", QRegularExpression::CaseInsensitiveOption);
+                    auto m = strRx.match(line);
+                    if (m.hasMatch()) {
+                        QString label = m.captured(1);
+                        QByteArray plain = label.toUtf8();
+                        plain.append('\0');
+                        if (plain.size() <= 32) {
+                            pendingKey = static_cast<quint8>(QRandomGenerator::global()->bounded(1, 256));
+                            pendingEncBytes = QByteArray(plain);
+                            for (int i = 0; i < pendingEncBytes.size(); ++i) pendingEncBytes[i] = pendingEncBytes[i] ^ pendingKey;
+                            pendingPlainLen = plain.size();
+                            pendingEncString = true;
+                            continue;
+                        }
+                    }
+                }
+                // if we have pending enc string and see shadow space reservation, emit the build+decrypt into shadow space
+                if (pendingEncString && line.trimmed().startsWith("sub rsp, 32")) {
+                    // replace with sub rsp, 64 to allocate extra 32 bytes (shadow + our buffer)
+                    obfuscatedStub << "    sub rsp, 64";
+                    encAdjustActive = true;
+                    // now emit write+decrypt sequence using only rax, rcx, r11, r8b buffer base is [rsp+20h]
+                    obfuscatedStub << "    ; Build decrypted resolver string in shadow space";
+                    int lblId = QRandomGenerator::global()->bounded(100000, 999999);
+                    QString loopLbl = QString("dec_loop_cf_%1").arg(lblId);
+                    QString doneLbl = QString("dec_done_cf_%1").arg(lblId);
+                    // write encrypted qwords into [rsp+off]
+                    for (int off = 0; off < 32; off += 8) {
+                        quint64 q = 0;
+                        for (int b = 0; b < 8; ++b) {
+                            int idx = off + b;
+                            unsigned char val = 0;
+                            if (idx < pendingEncBytes.size()) val = static_cast<unsigned char>(pendingEncBytes[idx]);
+                            q |= (static_cast<quint64>(val) << (8 * b));
+                        }
+                        QString hex = QString::number(static_cast<qulonglong>(q), 16).toUpper();
+                        while (hex.length() < 16) hex.prepend('0');
+                        obfuscatedStub << QString("    mov rax, 0%1h").arg(hex);
+                        if (off == 0) {
+                            obfuscatedStub << "    mov qword ptr [rsp+20h], rax";
+                        } else {
+                            obfuscatedStub << QString("    mov qword ptr [rsp+20h+%1], rax").arg(off);
+                        }
+                    }
+                    obfuscatedStub << QString("    mov r11d, %1").arg(pendingPlainLen);
+                    {
+                        QString khex = QString::number(pendingKey, 16).toUpper();
+                        if (khex.length() < 2) khex.prepend('0');
+                        obfuscatedStub << QString("    mov al, 0%1h").arg(khex);
+                    }
+                    obfuscatedStub << "    ; decrypt in place: for i in [0..len) shadow[i] ^= al";
+                    obfuscatedStub << "    xor rcx, rcx";
+                    obfuscatedStub << loopLbl + ":";
+                    obfuscatedStub << "    cmp rcx, r11";
+                    obfuscatedStub << "    jae " + doneLbl;
+                    obfuscatedStub << "    mov r8b, byte ptr [rsp+rcx+20h]";
+                    obfuscatedStub << "    xor r8b, al";
+                    obfuscatedStub << "    mov byte ptr [rsp+rcx+20h], r8b";
+                    obfuscatedStub << "    inc rcx";
+                    obfuscatedStub << "    jmp " + loopLbl;
+                    obfuscatedStub << doneLbl + ":";
+                    obfuscatedStub << "    lea rcx, [rsp+20h]"; // rcx = decrypted buffer out of callee home space
+                    pendingEncString = false;
+                    pendingEncBytes.clear();
+                    pendingPlainLen = 0;
+                    continue;
+                }
+                if (encAdjustActive && line.trimmed().startsWith("add rsp, 32")) {
+                    obfuscatedStub << "    add rsp, 64";
+                    encAdjustActive = false;
+                    continue;
                 }
                 if (line.contains("call GetSyscallNumber")) {
                     obfuscatedLine = obfuscateResolverCall(line);
@@ -214,15 +292,16 @@ QString IndirectObfuscation::obfuscateResolverCall(const QString& originalCall) 
 QString IndirectObfuscation::generateEncryptedSyscallNumbers() {
     QString encryptedCode;
     int encryptionKey = QRandomGenerator::global()->bounded(1, 256);
+    QString khex = QString::number(encryptionKey, 16).toUpper();
+    if (khex.length() < 2) khex.prepend('0');
+    int offset = QRandomGenerator::global()->bounded(8, 32);
     encryptedCode = QString("    ; Encrypted syscall number handling\n"
-                           "    ; Key: 0x%1\n"
-                           "    mov rax, [rsp+%2]\n"  // Get syscall number from stack
-                           "    xor rax, 0x%3\n"       // Decrypt with key
-                           "    mov [rsp+%2], rax\n"   // Store decrypted number back
-                           "    ; Continue with normal syscall\n")
-                           .arg(encryptionKey, 2, 16, QChar('0'))
-                           .arg(QRandomGenerator::global()->bounded(8, 32))
-                           .arg(encryptionKey, 2, 16, QChar('0'));
+                           "    ; Key: 0%1h\n"
+                           "    mov rax, [rsp+%2]\n"
+                           "    xor rax, 0%1h\n"
+                           "    mov [rsp+%2], rax\n")
+                           .arg(khex)
+                           .arg(offset);
     return encryptedCode;
 }
 
