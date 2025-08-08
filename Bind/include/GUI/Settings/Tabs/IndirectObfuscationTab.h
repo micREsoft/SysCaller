@@ -17,6 +17,7 @@ private:
     QGroupBox* resolverGroup;
     QGroupBox* encryptionGroup;
     QGroupBox* controlFlowGroup;
+    QGroupBox* stringEncGroup;
     QSpinBox* indirectMinInstructions;
     QSpinBox* indirectMaxInstructions;
     QCheckBox* indirectUseAdvancedJunk;
@@ -26,6 +27,7 @@ private:
     QCheckBox* indirectEncryptSyscalls;
     QCheckBox* indirectEnableControlFlow;
     QComboBox* indirectControlFlowMethod;
+    QCheckBox* indirectEncryptStrings;
 
 public:
     IndirectObfuscationTab(QSettings* settings, QWidget* parent = nullptr);
@@ -38,4 +40,5 @@ private:
     void setupResolverObfuscationGroup();
     void setupEncryptionGroup();
     void setupControlFlowGroup();
-}; 
+    void setupStringEncryptionGroup();
+};
