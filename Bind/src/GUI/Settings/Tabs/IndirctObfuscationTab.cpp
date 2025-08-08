@@ -14,10 +14,12 @@ void IndirectObfuscationTab::initUI() {
     setupResolverObfuscationGroup();
     setupEncryptionGroup();
     setupControlFlowGroup();
+    setupStringEncryptionGroup();
     if (junkGroup) layout->addWidget(junkGroup);
     if (resolverGroup) layout->addWidget(resolverGroup);
     if (encryptionGroup) layout->addWidget(encryptionGroup);
     if (controlFlowGroup) layout->addWidget(controlFlowGroup);
+    if (stringEncGroup) layout->addWidget(stringEncGroup);
     loadSettings();
 }
 
@@ -101,6 +103,16 @@ void IndirectObfuscationTab::setupControlFlowGroup() {
     controlFlowGroup->setLayout(controlFlowLayout);
 }
 
+void IndirectObfuscationTab::setupStringEncryptionGroup() {
+    stringEncGroup = new QGroupBox("Resolver String Encryption");
+    QFormLayout* fl = new QFormLayout();
+    indirectEncryptStrings = new QCheckBox("Encrypt Nt* resolver names");
+    indirectEncryptStrings->setChecked(settings->value("obfuscation/indirect_encrypt_strings", false).toBool());
+    indirectEncryptStrings->setToolTip("Encrypt strings like NtOpenProcess and decrypt them on the stack at runtime before calling the resolver");
+    fl->addRow(indirectEncryptStrings);
+    stringEncGroup->setLayout(fl);
+}
+
 void IndirectObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/indirect_min_instructions", indirectMinInstructions->value());
     settings->setValue("obfuscation/indirect_max_instructions", indirectMaxInstructions->value());
@@ -111,6 +123,7 @@ void IndirectObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/indirect_encrypt_syscalls", indirectEncryptSyscalls->isChecked());
     settings->setValue("obfuscation/indirect_enable_control_flow", indirectEnableControlFlow->isChecked());
     settings->setValue("obfuscation/indirect_control_flow_method", indirectControlFlowMethod->currentData().toString());
+    settings->setValue("obfuscation/indirect_encrypt_strings", indirectEncryptStrings->isChecked());
 }
 
 void IndirectObfuscationTab::loadSettings() {
