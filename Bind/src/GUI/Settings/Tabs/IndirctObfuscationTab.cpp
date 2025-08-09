@@ -14,12 +14,10 @@ void IndirectObfuscationTab::initUI() {
     setupResolverObfuscationGroup();
     setupEncryptionGroup();
     setupControlFlowGroup();
-    setupStringEncryptionGroup();
     if (junkGroup) layout->addWidget(junkGroup);
     if (resolverGroup) layout->addWidget(resolverGroup);
     if (encryptionGroup) layout->addWidget(encryptionGroup);
     if (controlFlowGroup) layout->addWidget(controlFlowGroup);
-    if (stringEncGroup) layout->addWidget(stringEncGroup);
     loadSettings();
 }
 
@@ -36,14 +34,6 @@ void IndirectObfuscationTab::setupJunkInstructionsGroup() {
     indirectMaxInstructions->setValue(settings->value("obfuscation/indirect_max_instructions", 8).toInt());
     indirectMaxInstructions->setToolTip("Maximum number of junk instructions to add to indirect stubs");
     junkLayout->addRow("Maximum Instructions:", indirectMaxInstructions);
-    indirectUseAdvancedJunk = new QCheckBox("Advanced Junk Instructions");
-    indirectUseAdvancedJunk->setChecked(settings->value("obfuscation/indirect_use_advanced_junk", false).toBool());
-    indirectUseAdvancedJunk->setToolTip("Use more complex junk instructions for indirect stubs");
-    junkLayout->addRow(indirectUseAdvancedJunk);
-    indirectEnableJunk = new QCheckBox("Enable Junk Instructions");
-    indirectEnableJunk->setChecked(settings->value("obfuscation/indirect_enable_junk", true).toBool());
-    indirectEnableJunk->setToolTip("Enable junk instruction generation for indirect stubs");
-    junkLayout->addRow(indirectEnableJunk);
     junkGroup->setLayout(junkLayout);
 }
 
@@ -67,6 +57,10 @@ void IndirectObfuscationTab::setupResolverObfuscationGroup() {
     }
     indirectResolverMethod->setToolTip("Choose the function pointer obfuscation method for resolver calls");
     resolverLayout->addRow("Resolver Method:", indirectResolverMethod);
+    indirectEncryptStrings = new QCheckBox("Encrypt Nt* Resolver Names");
+    indirectEncryptStrings->setChecked(settings->value("obfuscation/indirect_encrypt_strings", false).toBool());
+    indirectEncryptStrings->setToolTip("Encrypt strings like NtOpenProcess and decrypt them on the stack at runtime before calling the resolver");
+    resolverLayout->addRow(indirectEncryptStrings);
     resolverGroup->setLayout(resolverLayout);
 }
 
@@ -103,28 +97,17 @@ void IndirectObfuscationTab::setupControlFlowGroup() {
     controlFlowGroup->setLayout(controlFlowLayout);
 }
 
-void IndirectObfuscationTab::setupStringEncryptionGroup() {
-    stringEncGroup = new QGroupBox("Resolver String Encryption");
-    QFormLayout* fl = new QFormLayout();
-    indirectEncryptStrings = new QCheckBox("Encrypt Nt* resolver names");
-    indirectEncryptStrings->setChecked(settings->value("obfuscation/indirect_encrypt_strings", false).toBool());
-    indirectEncryptStrings->setToolTip("Encrypt strings like NtOpenProcess and decrypt them on the stack at runtime before calling the resolver");
-    fl->addRow(indirectEncryptStrings);
-    stringEncGroup->setLayout(fl);
-}
-
 void IndirectObfuscationTab::saveSettings() {
     settings->setValue("obfuscation/indirect_min_instructions", indirectMinInstructions->value());
     settings->setValue("obfuscation/indirect_max_instructions", indirectMaxInstructions->value());
-    settings->setValue("obfuscation/indirect_use_advanced_junk", indirectUseAdvancedJunk->isChecked());
-    settings->setValue("obfuscation/indirect_enable_junk", indirectEnableJunk->isChecked());
+    settings->setValue("obfuscation/indirect_enable_junk", true);
     settings->setValue("obfuscation/indirect_obfuscate_calls", indirectObfuscateCalls->isChecked());
     settings->setValue("obfuscation/indirect_resolver_method", indirectResolverMethod->currentData().toString());
+    settings->setValue("obfuscation/indirect_encrypt_strings", indirectEncryptStrings->isChecked());
     settings->setValue("obfuscation/indirect_encrypt_syscalls", indirectEncryptSyscalls->isChecked());
     settings->setValue("obfuscation/indirect_enable_control_flow", indirectEnableControlFlow->isChecked());
     settings->setValue("obfuscation/indirect_control_flow_method", indirectControlFlowMethod->currentData().toString());
-    settings->setValue("obfuscation/indirect_encrypt_strings", indirectEncryptStrings->isChecked());
 }
 
 void IndirectObfuscationTab::loadSettings() {
-}
+} 
