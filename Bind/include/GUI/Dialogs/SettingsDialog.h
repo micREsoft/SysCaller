@@ -12,6 +12,7 @@
 class SettingsTitleBar;
 class GeneralTab;
 class ObfuscationTab;
+class IndirectObfuscationTab;
 class IntegrityTab;
 class ProfileTab;
 class SettingsDialog : public QDialog {
@@ -35,6 +36,7 @@ private:
     SettingsTitleBar* titleBar;
     GeneralTab* generalTab;
     ObfuscationTab* obfuscationTab;
+    IndirectObfuscationTab* indirectObfuscationTab;
     IntegrityTab* integrityTab;
     ProfileTab* profileTab;
     bool m_dragging = false;

@@ -1,6 +1,7 @@
 #include "include/GUI/Dialogs/SettingsDialog.h"
 #include "include/GUI/Settings/Tabs/GeneralTab.h"
 #include "include/GUI/Settings/Tabs/ObfuscationTab.h"
+#include "include/GUI/Settings/Tabs/IndirectObfuscationTab.h"
 #include "include/GUI/Settings/Tabs/IntegrityTab.h"
 #include "include/GUI/Settings/Tabs/ProfileTab.h"
 #include "include/GUI/Dialogs/StubMapperDialog.h"
@@ -35,32 +36,44 @@ void SettingsDialog::initUI() {
     generalScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     generalTab = new GeneralTab(settings);
     generalTab->setStyleSheet("QWidget { background: #1E1E1E; color: white; }");
-    generalScrollArea->setWidget(generalTab);    
-    QScrollArea* obfuscationScrollArea = new QScrollArea();
-    obfuscationScrollArea->setWidgetResizable(true);
-    obfuscationScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    obfuscationScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    obfuscationTab = new ObfuscationTab(settings);
-    obfuscationTab->setStyleSheet("QWidget { background: #1E1E1E; color: white; }");
-    obfuscationScrollArea->setWidget(obfuscationTab);    
+    generalScrollArea->setWidget(generalTab);
     QScrollArea* integrityScrollArea = new QScrollArea();
     integrityScrollArea->setWidgetResizable(true);
     integrityScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     integrityScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     integrityTab = new IntegrityTab(settings);
     integrityTab->setStyleSheet("QWidget { background: #1E1E1E; color: white; }");
-    integrityScrollArea->setWidget(integrityTab);    
+    integrityScrollArea->setWidget(integrityTab);
     QScrollArea* profileScrollArea = new QScrollArea();
     profileScrollArea->setWidgetResizable(true);
     profileScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     profileScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     profileTab = new ProfileTab(settings);
     profileTab->setStyleSheet("QWidget { background: #1E1E1E; color: white; }");
-    profileScrollArea->setWidget(profileTab);    
+    profileScrollArea->setWidget(profileTab);
     tabs->addTab(generalScrollArea, "General");
     tabs->addTab(integrityScrollArea, "Integrity");
-    tabs->addTab(obfuscationScrollArea, "Obfuscation");
-    tabs->addTab(profileScrollArea, "Profile");    
+    bool indirectAssemblyEnabled = settings->value("general/indirect_assembly", false).toBool();
+    if (indirectAssemblyEnabled) {
+        QScrollArea* indirectObfuscationScrollArea = new QScrollArea();
+        indirectObfuscationScrollArea->setWidgetResizable(true);
+        indirectObfuscationScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        indirectObfuscationScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        indirectObfuscationTab = new IndirectObfuscationTab(settings);
+        indirectObfuscationTab->setStyleSheet("QWidget { background: #1E1E1E; color: white; }");
+        indirectObfuscationScrollArea->setWidget(indirectObfuscationTab);
+        tabs->addTab(indirectObfuscationScrollArea, "Obfuscation");
+    } else {
+        QScrollArea* obfuscationScrollArea = new QScrollArea();
+        obfuscationScrollArea->setWidgetResizable(true);
+        obfuscationScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        obfuscationScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        obfuscationTab = new ObfuscationTab(settings);
+        obfuscationTab->setStyleSheet("QWidget { background: #1E1E1E; color: white; }");
+        obfuscationScrollArea->setWidget(obfuscationTab);
+        tabs->addTab(obfuscationScrollArea, "Obfuscation");
+    }
+    tabs->addTab(profileScrollArea, "Profile");
     layout->addWidget(tabs);
     QHBoxLayout* buttonLayout = new QHBoxLayout();
     buttonLayout->setSpacing(10);
@@ -317,7 +330,16 @@ void SettingsDialog::setupStylesheet() {
 
 void SettingsDialog::saveSettings() {
     generalTab->saveSettings();
-    obfuscationTab->saveSettings();
+    bool indirectAssemblyEnabled = settings->value("general/indirect_assembly", false).toBool();
+    if (indirectAssemblyEnabled) {
+        if (indirectObfuscationTab) {
+            indirectObfuscationTab->saveSettings();
+        }
+    } else {
+        if (obfuscationTab) {
+            obfuscationTab->saveSettings();
+        }
+    }
     integrityTab->saveSettings();
     profileTab->saveSettings();
     accept();

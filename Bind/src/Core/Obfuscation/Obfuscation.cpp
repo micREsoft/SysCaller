@@ -5,6 +5,7 @@
 #include "include/Core/Obfuscation/Direct/Stub/StubGenerator.h"
 #include "include/Core/Obfuscation/Direct/Mapping/StubMapper.h"
 #include "include/Core/Obfuscation/Direct/ControlFlow/ControlFlow.h"
+#include "include/Core/Obfuscation/Indirect/IndirectObfuscation.h"
 #include "include/Core/Utils/PathUtils.h"
 #include <QFile>
 #include <QTextStream>
@@ -77,6 +78,20 @@ QString Obfuscation::getSyscallPrefix() {
 
 int Obfuscation::run(const QStringList& dllPaths) {
     try {
+        bool isIndirectMode = settings->value("general/indirect_assembly", false).toBool();
+        if (isIndirectMode) {
+            logMessage(Colors::OKBLUE() + "Using Indirect Obfuscation..." + Colors::ENDC());
+            IndirectObfuscation indirectObf(settings);
+            indirectObf.setOutputCallback(outputCallback);
+            bool success = indirectObf.generateIndirectObfuscation();
+            if (success) {
+                logMessage(Colors::OKGREEN() + "Indirect Obfuscation Completed!" + Colors::ENDC());
+                return 0;
+            } else {
+                logMessage(Colors::FAIL() + "Indirect Obfuscation Failed!" + Colors::ENDC());
+                return 1;
+            }
+        }
         QMap<QString, QVariant> syscallSettings = settings->value("stub_mapper/syscall_settings", QMap<QString, QVariant>()).toMap();
         bool forceNormal = settings->value("obfuscation/force_normal", false).toBool();
         bool forceStubMapper = settings->value("obfuscation/force_stub_mapper", false).toBool();
@@ -585,4 +600,4 @@ bool Obfuscation::updateDefFile(const QString& defPath, const QStringList& obfus
     }
     defFile.close();
     return true;
-} 
+}
