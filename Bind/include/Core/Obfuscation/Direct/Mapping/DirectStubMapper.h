@@ -10,6 +10,7 @@
 #include <QStringList>
 #include "include/GUI/Themes/Colors.h"
 
+namespace DirectObfuscation {
 class StubMapper {
 public:
     StubMapper(QSettings* settings);
@@ -35,5 +36,6 @@ private:
 public:
     void setOutputCallback(std::function<void(const QString&)> callback);
 };
+}
 
 #endif
