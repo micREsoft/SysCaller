@@ -4,6 +4,7 @@
 #include <QSet>
 #include <QSettings>
 
+namespace SharedObfuscation {
 class NameGenerator {
 public:
     explicit NameGenerator(QSettings* settings = nullptr);
@@ -17,4 +18,5 @@ private:
     QSettings* settings;
     QString generateRandomString(int length = 8);
     int getRandomInt(int min, int max);
-}; 
+};
+}
