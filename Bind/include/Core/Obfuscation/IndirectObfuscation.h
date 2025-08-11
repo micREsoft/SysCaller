@@ -1,27 +1,26 @@
- #pragma once
+#pragma once
 
 #include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <functional>
 
-class IndirectObfuscation {
+class IndirectObfuscationManager {
 private:
     QSettings* settings;
     std::function<void(const QString&)> outputCallback;
 
 public:
-    IndirectObfuscation(QSettings* settings);
+    IndirectObfuscationManager(QSettings* settings);
     void setOutputCallback(std::function<void(const QString&)> callback);
     bool generateIndirectObfuscation();
     bool processIndirectAssemblyFile(const QString& asmPath, const QString& headerPath);
-    QString generateEncryptedSyscallNumbers();
-    QString obfuscateResolverCall(const QString& originalCall);
-    QString generateRegisterSafeJunk();
-    QString generateControlFlowObfuscation();
     
 private:
     void logMessage(const QString& message);
     QString getIndirectPrefix();
     bool isIndirectMode();
-};
+    bool updateIndirectHeaderFile(const QString& headerPath,
+                                  const QMap<QString, QString>& syscallMap);
+    bool updateDefFile(const QString& defPath, const QStringList& obfuscatedNames);
+}; 
