@@ -1,22 +1,22 @@
-#include "include/Core/Obfuscation/Direct/Encryption/Encryptor.h"
+#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
 #include <QRandomGenerator>
 #include <QDebug>
 
-Encryptor::Encryptor(QSettings* settings) : settings(settings) {
+DirectObfuscation::Encryptor::Encryptor(QSettings* settings) : settings(settings) {
 }
 
-void Encryptor::setSettings(QSettings* settings) {
+void DirectObfuscation::Encryptor::setSettings(QSettings* settings) {
     this->settings = settings;
 }
 
-int Encryptor::getEncryptionMethod() {
+int DirectObfuscation::Encryptor::getEncryptionMethod() {
     if (!settings) {
         return 1;
     }
     return settings->value("obfuscation/encryption_method", 1).toInt();
 }
 
-QPair<int, QMap<QString, QVariant>> Encryptor::encryptOffset(int realOffset, int method) {
+QPair<int, QMap<QString, QVariant>> DirectObfuscation::Encryptor::encryptOffset(int realOffset, int method) {
     if (method == -1) {
         method = getEncryptionMethod();
     }
@@ -67,7 +67,7 @@ QPair<int, QMap<QString, QVariant>> Encryptor::encryptOffset(int realOffset, int
     return qMakePair(encryptedOffset, encryptionData);
 }
 
-QStringList Encryptor::generateDecryptionSequence(const QString& offsetName, const QMap<QString, QVariant>& encryptionData, int method) {
+QStringList DirectObfuscation::Encryptor::generateDecryptionSequence(const QString& offsetName, const QMap<QString, QVariant>& encryptionData, int method) {
     if (method == -1) {
         method = getEncryptionMethod();
     }
@@ -123,6 +123,6 @@ QStringList Encryptor::generateDecryptionSequence(const QString& offsetName, con
     return sequence;
 }
 
-int Encryptor::getRandomInt(int min, int max) {
+int DirectObfuscation::Encryptor::getRandomInt(int min, int max) {
     return QRandomGenerator::global()->bounded(min, max + 1);
-} 
+}
