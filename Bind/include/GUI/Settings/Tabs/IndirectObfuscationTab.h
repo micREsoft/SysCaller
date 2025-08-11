@@ -19,6 +19,10 @@ private:
     QGroupBox* controlFlowGroup;
     QSpinBox* indirectMinInstructions;
     QSpinBox* indirectMaxInstructions;
+    QGroupBox* nameGroup;
+    QSpinBox* indirectSyscallPrefixLength;
+    QSpinBox* indirectSyscallNumberLength;
+    QSpinBox* indirectOffsetNameLength;
     QCheckBox* indirectObfuscateCalls;
     QComboBox* indirectResolverMethod;
     QCheckBox* indirectEncryptSyscalls;
@@ -35,6 +39,7 @@ private:
     void initUI();
     void setupJunkInstructionsGroup();
     void setupResolverObfuscationGroup();
+    void setupNameRandomizationGroup();
     void setupEncryptionGroup();
     void setupControlFlowGroup();
-};
+}; 
