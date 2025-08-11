@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QSet>
 
+namespace DirectObfuscation {
 class ControlFlow {
 public:
     explicit ControlFlow(QSettings* settings = nullptr);
@@ -32,3 +33,4 @@ private:
     QStringList generateAlwaysFalseCondition();
     QStringList generateComplexPredicate();
 };
+}
