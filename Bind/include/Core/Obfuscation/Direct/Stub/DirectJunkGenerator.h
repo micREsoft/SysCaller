@@ -3,6 +3,7 @@
 #include <QString>
 #include <QSettings>
 
+namespace DirectObfuscation {
 class JunkGenerator {
 public:
     explicit JunkGenerator(QSettings* settings = nullptr);
@@ -15,3 +16,4 @@ private:
     QString getRandomAdvancedJunkInstruction();
     int getRandomInt(int min, int max);
 }; 
+}
