@@ -1,7 +1,7 @@
-#include "include/Core/Obfuscation/Indirect/IndirectObfuscation.h"
+#include "include/Core/Obfuscation/Indirect/Encryption/IndirectEncryptor.h"
 #include <QRandomGenerator>
 
-QString IndirectObfuscation::generateEncryptedSyscallNumbers() {
+QString IndirectObfuscation::Encryptor::generateEncryptedSyscallNumbers() {
     QString encryptedCode;
     int encryptionKey = QRandomGenerator::global()->bounded(1, 256);
     QString khex = QString::number(encryptionKey, 16).toUpper();
