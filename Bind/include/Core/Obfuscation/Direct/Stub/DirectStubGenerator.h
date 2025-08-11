@@ -6,6 +6,7 @@
 #include <QVariant>
 #include <QSettings>
 
+namespace DirectObfuscation {
 class StubGenerator {
 public:
     explicit StubGenerator(QSettings* settings = nullptr);
@@ -17,4 +18,5 @@ public:
 private:
     QSettings* settings;
     int getRandomInt(int min, int max);
-}; 
+};
+}
