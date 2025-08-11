@@ -5,6 +5,7 @@
 #include <QVariant>
 #include <QSettings>
 
+namespace DirectObfuscation {
 class Encryptor {
 public:
     explicit Encryptor(QSettings* settings = nullptr);
@@ -16,4 +17,5 @@ public:
 private:
     QSettings* settings;
     int getRandomInt(int min, int max);
-}; 
+};
+}
