@@ -1,9 +1,12 @@
-#include "include/Core/Obfuscation/Indirect/IndirectObfuscation.h"
+#include "include/Core/Obfuscation/Indirect/Stub/IndirectStub.h"
 #include <QRandomGenerator>
 #include <QMap>
 #include <QStringList>
 
-QString IndirectObfuscation::obfuscateResolverCall(const QString& originalCall) {
+IndirectObfuscation::Stub::Stub(QSettings* settings)
+    : settings(settings) {}
+
+QString IndirectObfuscation::Stub::obfuscateResolverCall(const QString& originalCall) {
     if (settings->value("obfuscation/indirect_obfuscate_calls", true).toBool()) {
         QString method = settings->value("obfuscation/indirect_resolver_method", "random").toString();
         if (method == "random") {
@@ -48,11 +51,11 @@ QString IndirectObfuscation::obfuscateResolverCall(const QString& originalCall) 
     return originalCall;
 }
 
-QString IndirectObfuscation::generateRegisterSafeJunk() {
+QString IndirectObfuscation::Stub::generateRegisterSafeJunk() {
     // rcx, rdx, r8, r9 are function parameters, NEVER touch these!
     // rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9, NEVER touch these!
     // r10 is used for function pointer, NEVER touch this!
-    // so we can ONLY safely use: r11, r13, r14, r15, rax
+    // So we can ONLY safely use: r11, r13, r14, r15, rax
     QStringList safeJunkInstructions = {
         "    nop\n",
         "    xchg r11, r11\n",
@@ -100,7 +103,7 @@ QString IndirectObfuscation::generateRegisterSafeJunk() {
         "    lfence\n",
         "    mfence\n"
     };
-    int numInstructions = QRandomGenerator::global()->bounded(1, 4);
+    int numInstructions = QRandomGenerator::global()->bounded(1, 4); // Reduced for safety
     int minJ = settings->value("obfuscation/indirect_min_instructions", 2).toInt();
     int maxJ = settings->value("obfuscation/indirect_max_instructions", 8).toInt();
     if (minJ < 1) minJ = 1;
