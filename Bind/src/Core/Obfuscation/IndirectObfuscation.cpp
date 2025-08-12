@@ -1,5 +1,6 @@
 #include "include/Core/Obfuscation/IndirectObfuscation.h"
 #include "include/Core/Obfuscation/Indirect/Stub/IndirectStub.h"
+#include "include/Core/Obfuscation/Indirect/Stub/IndirectJunkGenerator.h"
 #include "include/Core/Obfuscation/Indirect/ControlFlow/IndirectControlFlow.h"
 #include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
 #include "include/Core/Utils/PathUtils.h"
@@ -123,8 +124,8 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
             }
             if (inProcBlock) {
                 if (settings->value("obfuscation/indirect_enable_junk", true).toBool()) {
-                    IndirectObfuscation::Stub stub(settings);
-                    QString junkCode = stub.generateRegisterSafeJunk();
+                    IndirectObfuscation::JunkGenerator JunkGenerator(settings);
+                    QString junkCode = JunkGenerator.generateRegisterSafeJunk();
                     if (!junkCode.isEmpty()) {
                         QStringList junkLines = junkCode.split('\n');
                         for (const QString& junkLine : junkLines) {
@@ -147,17 +148,16 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
                             for (int i = 0; i < pendingEncBytes.size(); ++i) pendingEncBytes[i] = pendingEncBytes[i] ^ pendingKey;
                             pendingPlainLen = plain.size();
                             pendingEncString = true;
-                            // suppress original lea rcx, [...] line
                             continue;
                         }
                     }
                 }
-                // If we have pending enc string and see shadow space reservation, emit the build+decrypt into shadow space
+                // if we have pending enc string and see shadow space reservation, emit the build+decrypt into shadow space
                 if (pendingEncString && line.trimmed().startsWith("sub rsp, 32")) {
                     // replace with sub rsp, 64 to allocate extra 32 bytes (shadow + our buffer)
                     obfuscatedStub << "    sub rsp, 64";
                     encAdjustActive = true;
-                    // now emit write+decrypt sequence using only rax, rcx, r11, r8b, buffer base is [rsp+20h]
+                    // now emit write+decrypt sequence using only rax, rcx, r11, r8b; buffer base is [rsp+20h]
                     obfuscatedStub << "    ; Build decrypted resolver string in shadow space";
                     int lblId = QRandomGenerator::global()->bounded(100000, 999999);
                     QString loopLbl = QString("dec_loop_cf_%1").arg(lblId);
@@ -396,7 +396,6 @@ bool IndirectObfuscationManager::updateIndirectHeaderFile(const QString& headerP
             prevEmpty = false;
         }
     }
-
     QFile outHeaderFile(headerPath);
     if (!outHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         logMessage("Failed to write Header File: " + headerPath);
