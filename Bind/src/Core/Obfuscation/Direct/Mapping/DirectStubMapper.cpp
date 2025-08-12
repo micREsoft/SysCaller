@@ -582,6 +582,7 @@ bool DirectObfuscation::StubMapper::updateDefFile(const QString& defPath, const 
         return false;
     }
     QTextStream out(&defFile);
+    out << "LIBRARY SysCaller\n";
     out << "EXPORTS\n";
     for (const QString& name : obfuscatedNames) {
         out << "    " << name << "\n";
@@ -593,3 +594,4 @@ bool DirectObfuscation::StubMapper::updateDefFile(const QString& defPath, const 
 int DirectObfuscation::StubMapper::getRandomInt(int min, int max) {
     return QRandomGenerator::global()->bounded(min, max + 1);
 }
+
