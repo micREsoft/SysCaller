@@ -314,8 +314,7 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
     return true;
 }
 
-bool IndirectObfuscationManager::updateIndirectHeaderFile(const QString& headerPath,
-                                                          const QMap<QString, QString>& syscallMap) {
+bool IndirectObfuscationManager::updateIndirectHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap) {
     QFile headerFile(headerPath);
     if (!headerFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         logMessage("Failed to open Header File: " + headerPath);
@@ -414,9 +413,15 @@ bool IndirectObfuscationManager::updateDefFile(const QString& defPath, const QSt
         return false;
     }
     QTextStream out(&defFile);
+    out << "LIBRARY SysCaller\n";
     out << "EXPORTS\n";
     for (const QString& name : obfuscatedNames) {
         out << "    " << name << "\n";
+    }
+    if (settings && settings->value("general/indirect_assembly", false).toBool()) {
+        out << "    GetSyscallNumber\n";
+        out << "    InitializeResolver\n";
+        out << "    CleanupResolver\n";
     }
     defFile.close();
     return true;
