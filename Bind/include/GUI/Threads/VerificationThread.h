@@ -11,6 +11,7 @@ class VerificationThread : public QThread {
 
 public:
     explicit VerificationThread(QObject* parent = nullptr);
+
     void setDllPaths(const QStringList& paths);
     void setOutputCallback(std::function<void(const QString&)> callback);
 

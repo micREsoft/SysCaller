@@ -1,5 +1,4 @@
-#ifndef PATHUTILS_H
-#define PATHUTILS_H
+#pragma once
 
 #include <QString>
 #include <QDir>
@@ -26,5 +25,3 @@ private:
     static QString findProjectRoot();
     static bool isProjectRoot(const QString& path);
 };
-
-#endif
