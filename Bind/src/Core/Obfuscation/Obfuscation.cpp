@@ -594,6 +594,7 @@ bool Obfuscation::updateDefFile(const QString& defPath, const QStringList& obfus
         return false;
     }
     QTextStream out(&defFile);
+    out << "LIBRARY SysCaller\n";
     out << "EXPORTS\n";
     for (const QString& name : obfuscatedNames) {
         out << "    " << name << "\n";
