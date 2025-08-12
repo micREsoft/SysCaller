@@ -159,7 +159,7 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
                     encAdjustActive = true;
                     // now emit write+decrypt sequence using only rax, rcx, r11, r8b; buffer base is [rsp+20h]
                     obfuscatedStub << "    ; Build decrypted resolver string in shadow space";
-                    int lblId = QRandomGenerator::global()->bounded(100000, 999999);
+                    int lblId = QRandomGenerator::global()->bounded(1000, 999999);
                     QString loopLbl = QString("dec_loop_cf_%1").arg(lblId);
                     QString doneLbl = QString("dec_done_cf_%1").arg(lblId);
                     // write encrypted qwords into [rsp+off]
