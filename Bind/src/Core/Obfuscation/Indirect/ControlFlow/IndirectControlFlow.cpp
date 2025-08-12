@@ -31,7 +31,7 @@ QString IndirectObfuscation::ControlFlow::generateControlFlowObfuscation() {
                 "    xor r13, r13\n"            // Dead code
                 "    add r14, 0\n"              // Dead code
                 "real_code_%1:\n")
-                .arg(QRandomGenerator::global()->bounded(100000, 999999)),
+                .arg(QRandomGenerator::global()->bounded(1000, 999999)),
         // Pattern 1: Value Based
         QString("    ; Opaque Predicate - Value Based\n"
                 "    mov r15, 0\n"              // Set r15 to 0
@@ -44,7 +44,7 @@ QString IndirectObfuscation::ControlFlow::generateControlFlowObfuscation() {
                 "    pop r11\n"                 // Dead code
                 "    test r13, r13\n"           // Dead code
                 "real_code_%1:\n")
-                .arg(QRandomGenerator::global()->bounded(100000, 999999)),
+                .arg(QRandomGenerator::global()->bounded(1000, 999999)),
         // Pattern 2: Flag Based
         QString("    ; Opaque Predicate - Flag Based\n"
                 "    clc\n"                     // Clear carry flag
@@ -56,7 +56,7 @@ QString IndirectObfuscation::ControlFlow::generateControlFlowObfuscation() {
                 "    mov r13, r13\n"            // Dead code
                 "    xchg r14, r14\n"          // Dead code
                 "real_code_%1:\n")
-                .arg(QRandomGenerator::global()->bounded(100000, 999999)),
+                .arg(QRandomGenerator::global()->bounded(1000, 999999)),
         // Pattern 3: Mixed Junk Code
         QString("    ; Opaque Predicate - Mixed Junk Code\n"
                 "    xor r11, r11\n"            // r11 = 0
@@ -71,7 +71,7 @@ QString IndirectObfuscation::ControlFlow::generateControlFlowObfuscation() {
                 "    fnop\n"                    // Dead code
                 "    pause\n"                   // Dead code
                 "real_code_%1:\n")
-                .arg(QRandomGenerator::global()->bounded(100000, 999999))
+                .arg(QRandomGenerator::global()->bounded(1000, 999999))
     };
     return controlFlowPatterns[pattern];
 }
