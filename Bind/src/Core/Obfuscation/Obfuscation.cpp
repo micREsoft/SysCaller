@@ -207,7 +207,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     QMap<QString, QString> functionSuffixes; // store suffixes for each function
     if (enableControlFlow) {
         for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
-            QString suffix = QString::number(QRandomGenerator::global()->bounded(100000, 999999));
+            QString suffix = QString::number(QRandomGenerator::global()->bounded(1000, 999999));
             functionSuffixes[it.key()] = suffix;
         }
     }

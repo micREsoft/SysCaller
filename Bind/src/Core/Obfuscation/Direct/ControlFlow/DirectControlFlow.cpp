@@ -12,7 +12,7 @@ void DirectObfuscation::ControlFlow::setSettings(QSettings* settings) {
 QString DirectObfuscation::ControlFlow::generateRandomLabel(const QString& prefix) {
     QString label;
     do {
-        QString suffix = QString::number(getRandomInt(100000, 999999));
+        QString suffix = QString::number(getRandomInt(1000, 999999));
         label = prefix + suffix;
     } while (usedLabels.contains(label));
     usedLabels.insert(label);

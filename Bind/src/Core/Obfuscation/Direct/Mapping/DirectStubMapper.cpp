@@ -241,7 +241,7 @@ bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, 
     QMap<QString, QString> functionSuffixes; // store suffixes for each function
     if (enableControlFlow) {
         for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
-            QString suffix = QString::number(getRandomInt(100000, 999999));
+            QString suffix = QString::number(getRandomInt(1000, 999999));
             functionSuffixes[it.key()] = suffix;
         }
     }
@@ -594,4 +594,5 @@ bool DirectObfuscation::StubMapper::updateDefFile(const QString& defPath, const 
 int DirectObfuscation::StubMapper::getRandomInt(int min, int max) {
     return QRandomGenerator::global()->bounded(min, max + 1);
 }
+
 
