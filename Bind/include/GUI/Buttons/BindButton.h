@@ -1,5 +1,4 @@
-#ifndef BINDBUTTON_H
-#define BINDBUTTON_H
+#pragma once
 
 #include <QPushButton>
 #include <QString>
@@ -9,13 +8,11 @@ class BindButton : public QPushButton {
 
 public:
     BindButton(const QString& text, const QString& iconPath, 
-                   const QString& title, const QString& description, 
-                   QWidget* parent = nullptr);
+                const QString& title, const QString& description, 
+                QWidget* parent = nullptr);
 
 private:
     void setupStyle();
     QString title;
     QString description;
 };
-
-#endif

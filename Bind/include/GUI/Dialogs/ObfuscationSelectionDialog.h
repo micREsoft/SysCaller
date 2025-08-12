@@ -1,5 +1,4 @@
-#ifndef OBFUSCATIONSELECTIONDIALOG_H
-#define OBFUSCATIONSELECTIONDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -12,13 +11,13 @@ class ObfuscationSelectionDialog : public QDialog {
 
 public:
     explicit ObfuscationSelectionDialog(QWidget* parent = nullptr);
-    
+
     enum Selection {
         NormalObfuscation,
         StubMapper,
         Cancelled
     };
-    
+
     Selection getSelection() const { return selection; }
 
 private slots:
@@ -29,7 +28,7 @@ private slots:
 private:
     void setupStylesheet();
     void initUI();
-    
+
     Selection selection;
     QLabel* titleLabel;
     QLabel* descriptionLabel;
@@ -37,5 +36,3 @@ private:
     QPushButton* stubMapperButton;
     QPushButton* cancelButton;
 };
-
-#endif

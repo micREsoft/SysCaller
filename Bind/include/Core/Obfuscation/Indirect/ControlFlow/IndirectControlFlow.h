@@ -15,6 +15,8 @@ namespace IndirectObfuscation {
     public:
         explicit ControlFlow(QSettings* settings);
 
+        // Generates a control flow obfuscation pattern for indirect stubs
         QString generateControlFlowObfuscation();
     };
+
 }

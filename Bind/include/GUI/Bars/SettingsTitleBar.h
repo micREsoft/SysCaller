@@ -3,6 +3,7 @@
 
 class SettingsTitleBar : public QFrame {
     Q_OBJECT
+    
 public:
     explicit SettingsTitleBar(QWidget* parent = nullptr);
     explicit SettingsTitleBar(const QString& title, QWidget* parent = nullptr);

@@ -3,17 +3,18 @@
 #include <QString>
 #include <QStringList>
 #include <QSettings>
+#include <functional>
 
 namespace IndirectObfuscation {
 
-    class JunkGenerator {
+    class StubGenerator {
     private:
         QSettings* settings;
 
     public:
-        explicit JunkGenerator(QSettings* settings);
+        explicit StubGenerator(QSettings* settings);
 
-        QString generateRegisterSafeJunk();
+        QString obfuscateResolverCall(const QString& originalCall);
     };
 
 }

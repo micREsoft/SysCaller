@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QMainWindow>
 #include <QPoint>
 
@@ -14,8 +15,9 @@ class OutputPanel;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
+
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -28,15 +30,14 @@ private slots:
     void toggleMaximize();
     void closeWindow();
 
-private:
-    void saveAllSettings();
-
 protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void closeEvent(QCloseEvent* event) override;
 
 private:
+    void saveAllSettings();
+
     TitleBar* titleBar;
     LeftPanel* leftPanel;
     RightPanel* rightPanel;
