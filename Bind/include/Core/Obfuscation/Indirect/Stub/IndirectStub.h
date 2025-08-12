@@ -15,6 +15,5 @@ namespace IndirectObfuscation {
         explicit Stub(QSettings* settings);
 
         QString obfuscateResolverCall(const QString& originalCall);
-        QString generateRegisterSafeJunk();
     };
 }
