@@ -1,12 +1,12 @@
-#include "include/Core/Obfuscation/Indirect/Stub/IndirectStub.h"
+#include "include/Core/Obfuscation/Indirect/Stub/IndirectStubGenerator.h"
 #include <QRandomGenerator>
 #include <QMap>
 #include <QStringList>
 
-IndirectObfuscation::Stub::Stub(QSettings* settings)
+IndirectObfuscation::StubGenerator::StubGenerator(QSettings* settings)
     : settings(settings) {}
 
-QString IndirectObfuscation::Stub::obfuscateResolverCall(const QString& originalCall) {
+QString IndirectObfuscation::StubGenerator::obfuscateResolverCall(const QString& originalCall) {
     if (settings->value("obfuscation/indirect_obfuscate_calls", true).toBool()) {
         QString method = settings->value("obfuscation/indirect_resolver_method", "random").toString();
         if (method == "random") {
@@ -40,7 +40,7 @@ QString IndirectObfuscation::Stub::obfuscateResolverCall(const QString& original
                        "    lea rax, [rsp-8]\n"
                        "    call qword ptr [rax]";
             case 3:
-                /// Pattern 4: Register shuffle call via R10
+                // Pattern 4: Register shuffle call via R10
                 return "    ; RegShuffle_R10_Call\n"
                        "    push r10\n"
                        "    lea r10, [GetSyscallNumber]\n"
