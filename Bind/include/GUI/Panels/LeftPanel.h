@@ -12,6 +12,7 @@ class BindButton;
 
 class LeftPanel : public QFrame {
     Q_OBJECT
+
 public:
     explicit LeftPanel(QWidget* parent = nullptr);
 
@@ -40,14 +41,18 @@ private:
     QLabel* logoImage;
     QLabel* logoLabel;
     QLabel* versionLabel;
+    QLabel* statusLabel;
+
     QListWidget* dllList;
+
+    ProgressBar* progressBar;
+
     QPushButton* addDllBtn;
     QPushButton* removeDllBtn;
+
     BindButton* validateBtn;
     BindButton* compatibilityBtn;
     BindButton* verifyBtn;
     BindButton* obfuscateBtn;
     BindButton* settingsBtn;
-    ProgressBar* progressBar;
-    QLabel* statusLabel;
 }; 

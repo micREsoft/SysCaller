@@ -1,5 +1,4 @@
-#ifndef INTEGRITYTAB_H
-#define INTEGRITYTAB_H
+#pragma once
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -17,6 +16,7 @@ class IntegrityTab : public QWidget {
 
 public:
     explicit IntegrityTab(QSettings* settings, QWidget* parent = nullptr);
+
     void saveSettings();
 
 private slots:
@@ -32,5 +32,3 @@ private:
     QLineEdit* filterEdit;
     QStringList syscalls;
 };
-
-#endif

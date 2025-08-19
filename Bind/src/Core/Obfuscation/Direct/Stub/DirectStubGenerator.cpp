@@ -1,18 +1,18 @@
-#include "include/Core/Obfuscation/Direct/Stub/StubGenerator.h"
-#include "include/Core/Obfuscation/Direct/Stub/JunkGenerator.h"
-#include "include/Core/Obfuscation/Direct/Encryption/Encryptor.h"
-#include "include/Core/Obfuscation/Direct/Stub/NameGenerator.h"
+#include "include/Core/Obfuscation/Direct/Stub/DirectStubGenerator.h"
+#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
+#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
+#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
 #include <QRandomGenerator>
 #include <QDebug>
 
-StubGenerator::StubGenerator(QSettings* settings) : settings(settings) {
+DirectObfuscation::StubGenerator::StubGenerator(QSettings* settings) : settings(settings) {
 }
 
-void StubGenerator::setSettings(QSettings* settings) {
+void DirectObfuscation::StubGenerator::setSettings(QSettings* settings) {
     this->settings = settings;
 }
 
-QString StubGenerator::generateMaskedSequence(const QString& offsetName, const QMap<QString, QVariant>& encryptionData, int method) {
+QString DirectObfuscation::StubGenerator::generateMaskedSequence(const QString& offsetName, const QMap<QString, QVariant>& encryptionData, int method) {
     if (!settings) {
         return "";
     }
@@ -48,7 +48,7 @@ QString StubGenerator::generateMaskedSequence(const QString& offsetName, const Q
     return sequence.join("");
 }
 
-QString StubGenerator::generateChunkedSequence(const QString& offsetName, const QMap<QString, QVariant>& encryptionData, int method) {
+QString DirectObfuscation::StubGenerator::generateChunkedSequence(const QString& offsetName, const QMap<QString, QVariant>& encryptionData, int method) {
     if (!settings) {
         return "";
     }
@@ -58,7 +58,7 @@ QString StubGenerator::generateChunkedSequence(const QString& offsetName, const 
     }
     JunkGenerator junkGen(settings);
     Encryptor encryptor(settings);
-    NameGenerator nameGen(settings);
+    SharedObfuscation::NameGenerator nameGen(settings);
     bool enableEncryption = settings->value("obfuscation/enable_encryption", true).toBool();
     QSet<QString> usedLabels;
     QString entryLabel = nameGen.generateRandomLabel();
@@ -94,9 +94,9 @@ QString StubGenerator::generateChunkedSequence(const QString& offsetName, const 
     return chunks.join("");
 }
 
-QString StubGenerator::generateAlignPadding() {
+QString DirectObfuscation::StubGenerator::generateAlignPadding() {
     JunkGenerator junkGen(settings);
-    NameGenerator nameGen(settings);
+    SharedObfuscation::NameGenerator nameGen(settings);
     int alignSize = QList<int>{4, 8, 16}[getRandomInt(0, 2)];
     QStringList padding;
     int paddingCount = getRandomInt(1, 3);
@@ -107,6 +107,6 @@ QString StubGenerator::generateAlignPadding() {
     return padding.join("");
 }
 
-int StubGenerator::getRandomInt(int min, int max) {
+int DirectObfuscation::StubGenerator::getRandomInt(int min, int max) {
     return QRandomGenerator::global()->bounded(min, max + 1);
-} 
+}

@@ -1,4 +1,8 @@
-#include "include/Core/Obfuscation/Indirect/IndirectObfuscation.h"
+#include "include/Core/Obfuscation/IndirectObfuscation.h"
+#include "include/Core/Obfuscation/Indirect/Stub/IndirectStub.h"
+#include "include/Core/Obfuscation/Indirect/Stub/IndirectJunkGenerator.h"
+#include "include/Core/Obfuscation/Indirect/ControlFlow/IndirectControlFlow.h"
+#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
 #include "include/Core/Utils/PathUtils.h"
 #include <QFile>
 #include <QTextStream>
@@ -8,30 +12,30 @@
 #include <QRandomGenerator>
 #include <QDir>
 
-IndirectObfuscation::IndirectObfuscation(QSettings* settings) 
+IndirectObfuscationManager::IndirectObfuscationManager(QSettings* settings) 
     : settings(settings), outputCallback(nullptr) {
 }
 
-void IndirectObfuscation::setOutputCallback(std::function<void(const QString&)> callback) {
+void IndirectObfuscationManager::setOutputCallback(std::function<void(const QString&)> callback) {
     outputCallback = callback;
 }
 
-void IndirectObfuscation::logMessage(const QString& message) {
+void IndirectObfuscationManager::logMessage(const QString& message) {
     if (outputCallback) {
         outputCallback(message);
     }
     qDebug() << "IndirectObfuscation:" << message;
 }
 
-QString IndirectObfuscation::getIndirectPrefix() {
+QString IndirectObfuscationManager::getIndirectPrefix() {
     return "SysIndirect";
 }
 
-bool IndirectObfuscation::isIndirectMode() {
+bool IndirectObfuscationManager::isIndirectMode() {
     return settings->value("general/indirect_assembly", false).toBool();
 }
 
-bool IndirectObfuscation::generateIndirectObfuscation() {
+bool IndirectObfuscationManager::generateIndirectObfuscation() {
     logMessage("Starting Indirect Obfuscation...");
     bool isKernel = settings->value("general/syscall_mode", "Nt").toString() == "Zw";
     QString asmPath = isKernel ? 
@@ -43,7 +47,7 @@ bool IndirectObfuscation::generateIndirectObfuscation() {
     return processIndirectAssemblyFile(asmPath, headerPath);
 }
 
-bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, const QString& headerPath) {
+bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmPath, const QString& headerPath) {
     QFile asmFile(asmPath);
     if (!asmFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         logMessage("Failed to open Assembly File: " + asmPath);
@@ -56,6 +60,8 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
     bool useAllSyscalls = selectedSyscalls.isEmpty();
     QString indirectPrefix = getIndirectPrefix();
     QMap<QString, QStringList> indirectStubs;
+    QSet<QString> usedNames;
+    QMap<QString, QString> syscallMap; // original -> obfuscated
     QStringList currentStub;
     QString currentSyscall;
     bool inStub = false;
@@ -77,6 +83,19 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
                 if (useAllSyscalls || selectedSyscalls.contains(currentSyscall)) {
                     indirectStubs[currentSyscall] = currentStub;
                 }
+            }
+        }
+    }
+    if (!indirectStubs.isEmpty()) {
+        SharedObfuscation::NameGenerator nameGen(settings);
+        int indirectPrefixLength = settings->value("obfuscation/indirect_syscall_prefix_length",
+                                                  settings->value("obfuscation/syscall_prefix_length", 8).toInt()).toInt();
+        int indirectNumberLength = settings->value("obfuscation/indirect_syscall_number_length",
+                                                  settings->value("obfuscation/syscall_number_length", 6).toInt()).toInt();
+        for (auto it = indirectStubs.begin(); it != indirectStubs.end(); ++it) {
+            const QString& original = it.key();
+            if (!syscallMap.contains(original)) {
+                syscallMap[original] = nameGen.generateRandomName(usedNames, indirectPrefixLength, indirectNumberLength);
             }
         }
     }
@@ -105,7 +124,8 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
             }
             if (inProcBlock) {
                 if (settings->value("obfuscation/indirect_enable_junk", true).toBool()) {
-                    QString junkCode = generateRegisterSafeJunk();
+                    IndirectObfuscation::JunkGenerator JunkGenerator(settings);
+                    QString junkCode = JunkGenerator.generateRegisterSafeJunk();
                     if (!junkCode.isEmpty()) {
                         QStringList junkLines = junkCode.split('\n');
                         for (const QString& junkLine : junkLines) {
@@ -139,7 +159,7 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
                     encAdjustActive = true;
                     // now emit write+decrypt sequence using only rax, rcx, r11, r8b; buffer base is [rsp+20h]
                     obfuscatedStub << "    ; Build decrypted resolver string in shadow space";
-                    int lblId = QRandomGenerator::global()->bounded(100000, 999999);
+                    int lblId = QRandomGenerator::global()->bounded(1000, 999999);
                     QString loopLbl = QString("dec_loop_cf_%1").arg(lblId);
                     QString doneLbl = QString("dec_done_cf_%1").arg(lblId);
                     // write encrypted qwords into [rsp+off]
@@ -189,10 +209,12 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
                     continue;
                 }
                 if (line.contains("call GetSyscallNumber")) {
-                    obfuscatedLine = obfuscateResolverCall(line);
+                    IndirectObfuscation::Stub stub(settings);
+                    obfuscatedLine = stub.obfuscateResolverCall(line);
                 }
                 if (settings->value("obfuscation/indirect_enable_control_flow", false).toBool()) {
-                    QString controlFlowCode = generateControlFlowObfuscation();
+                    IndirectObfuscation::ControlFlow cf(settings);
+                    QString controlFlowCode = cf.generateControlFlowObfuscation();
                     if (!controlFlowCode.isEmpty()) {
                         QStringList controlFlowLines = controlFlowCode.split('\n');
                         for (const QString& flowLine : controlFlowLines) {
@@ -205,7 +227,20 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
             }
             obfuscatedStub << obfuscatedLine;
         }
-        it.value() = obfuscatedStub;
+        QStringList renamedStub;
+        for (const QString& sLine : obfuscatedStub) {
+            QString newLine = sLine;
+            QRegularExpression nameRx(QString("((%1\\w+))\\s+(PROC|ENDP)").arg(indirectPrefix));
+            auto m = nameRx.match(newLine);
+            if (m.hasMatch()) {
+                QString originalName = m.captured(1);
+                if (syscallMap.contains(originalName)) {
+                    newLine = newLine.replace(originalName, syscallMap.value(originalName));
+                }
+            }
+            renamedStub << newLine;
+        }
+        it.value() = renamedStub;
     }
     QFile outAsmFile(asmPath);
     if (!outAsmFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -214,8 +249,26 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
     }
     QTextStream out(&outAsmFile);
     bool inProcessedStub = false;
+    bool injectedAliases = false;
     QString currentStubName;
-    for (const QString& line : content) {
+    for (int i = 0; i < content.size(); ++i) {
+        const QString& line = content[i];
+        if (!injectedAliases && line.trimmed().compare(".code", Qt::CaseInsensitive) == 0) {
+            out << line << "\n\n";
+            if (!syscallMap.isEmpty()) {
+                out << "; Public Declarations\n";
+                for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
+                    out << QString("PUBLIC %1\n").arg(it.value());
+                }
+                out << "\n; Export Aliases\n";
+                for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
+                    out << QString("ALIAS <%1> = <%2>\n").arg(it.key()).arg(it.value());
+                }
+                out << "\n";
+            }
+            injectedAliases = true;
+            continue;
+        }
         QRegularExpression procRegex(QString("(%1\\w+)\\s+PROC").arg(indirectPrefix));
         QRegularExpressionMatch procMatch = procRegex.match(line);
         if (procMatch.hasMatch()) {
@@ -240,6 +293,136 @@ bool IndirectObfuscation::processIndirectAssemblyFile(const QString& asmPath, co
         out << line << "\n";
     }
     outAsmFile.close();
+    if (!updateIndirectHeaderFile(headerPath, syscallMap)) {
+        logMessage("Failed to update Header File for indirect obfuscation");
+        return false;
+    }
+    bool bindingsEnabled = settings->value("general/bindings_enabled", false).toBool();
+    bool isKernel = settings->value("general/syscall_mode", "Nt").toString() == "Zw";
+    if (bindingsEnabled && !isKernel) {
+        QString defPath = PathUtils::getSysCallerPath() + "/Wrapper/SysCaller.def";
+        QStringList obfuscatedNames;
+        for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
+            obfuscatedNames << it.value();
+        }
+        if (!updateDefFile(defPath, obfuscatedNames)) {
+            logMessage("Failed to update DEF File for indirect obfuscation");
+            return false;
+        }
+    }
     logMessage("Indirect Obfuscation completed successfully!");
+    return true;
+}
+
+bool IndirectObfuscationManager::updateIndirectHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap) {
+    QFile headerFile(headerPath);
+    if (!headerFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        logMessage("Failed to open Header File: " + headerPath);
+        return false;
+    }
+    QTextStream in(&headerFile);
+    QStringList headerContent = in.readAll().split('\n');
+    headerFile.close();
+    QStringList selectedSyscalls = settings->value("integrity/selected_syscalls", QStringList()).toStringList();
+    bool useAllSyscalls = selectedSyscalls.isEmpty();
+    QString indirectPrefix = getIndirectPrefix();
+    QStringList newHeaderContent;
+    bool headerPartEnded = false;
+    bool skipBlock = false;
+    QString currentFunc;
+    for (const QString& line : headerContent) {
+        if (!headerPartEnded && (
+            line.contains(QString("NTSTATUS %1").arg(indirectPrefix)) ||
+            line.contains(QString("ULONG %1").arg(indirectPrefix)) ||
+            line.contains(QString("BOOLEAN %1").arg(indirectPrefix)) ||
+            line.contains(QString("VOID %1").arg(indirectPrefix)) ||
+            line.contains("#ifdef __cplusplus")
+        )) {
+            headerPartEnded = true;
+        }
+        if (!headerPartEnded) {
+            newHeaderContent << line;
+            continue;
+        }
+        // preserve c++ guards and extern blocks
+        if (line.contains("#ifdef __cplusplus") || line.contains("extern \"C\"") ||
+            line.trimmed() == "{" || line.trimmed() == "}" || line.contains("#endif")) {
+            newHeaderContent << line;
+            continue;
+        }
+        if (line.contains(QString("%1").arg(indirectPrefix))) {
+            QRegularExpression regex(QString(R"((?:extern\s+\"C\"\s+)?(?:NTSTATUS|ULONG|BOOLEAN|VOID) ((?:%1)\w+)\()").arg(indirectPrefix));
+            auto m = regex.match(line);
+            if (m.hasMatch()) {
+                QString originalName = m.captured(1);
+                currentFunc = originalName;
+                if (useAllSyscalls || selectedSyscalls.contains(currentFunc)) {
+                    skipBlock = false;
+                    if (syscallMap.contains(originalName)) {
+                        QString newLine = line;
+                        QString obf = syscallMap.value(originalName);
+                        newLine = newLine.replace(originalName, obf);
+                        newLine = newLine.replace("extern \"C\" ", "");
+                        newHeaderContent << newLine;
+                    }
+                } else {
+                    skipBlock = true;
+                }
+                continue;
+            }
+        }
+        if (!skipBlock) {
+            newHeaderContent << line;
+        } else if (line.trimmed() == ");") {
+            skipBlock = false;
+        }
+    }
+    newHeaderContent << "";
+    newHeaderContent << "// Syscall Name Mappings (Indirect)";
+    for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
+        newHeaderContent << QString("#define %1 %2").arg(it.key()).arg(it.value());
+    }
+    QStringList cleaned;
+    bool prevEmpty = false;
+    for (const QString& l : newHeaderContent) {
+        if (l.trimmed().isEmpty()) {
+            if (!prevEmpty) {
+                cleaned << l;
+                prevEmpty = true;
+            }
+        } else {
+            cleaned << l;
+            prevEmpty = false;
+        }
+    }
+    QFile outHeaderFile(headerPath);
+    if (!outHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        logMessage("Failed to write Header File: " + headerPath);
+        return false;
+    }
+    QTextStream hout(&outHeaderFile);
+    hout << cleaned.join("\n");
+    outHeaderFile.close();
+    return true;
+}
+
+bool IndirectObfuscationManager::updateDefFile(const QString& defPath, const QStringList& obfuscatedNames) {
+    QFile defFile(defPath);
+    if (!defFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        logMessage("Failed to write DEF File: " + defPath);
+        return false;
+    }
+    QTextStream out(&defFile);
+    out << "LIBRARY SysCaller\n";
+    out << "EXPORTS\n";
+    for (const QString& name : obfuscatedNames) {
+        out << "    " << name << "\n";
+    }
+    if (settings && settings->value("general/indirect_assembly", false).toBool()) {
+        out << "    GetSyscallNumber\n";
+        out << "    InitializeResolver\n";
+        out << "    CleanupResolver\n";
+    }
+    defFile.close();
     return true;
 }

@@ -1,25 +1,25 @@
-#include "include/Core/Obfuscation/Direct/ControlFlow/ControlFlow.h"
+#include "include/Core/Obfuscation/Direct/ControlFlow/DirectControlFlow.h"
 #include <QRandomGenerator>
 #include <QDebug>
 
-ControlFlow::ControlFlow(QSettings* settings) : settings(settings) {
+DirectObfuscation::ControlFlow::ControlFlow(QSettings* settings) : settings(settings) {
 }
 
-void ControlFlow::setSettings(QSettings* settings) {
+void DirectObfuscation::ControlFlow::setSettings(QSettings* settings) {
     this->settings = settings;
 }
 
-QString ControlFlow::generateRandomLabel(const QString& prefix) {
+QString DirectObfuscation::ControlFlow::generateRandomLabel(const QString& prefix) {
     QString label;
     do {
-        QString suffix = QString::number(getRandomInt(100000, 999999));
+        QString suffix = QString::number(getRandomInt(1000, 999999));
         label = prefix + suffix;
     } while (usedLabels.contains(label));
     usedLabels.insert(label);
     return label;
 }
 
-QStringList ControlFlow::generateOpaquePredicates(const QString& labelPrefix) {
+QStringList DirectObfuscation::ControlFlow::generateOpaquePredicates(const QString& labelPrefix) {
     if (!settings || !isOpaquePredicatesEnabled()) {
         return QStringList();
     }
@@ -37,7 +37,7 @@ QStringList ControlFlow::generateOpaquePredicates(const QString& labelPrefix) {
     return predicates;
 }
 
-QStringList ControlFlow::generateBogusControlFlow(const QString& labelPrefix) {
+QStringList DirectObfuscation::ControlFlow::generateBogusControlFlow(const QString& labelPrefix) {
     if (!settings || !isBogusControlFlowEnabled()) {
         return QStringList();
     }
@@ -59,7 +59,7 @@ QStringList ControlFlow::generateBogusControlFlow(const QString& labelPrefix) {
     return bogusFlow;
 }
 
-QStringList ControlFlow::generateIndirectJumps(const QString& labelPrefix) {
+QStringList DirectObfuscation::ControlFlow::generateIndirectJumps(const QString& labelPrefix) {
     if (!settings || !isIndirectJumpsEnabled()) {
         return QStringList();
     }
@@ -75,7 +75,7 @@ QStringList ControlFlow::generateIndirectJumps(const QString& labelPrefix) {
     return indirectJumps;
 }
 
-QStringList ControlFlow::generateConditionalBranches(const QString& labelPrefix) {
+QStringList DirectObfuscation::ControlFlow::generateConditionalBranches(const QString& labelPrefix) {
     if (!settings || !isConditionalBranchesEnabled()) {
         return QStringList();
     }
@@ -99,7 +99,7 @@ QStringList ControlFlow::generateConditionalBranches(const QString& labelPrefix)
     return branches;
 }
 
-QStringList ControlFlow::wrapWithControlFlow(const QStringList& originalCode, const QString& labelPrefix) {
+QStringList DirectObfuscation::ControlFlow::wrapWithControlFlow(const QStringList& originalCode, const QString& labelPrefix) {
     if (!settings) {
         return originalCode;
     }
@@ -120,41 +120,41 @@ QStringList ControlFlow::wrapWithControlFlow(const QStringList& originalCode, co
     return obfuscatedCode;
 }
 
-bool ControlFlow::isOpaquePredicatesEnabled() {
+bool DirectObfuscation::ControlFlow::isOpaquePredicatesEnabled() {
     return settings ? settings->value("obfuscation/control_flow_opaque_predicates", false).toBool() : false;
 }
 
-bool ControlFlow::isBogusControlFlowEnabled() {
+bool DirectObfuscation::ControlFlow::isBogusControlFlowEnabled() {
     return settings ? settings->value("obfuscation/control_flow_bogus_flow", false).toBool() : false;
 }
 
-bool ControlFlow::isIndirectJumpsEnabled() {
+bool DirectObfuscation::ControlFlow::isIndirectJumpsEnabled() {
     return settings ? settings->value("obfuscation/control_flow_indirect_jumps", false).toBool() : false;
 }
 
-bool ControlFlow::isConditionalBranchesEnabled() {
+bool DirectObfuscation::ControlFlow::isConditionalBranchesEnabled() {
     return settings ? settings->value("obfuscation/control_flow_conditional_branches", false).toBool() : false;
 }
 
-int ControlFlow::getControlFlowComplexity() {
+int DirectObfuscation::ControlFlow::getControlFlowComplexity() {
     return settings ? settings->value("obfuscation/control_flow_complexity", 2).toInt() : 2;
 }
 
-int ControlFlow::getRandomInt(int min, int max) {
+int DirectObfuscation::ControlFlow::getRandomInt(int min, int max) {
     return QRandomGenerator::global()->bounded(min, max + 1);
 }
 
-QString ControlFlow::getRandomRegister() {
+QString DirectObfuscation::ControlFlow::getRandomRegister() {
     QStringList registers = {"rax", "rbx", "rcx", "rdx", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15"};
     return registers[getRandomInt(0, registers.size() - 1)];
 }
 
-QString ControlFlow::getRandomCondition() {
+QString DirectObfuscation::ControlFlow::getRandomCondition() {
     QStringList conditions = {"test", "cmp", "and", "or", "xor"};
     return conditions[getRandomInt(0, conditions.size() - 1)];
 }
 
-QStringList ControlFlow::generateAlwaysTrueCondition() {
+QStringList DirectObfuscation::ControlFlow::generateAlwaysTrueCondition() {
     QStringList conditions;
     QString reg = getRandomRegister();    
     conditions << QString("    mov %1, 1").arg(reg);
@@ -162,7 +162,7 @@ QStringList ControlFlow::generateAlwaysTrueCondition() {
     return conditions;
 }
 
-QStringList ControlFlow::generateAlwaysFalseCondition() {
+QStringList DirectObfuscation::ControlFlow::generateAlwaysFalseCondition() {
     QStringList conditions;
     QString reg = getRandomRegister();
     conditions << QString("    mov %1, 0").arg(reg);
@@ -170,7 +170,7 @@ QStringList ControlFlow::generateAlwaysFalseCondition() {
     return conditions;
 }
 
-QStringList ControlFlow::generateComplexPredicate() {
+QStringList DirectObfuscation::ControlFlow::generateComplexPredicate() {
     QStringList predicate;
     QString reg1 = getRandomRegister();
     QString reg2 = getRandomRegister();
@@ -180,4 +180,4 @@ QStringList ControlFlow::generateComplexPredicate() {
     predicate << QString("    sub %1, 2").arg(reg1);
     predicate << QString("    test %1, %1").arg(reg1);
     return predicate;
-} 
+}

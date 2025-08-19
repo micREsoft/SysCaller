@@ -1,5 +1,4 @@
-#ifndef CHANGELOGDIALOG_H
-#define CHANGELOGDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QMap>
@@ -28,5 +27,3 @@ private:
     QTextEdit* textEdit;
     QMap<QString, QString> changelogFiles; // version -> filepath
 };
-
-#endif

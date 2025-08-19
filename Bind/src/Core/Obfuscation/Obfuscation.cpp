@@ -1,11 +1,11 @@
 #include "include/Core/Obfuscation/Obfuscation.h"
-#include "include/Core/Obfuscation/Direct/Stub/JunkGenerator.h"
-#include "include/Core/Obfuscation/Direct/Stub/NameGenerator.h"
-#include "include/Core/Obfuscation/Direct/Encryption/Encryptor.h"
-#include "include/Core/Obfuscation/Direct/Stub/StubGenerator.h"
-#include "include/Core/Obfuscation/Direct/Mapping/StubMapper.h"
-#include "include/Core/Obfuscation/Direct/ControlFlow/ControlFlow.h"
-#include "include/Core/Obfuscation/Indirect/IndirectObfuscation.h"
+#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
+#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
+#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
+#include "include/Core/Obfuscation/Direct/Stub/DirectStubGenerator.h"
+#include "include/Core/Obfuscation/Direct/Mapping/DirectStubMapper.h"
+#include "include/Core/Obfuscation/Direct/ControlFlow/DirectControlFlow.h"
+#include "include/Core/Obfuscation/IndirectObfuscation.h"
 #include "include/Core/Utils/PathUtils.h"
 #include <QFile>
 #include <QTextStream>
@@ -81,7 +81,7 @@ int Obfuscation::run(const QStringList& dllPaths) {
         bool isIndirectMode = settings->value("general/indirect_assembly", false).toBool();
         if (isIndirectMode) {
             logMessage(Colors::OKBLUE() + "Using Indirect Obfuscation..." + Colors::ENDC());
-            IndirectObfuscation indirectObf(settings);
+            IndirectObfuscationManager indirectObf(settings);
             indirectObf.setOutputCallback(outputCallback);
             bool success = indirectObf.generateIndirectObfuscation();
             if (success) {
@@ -97,7 +97,7 @@ int Obfuscation::run(const QStringList& dllPaths) {
         bool forceStubMapper = settings->value("obfuscation/force_stub_mapper", false).toBool();
         if (forceStubMapper || (syscallSettings.size() > 0 && !forceNormal)) {
                     logMessage(Colors::OKBLUE() + "Using Stub Mapper..." + Colors::ENDC());
-        StubMapper stubMapper(settings);
+        DirectObfuscation::StubMapper stubMapper(settings);
         stubMapper.setOutputCallback(outputCallback);
         bool success = stubMapper.generateCustomExports();
         if (success) {
@@ -170,7 +170,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
             currentStub << line;
             if (useAllSyscalls || selectedSyscalls.contains(currentSyscall)) {
                 if (!syscallMap.contains(currentSyscall)) {
-                    NameGenerator nameGen(settings);
+                    SharedObfuscation::NameGenerator nameGen(settings);
                     syscallMap[currentSyscall] = nameGen.generateRandomName(usedNames);
                 }
             }
@@ -181,7 +181,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
                 if (realOffset != -1) {
                     syscallOffsets[currentSyscall] = realOffset;
                     if (!realToFakeOffset.contains(realOffset)) {
-                        NameGenerator nameGen(settings);
+                        SharedObfuscation::NameGenerator nameGen(settings);
                         realToFakeOffset[realOffset] = nameGen.generateRandomOffset(usedOffsets);
                     }
                 }
@@ -207,7 +207,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     QMap<QString, QString> functionSuffixes; // store suffixes for each function
     if (enableControlFlow) {
         for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
-            QString suffix = QString::number(QRandomGenerator::global()->bounded(100000, 999999));
+            QString suffix = QString::number(QRandomGenerator::global()->bounded(1000, 999999));
             functionSuffixes[it.key()] = suffix;
         }
     }
@@ -225,8 +225,8 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     bool enableEncryption = settings->value("obfuscation/enable_encryption", true).toBool();
     int encryptionMethod = settings->value("obfuscation/encryption_method", 1).toInt();
     QMap<QString, QMap<QString, QVariant>> encryptionDataMap;
-    Encryptor encryptor(settings);
-    NameGenerator nameGen(settings);
+    DirectObfuscation::Encryptor encryptor(settings);
+    SharedObfuscation::NameGenerator nameGen(settings);
     for (auto it = realToFakeOffset.begin(); it != realToFakeOffset.end(); ++it) {
         int realOffset = it.key();
         int fakeOffset = it.value();
@@ -255,8 +255,8 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     }
     newContent << "";
     bool enableInterleaved = settings->value("obfuscation/enable_interleaved", true).toBool();
-    StubGenerator stubGen(settings);
-    ControlFlow controlFlow(settings);
+    DirectObfuscation::StubGenerator stubGen(settings);
+    DirectObfuscation::ControlFlow controlFlow(settings);
     for (const auto& stubPair : syscallStubs) {
         QString originalSyscall = stubPair.first;
         QStringList stubLines = stubPair.second;
@@ -594,6 +594,7 @@ bool Obfuscation::updateDefFile(const QString& defPath, const QStringList& obfus
         return false;
     }
     QTextStream out(&defFile);
+    out << "LIBRARY SysCaller\n";
     out << "EXPORTS\n";
     for (const QString& name : obfuscatedNames) {
         out << "    " << name << "\n";

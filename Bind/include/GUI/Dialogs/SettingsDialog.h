@@ -1,5 +1,4 @@
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -15,6 +14,7 @@ class ObfuscationTab;
 class IndirectObfuscationTab;
 class IntegrityTab;
 class ProfileTab;
+
 class SettingsDialog : public QDialog {
     Q_OBJECT
 
@@ -28,9 +28,11 @@ private slots:
 private:
     void initUI();
     void setupStylesheet();
+
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
+
     QSettings* settings;
     QTabWidget* tabs;
     SettingsTitleBar* titleBar;
@@ -39,8 +41,7 @@ private:
     IndirectObfuscationTab* indirectObfuscationTab;
     IntegrityTab* integrityTab;
     ProfileTab* profileTab;
+
     bool m_dragging = false;
     QPoint m_dragPosition;
 };
-
-#endif

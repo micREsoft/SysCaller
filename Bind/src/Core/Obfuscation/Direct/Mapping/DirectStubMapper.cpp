@@ -1,9 +1,9 @@
-#include "include/Core/Obfuscation/Direct/Mapping/StubMapper.h"
-#include "include/Core/Obfuscation/Direct/Stub/JunkGenerator.h"
-#include "include/Core/Obfuscation/Direct/Stub/NameGenerator.h"
-#include "include/Core/Obfuscation/Direct/Encryption/Encryptor.h"
-#include "include/Core/Obfuscation/Direct/Stub/StubGenerator.h"
-#include "include/Core/Obfuscation/Direct/ControlFlow/ControlFlow.h"
+#include "include/Core/Obfuscation/Direct/Mapping/DirectStubMapper.h"
+#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
+#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
+#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
+#include "include/Core/Obfuscation/Direct/Stub/DirectStubGenerator.h"
+#include "include/Core/Obfuscation/Direct/ControlFlow/DirectControlFlow.h"
 #include "include/Core/Utils/PathUtils.h"
 #include <QFile>
 #include <QTextStream>
@@ -13,25 +13,25 @@
 #include <QRandomGenerator>
 #include <QDir>
 
-StubMapper::StubMapper(QSettings* settings) : settings(settings), outputCallback(nullptr) {
+DirectObfuscation::StubMapper::StubMapper(QSettings* settings) : settings(settings), outputCallback(nullptr) {
 }
 
-void StubMapper::setSettings(QSettings* settings) {
+void DirectObfuscation::StubMapper::setSettings(QSettings* settings) {
     this->settings = settings;
 }
 
-void StubMapper::setOutputCallback(std::function<void(const QString&)> callback) {
+void DirectObfuscation::StubMapper::setOutputCallback(std::function<void(const QString&)> callback) {
     outputCallback = callback;
 }
 
-void StubMapper::logMessage(const QString& message) {
+void DirectObfuscation::StubMapper::logMessage(const QString& message) {
     if (outputCallback) {
         outputCallback(message);
     }
     qDebug() << "StubMapper:" << message;
 }
 
-int StubMapper::extractSyscallOffset(const QString& line) {
+int DirectObfuscation::StubMapper::extractSyscallOffset(const QString& line) {
     QRegularExpression regex(R"(mov eax,\s*([0-9A-Fa-f]+)h)");
     QRegularExpressionMatch match = regex.match(line);
     if (match.hasMatch()) {
@@ -45,7 +45,7 @@ int StubMapper::extractSyscallOffset(const QString& line) {
     return -1;
 }
 
-QString StubMapper::getAsmFilePath(bool isKernelMode) {
+QString DirectObfuscation::StubMapper::getAsmFilePath(bool isKernelMode) {
     if (isKernelMode) {
         return PathUtils::getSysCallerKPath() + "/Wrapper/src/syscaller.asm";
     } else {
@@ -53,7 +53,7 @@ QString StubMapper::getAsmFilePath(bool isKernelMode) {
     }
 }
 
-QString StubMapper::getHeaderFilePath(bool isKernelMode) {
+QString DirectObfuscation::StubMapper::getHeaderFilePath(bool isKernelMode) {
     if (isKernelMode) {
         return PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/sysFunctions_k.h";
     } else {
@@ -61,7 +61,7 @@ QString StubMapper::getHeaderFilePath(bool isKernelMode) {
     }
 }
 
-QString StubMapper::getDefFilePath(bool isKernelMode) {
+QString DirectObfuscation::StubMapper::getDefFilePath(bool isKernelMode) {
     if (isKernelMode) {
         return PathUtils::getSysCallerKPath() + "/Wrapper/SysCallerK.def";
     } else {
@@ -69,15 +69,15 @@ QString StubMapper::getDefFilePath(bool isKernelMode) {
     }
 }
 
-bool StubMapper::isKernelMode() {
+bool DirectObfuscation::StubMapper::isKernelMode() {
     return settings->value("general/syscall_mode", "Nt").toString() == "Zw";
 }
 
-QString StubMapper::getSyscallPrefix() {
+QString DirectObfuscation::StubMapper::getSyscallPrefix() {
     return isKernelMode() ? "SysK" : "Sys";
 }
 
-QPair<int, QString> StubMapper::applyCustomSyscallSettings(const QString& syscallName, int realOffset, const QMap<QString, QVariant>& customSettings) {
+QPair<int, QString> DirectObfuscation::StubMapper::applyCustomSyscallSettings(const QString& syscallName, int realOffset, const QMap<QString, QVariant>& customSettings) {
     QMap<QString, QVariant> settings;
     
     if (customSettings.isEmpty()) {
@@ -109,7 +109,7 @@ QPair<int, QString> StubMapper::applyCustomSyscallSettings(const QString& syscal
     }
     QSet<int> usedOffsets;
     QSet<QString> usedOffsetNames;
-    NameGenerator nameGen(this->settings);
+    SharedObfuscation::NameGenerator nameGen(this->settings);
     Encryptor encryptor(this->settings);
     int fakeOffset = nameGen.generateRandomOffset(usedOffsets);
     int offsetNameLength = settings.value("offset_name_length", 8).toInt();
@@ -117,7 +117,7 @@ QPair<int, QString> StubMapper::applyCustomSyscallSettings(const QString& syscal
     return qMakePair(fakeOffset, offsetName);
 }
 
-bool StubMapper::generateCustomExports() {
+bool DirectObfuscation::StubMapper::generateCustomExports() {
     logMessage(Colors::OKBLUE() + "Starting Stub Mapper Custom Export Generation..." + Colors::ENDC());
     try {
         bool success = processAssemblyFile(getAsmFilePath(isKernelMode()), getHeaderFilePath(isKernelMode()));
@@ -134,7 +134,7 @@ bool StubMapper::generateCustomExports() {
     }
 }
 
-bool StubMapper::processAssemblyFile(const QString& asmPath, const QString& headerPath) {
+bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, const QString& headerPath) {
     QFile asmFile(asmPath);
     if (!asmFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         logMessage(Colors::FAIL() + QString("Failed to open Assembly File: %1").arg(asmPath) + Colors::ENDC());
@@ -171,7 +171,7 @@ bool StubMapper::processAssemblyFile(const QString& asmPath, const QString& head
             currentStub << line;
             if (useAllSyscalls || selectedSyscalls.contains(currentSyscall)) {
                 if (!syscallMap.contains(currentSyscall)) {
-                    NameGenerator nameGen(settings);
+                    SharedObfuscation::NameGenerator nameGen(settings);
                     int prefixLength = 8;
                     int numberLength = 6;
                     if (syscallSettings.contains(currentSyscall)) {
@@ -198,7 +198,7 @@ bool StubMapper::processAssemblyFile(const QString& asmPath, const QString& head
                         usedOffsets.insert(fakeOffset);
                         usedOffsetNames.insert(offsetName);
                     } else if (!realToFakeOffset.contains(realOffset)) {
-                        NameGenerator nameGen(settings);
+                        SharedObfuscation::NameGenerator nameGen(settings);
                         int fakeOffset = nameGen.generateRandomOffset(usedOffsets);
                         QString offsetName = nameGen.generateRandomOffsetName(usedOffsetNames);
                         realToFakeOffset[realOffset] = fakeOffset;
@@ -241,7 +241,7 @@ bool StubMapper::processAssemblyFile(const QString& asmPath, const QString& head
     QMap<QString, QString> functionSuffixes; // store suffixes for each function
     if (enableControlFlow) {
         for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it) {
-            QString suffix = QString::number(getRandomInt(100000, 999999));
+            QString suffix = QString::number(getRandomInt(1000, 999999));
             functionSuffixes[it.key()] = suffix;
         }
     }
@@ -258,7 +258,7 @@ bool StubMapper::processAssemblyFile(const QString& asmPath, const QString& head
     newContent << "ALIGN 8";
     QMap<QString, QMap<QString, QVariant>> encryptionDataMap;
     Encryptor encryptor(settings);
-    NameGenerator nameGen(settings);
+    SharedObfuscation::NameGenerator nameGen(settings);
     for (auto it = realToFakeOffset.begin(); it != realToFakeOffset.end(); ++it) {
         int realOffset = it.key();
         int fakeOffset = it.value();
@@ -446,7 +446,7 @@ bool StubMapper::processAssemblyFile(const QString& asmPath, const QString& head
     return true;
 }
 
-bool StubMapper::updateHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap, const QMap<QString, QString>& functionSuffixes) {
+bool DirectObfuscation::StubMapper::updateHeaderFile(const QString& headerPath, const QMap<QString, QString>& syscallMap, const QMap<QString, QString>& functionSuffixes) {
     QFile headerFile(headerPath);
     if (!headerFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         logMessage(Colors::FAIL() + QString("Failed to open Header File: %1").arg(headerPath) + Colors::ENDC());
@@ -575,13 +575,14 @@ bool StubMapper::updateHeaderFile(const QString& headerPath, const QMap<QString,
     return true;
 }
 
-bool StubMapper::updateDefFile(const QString& defPath, const QStringList& obfuscatedNames) {
+bool DirectObfuscation::StubMapper::updateDefFile(const QString& defPath, const QStringList& obfuscatedNames) {
     QFile defFile(defPath);
     if (!defFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         logMessage(Colors::FAIL() + QString("Failed to write DEF File: %1").arg(defPath) + Colors::ENDC());
         return false;
     }
     QTextStream out(&defFile);
+    out << "LIBRARY SysCaller\n";
     out << "EXPORTS\n";
     for (const QString& name : obfuscatedNames) {
         out << "    " << name << "\n";
@@ -590,6 +591,8 @@ bool StubMapper::updateDefFile(const QString& defPath, const QStringList& obfusc
     return true;
 }
 
-int StubMapper::getRandomInt(int min, int max) {
+int DirectObfuscation::StubMapper::getRandomInt(int min, int max) {
     return QRandomGenerator::global()->bounded(min, max + 1);
 }
+
+

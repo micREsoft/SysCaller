@@ -1,5 +1,4 @@
-#ifndef PROFILETAB_H
-#define PROFILETAB_H
+#pragma once
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -26,5 +25,3 @@ private:
     void initUI();
     QSettings* settings;
 };
-
-#endif

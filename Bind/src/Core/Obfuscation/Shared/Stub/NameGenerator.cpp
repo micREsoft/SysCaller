@@ -1,16 +1,16 @@
-#include "include/Core/Obfuscation/Direct/Stub/NameGenerator.h"
+#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
 #include <QRandomGenerator>
 #include <QDebug>
 #include <QtMath>
 
-NameGenerator::NameGenerator(QSettings* settings) : settings(settings) {
+SharedObfuscation::NameGenerator::NameGenerator(QSettings* settings) : settings(settings) {
 }
 
-void NameGenerator::setSettings(QSettings* settings) {
+void SharedObfuscation::NameGenerator::setSettings(QSettings* settings) {
     this->settings = settings;
 }
 
-QString NameGenerator::generateRandomString(int length) {
+QString SharedObfuscation::NameGenerator::generateRandomString(int length) {
     const QString chars = "abcdefghijklmnopqrstuvwxyz";
     QString result;
     for (int i = 0; i < length; ++i) {
@@ -19,7 +19,7 @@ QString NameGenerator::generateRandomString(int length) {
     return result;
 }
 
-QString NameGenerator::generateRandomName(QSet<QString>& usedNames, int prefixLength, int numberLength) {
+QString SharedObfuscation::NameGenerator::generateRandomName(QSet<QString>& usedNames, int prefixLength, int numberLength) {
     if (!settings) {
         return "";
     }
@@ -41,7 +41,7 @@ QString NameGenerator::generateRandomName(QSet<QString>& usedNames, int prefixLe
     return name;
 }
 
-QString NameGenerator::generateRandomOffsetName(QSet<QString>& usedNames, int length) {
+QString SharedObfuscation::NameGenerator::generateRandomOffsetName(QSet<QString>& usedNames, int length) {
     if (!settings) {
         return "";
     }
@@ -56,7 +56,7 @@ QString NameGenerator::generateRandomOffsetName(QSet<QString>& usedNames, int le
     return name;
 }
 
-int NameGenerator::generateRandomOffset(QSet<int>& usedOffsets) {
+int SharedObfuscation::NameGenerator::generateRandomOffset(QSet<int>& usedOffsets) {
     int offset;
     do {
         offset = getRandomInt(0x1000, 0xFFFF);
@@ -65,10 +65,10 @@ int NameGenerator::generateRandomOffset(QSet<int>& usedOffsets) {
     return offset;
 }
 
-QString NameGenerator::generateRandomLabel() {
+QString SharedObfuscation::NameGenerator::generateRandomLabel() {
     return generateRandomString(8);
 }
 
-int NameGenerator::getRandomInt(int min, int max) {
+int SharedObfuscation::NameGenerator::getRandomInt(int min, int max) {
     return QRandomGenerator::global()->bounded(min, max + 1);
-} 
+}
