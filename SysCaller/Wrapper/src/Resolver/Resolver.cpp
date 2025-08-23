@@ -1,3 +1,19 @@
+#if defined(SYSCALLER_DIRECT)
+#pragma message("SysCaller: Building via DIRECT syscall mode")
+#elif defined(SYSCALLER_INDIRECT)
+#pragma message("SysCaller: Building via INDIRECT syscall mode")
+#elif defined(SYSCALLER_INLINE)
+#pragma message("SysCaller: Building via INLINE ASM syscall mode")
+#else
+#pragma message("SysCaller: No build mode specified, defaulting to DIRECT")
+#endif
+
+#if defined(SYSCALLER_BINDINGS)
+#pragma message("SysCaller: Building with BINDINGS support (DLL export)")
+#endif
+
+#ifdef SYSCALLER_INDIRECT
+// Indirect syscall mode, include resolver implementation
 #include "../../include/Resolver/Resolver.h"
 #include <windows.h>
 #include <winternl.h>
@@ -102,3 +118,8 @@ void CleanupResolver() {
     syscallCache.clear();
     resolverInitialized = FALSE;
 }
+
+#else
+// Not in indirect mode file compiles to nothing
+#pragma message("SysCaller: Resolver.cpp skipped (SYSCALLER_INDIRECT not defined)")
+#endif
