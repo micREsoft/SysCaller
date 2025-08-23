@@ -11,7 +11,7 @@ ObfuscationSelectionDialog::ObfuscationSelectionDialog(QWidget* parent)
     : QDialog(parent)
     , selection(Cancelled)
 {
-    setWindowTitle("Bind - v1.2.0");
+    setWindowTitle("Bind - v1.3.0");
     setFixedSize(450, 300);
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);

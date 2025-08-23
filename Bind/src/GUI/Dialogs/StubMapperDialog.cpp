@@ -493,7 +493,7 @@ void StubMapperDialog::validateCurrentSettings() {
             showValidationSuccess(QString("Using Global Settings for %1.").arg(syscallName));
         }
     } else {
-        QMessageBox::warning(this, "Bind - v1.2.0", "Please select a Syscall first.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "Please select a Syscall first.");
     }
 }
 
@@ -524,7 +524,7 @@ void StubMapperDialog::saveSettings() {
         return;
     }
     settings->setValue("stub_mapper/syscall_settings", QVariant::fromValue(syscallSettings));
-    QMessageBox::information(this, "Bind - v1.2.0", "Custom Syscall Settings have been saved successfully.");
+    QMessageBox::information(this, "Bind - v1.3.0", "Custom Syscall Settings have been saved successfully.");
     accept();
 }
 
@@ -574,9 +574,9 @@ bool StubMapperDialog::validateStubSettings(const QMap<QString, QVariant>& setti
 }
 
 void StubMapperDialog::showValidationError(const QString& message) {
-    QMessageBox::critical(this, "Bind - v1.2.0", message);
+    QMessageBox::critical(this, "Bind - v1.3.0", message);
 }
 
 void StubMapperDialog::showValidationSuccess(const QString& message) {
-    QMessageBox::information(this, "Bind - v1.2.0", message);
+    QMessageBox::information(this, "Bind - v1.3.0", message);
 }

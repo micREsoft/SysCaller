@@ -296,11 +296,11 @@ void HashCompareDialog::updateHashTable() {
 void HashCompareDialog::compareSelected() {
     QList<QListWidgetItem*> selectedItems = hashFileList->selectedItems();
     if (selectedItems.size() < 1) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "Please select at least one Hash File to view.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "Please select at least one Hash File to view.");
         return;
     }
     if (selectedItems.size() > 5) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "Please select at most 5 Hash Files to compare.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "Please select at most 5 Hash Files to compare.");
         return;
     }
     QStringList selectedFiles;
@@ -429,7 +429,7 @@ QString HashCompareDialog::extractHash(const QString& hashValue, const QString& 
 void HashCompareDialog::exportComparison() {
     QList<QListWidgetItem*> selectedItems = hashFileList->selectedItems();
     if (selectedItems.isEmpty()) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "Please select at least one Hash File to export.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "Please select at least one Hash File to export.");
         return;
     }
     QStringList selectedFiles;
@@ -441,7 +441,7 @@ void HashCompareDialog::exportComparison() {
     }
     QString exportPath = QFileDialog::getSaveFileName(
         this,
-        "Bind - v1.2.0",
+        "Bind - v1.3.0",
         "",
         "CSV Files (*.csv);;HTML Files (*.html);;All Files (*.*)"
     );
@@ -459,10 +459,10 @@ void HashCompareDialog::exportComparison() {
             }
             exportAsCsv(exportPath, selectedFiles);
         }
-        QMessageBox::information(this, "Bind - v1.2.0", 
+        QMessageBox::information(this, "Bind - v1.3.0", 
                                QString("Hash Comparison exported successfully to:\n%1").arg(exportPath));
     } catch (...) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "Failed to Export Comparison.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "Failed to Export Comparison.");
     }
 }
 
@@ -483,7 +483,7 @@ void HashCompareDialog::exportAsCsv(const QString& exportPath, const QStringList
     }
     QFile file(exportPath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "Could not create Export File.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "Could not create Export File.");
         return;
     }
     QTextStream stream(&file);
@@ -544,7 +544,7 @@ void HashCompareDialog::exportAsHtml(const QString& exportPath, const QStringLis
     }
     QFile file(exportPath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "Could not create Export File.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "Could not create Export File.");
         return;
     }
     QTextStream stream(&file);
