@@ -20,9 +20,11 @@ QString DirectObfuscation::StubGenerator::generateMaskedSequence(const QString& 
     Encryptor encryptor(settings);
     bool enableEncryption = settings->value("obfuscation/enable_encryption", true).toBool();
     QStringList movR10RcxVariants = {
+        "    mov r10, rcx\n",
         "    lea r10, [rcx]\n",
-        "    push rcx\n    pop r10\n",
-        "    mov r11, rcx\n    xchg r10, r11\n"
+        "    mov r11, rcx\n    xchg r10, r11\n",
+        "    mov r12, rcx\n    mov r10, r12\n",
+        "    mov r13, rcx\n    mov r10, r13\n"
     };
     QStringList syscallSequence;
     if (enableEncryption && !encryptionData.isEmpty()) {

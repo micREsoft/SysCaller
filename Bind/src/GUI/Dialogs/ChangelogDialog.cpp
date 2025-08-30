@@ -1,4 +1,5 @@
 #include "include/GUI/Dialogs/ChangelogDialog.h"
+#include "include/GUI/Bars/SettingsTitleBar.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QListWidget>
@@ -12,6 +13,7 @@
 #include <QRegularExpression>
 #include <QApplication>
 #include <QIcon>
+#include <QMouseEvent>
 #include "include/Core/Utils/PathUtils.h"
 
 ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
@@ -19,10 +21,12 @@ ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
     setMinimumSize(950, 600);
     resize(950, 600);
     setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    // setAttribute(Qt::WA_TranslucentBackground);
     setStyleSheet(
         "QDialog {"
-        " background: #232323;"
-        " border-radius: 12px;"
+        " background: #1A1A1A;"
+        " border-radius: 15px;"
         "}"
         "QLabel {"
         " color: #0077d4;"
@@ -71,9 +75,13 @@ ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
 
 void ChangelogDialog::setupUI() {
     auto* layout = new QVBoxLayout(this);
-    auto* title = new QLabel("Changelog History");
-    title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    titleBar = new SettingsTitleBar("Changelog History", this);
+    layout->addWidget(titleBar);
+    auto* contentLayout = new QVBoxLayout();
+    contentLayout->setContentsMargins(20, 20, 20, 20);
+    contentLayout->setSpacing(20);
     auto* hbox = new QHBoxLayout();
     listWidget = new QListWidget();
     listWidget->setFixedWidth(200);
@@ -81,13 +89,15 @@ void ChangelogDialog::setupUI() {
     textEdit = new QTextEdit();
     textEdit->setReadOnly(true);
     hbox->addWidget(textEdit, 1);
-    layout->addLayout(hbox);
+    contentLayout->addLayout(hbox);
     auto* btnBox = new QHBoxLayout();
     btnBox->addStretch();
     auto* closeBtn = new QPushButton("Close");
     connect(closeBtn, &QPushButton::clicked, this, &QDialog::accept);
     btnBox->addWidget(closeBtn);
-    layout->addLayout(btnBox);
+    contentLayout->addLayout(btnBox);
+    layout->addLayout(contentLayout);
+    connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::accept);
 }
 
 void ChangelogDialog::populateChangelogs() {
@@ -160,4 +170,26 @@ QString ChangelogDialog::markdownToHtml(const QString& markdown) {
         "p { margin-bottom: 10px; line-height: 1.4; }"
         "</style>";
     return customCss + result;
+}
+
+void ChangelogDialog::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void ChangelogDialog::mouseMoveEvent(QMouseEvent* event) {
+    if (event->buttons() & Qt::LeftButton && m_dragging) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void ChangelogDialog::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = false;
+        event->accept();
+    }
 }

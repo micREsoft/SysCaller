@@ -87,7 +87,7 @@ void GeneralTab::initUI() {
     layout->addWidget(inlineAssemblyGroup);
     indirectAssemblyGroup = new QGroupBox("Indirect Assembly Mode");
     QVBoxLayout* indirectAssemblyLayout = new QVBoxLayout();
-    QLabel* indirectDesc = new QLabel("Enable indirect assembly mode to generate runtime syscall resolution stubs.");
+    QLabel* indirectDesc = new QLabel("Enable indirect assembly mode to generate runtime syscall resolution stubs for enhanced stealth.");
     indirectDesc->setWordWrap(true);
     indirectAssemblyLayout->addWidget(indirectDesc);
     indirectAssembly = new QCheckBox("Enable Indirect Assembly Mode");
@@ -163,7 +163,7 @@ void GeneralTab::saveSettings() {
     if (modeChanged) {
         QMessageBox::information(
             this,
-            "Bind - v1.2.0",
+            "Bind - v1.3.0",
             QString("The syscall mode has been changed from %1 to %2.\n\n"
                    "This change affects which files are processed:\n"
                    "- Nt Mode: User mode files in SysCaller directory\n"
@@ -237,7 +237,7 @@ void GeneralTab::restoreDefaultFiles() {
     QString headerName = isKernelMode ? "sysFunctions_k.h" : "sysFunctions.h";
     QMessageBox::StandardButton reply = QMessageBox::question(
         this, 
-        "Bind - v1.2.0", 
+        "Bind - v1.3.0", 
         QString("Are you sure you want to restore default %1 files?\n"
                "This will overwrite your current syscaller.asm and %2 files in the %3.")
                .arg(modeText, headerName, filePathText),
@@ -253,7 +253,7 @@ void GeneralTab::restoreDefaultFiles() {
         QString asmPath = PathUtils::getSysCallerAsmPath(isKernelMode);
         QString headerPath = PathUtils::getSysFunctionsPath(isKernelMode);
         if (!QFile::exists(defaultAsmPath) || !QFile::exists(defaultHeaderPath)) {
-            QMessageBox::warning(this, "Bind - v1.2.0", 
+            QMessageBox::warning(this, "Bind - v1.3.0", 
                                "Default files not found in Default directory.");
             return;
         }
@@ -269,16 +269,16 @@ void GeneralTab::restoreDefaultFiles() {
         bool asmCopied = QFile::copy(defaultAsmPath, asmPath);
         bool headerCopied = QFile::copy(defaultHeaderPath, headerPath);
         if (!asmCopied || !headerCopied) {
-            QMessageBox::critical(this, "Bind - v1.2.0", 
+            QMessageBox::critical(this, "Bind - v1.3.0", 
                 QString("Failed to copy files:\nASM: %1\nHeader: %2")
                 .arg(asmCopied ? "Success" : "Failed")
                 .arg(headerCopied ? "Success" : "Failed"));
             return;
         }
-        QMessageBox::information(this, "Bind - v1.2.0", 
+        QMessageBox::information(this, "Bind - v1.3.0", 
                                QString("Default %1 files have been restored successfully!").arg(modeText));
     } catch (...) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "An error occurred while restoring default files.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "An error occurred while restoring default files.");
     }
 }
 
@@ -287,7 +287,7 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
         QString backupsDir = PathUtils::getBackupsPath();
         QStringList completeBackups = getAvailableBackups();
         if (!completeBackups.contains(timestamp)) {
-            QMessageBox::warning(this, "Bind - v1.2.0", 
+            QMessageBox::warning(this, "Bind - v1.3.0", 
                                QString("Could not find complete backup set for timestamp %1").arg(timestamp));
             return;
         }
@@ -301,12 +301,12 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
             missingFiles << QString("Header file: %1").arg(backupHeaderPath);
         }
         if (!missingFiles.isEmpty()) {
-            QMessageBox::warning(this, "Bind - v1.2.0", 
+            QMessageBox::warning(this, "Bind - v1.3.0", 
                                QString("Could not find the following backup files:\n%1").arg(missingFiles.join("\n")));
             return;
         }
         QMessageBox::StandardButton reply = QMessageBox::question(
-            this, "Bind - v1.2.0", 
+            this, "Bind - v1.3.0", 
             QString("Are you sure you want to restore from backup files dated %1?\n"
                    "This will overwrite your current syscaller.asm and sysFunctions.h files.")
                    .arg(formatTimestamp(timestamp)),
@@ -321,12 +321,12 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
         QDir().mkpath(QFileInfo(asmPath).absolutePath());
         QDir().mkpath(QFileInfo(headerPath).absolutePath());
         if (QFile::exists(asmPath) && isFileLocked(asmPath)) {
-            QMessageBox::warning(this, "Bind - v1.2.0", 
+            QMessageBox::warning(this, "Bind - v1.3.0", 
                                "The ASM file appears to be locked by another process. Close any applications that might be using it and try again.");
             return;
         }
         if (QFile::exists(headerPath) && isFileLocked(headerPath)) {
-            QMessageBox::warning(this, "Bind - v1.2.0", 
+            QMessageBox::warning(this, "Bind - v1.3.0", 
                                "The header file appears to be locked by another process. Close any applications that might be using it and try again.");
             return;
         }
@@ -350,20 +350,20 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
             headerRestored = QFile::copy(backupHeaderPath, headerPath);
         }
         if (asmRestored && headerRestored) {
-            QMessageBox::information(this, "Bind - v1.2.0", 
+            QMessageBox::information(this, "Bind - v1.3.0", 
                                    QString("Files have been restored from backup successfully!\nBackup date: %1")
                                    .arg(formatTimestamp(timestamp)));
         } else if (!asmRestored && headerRestored) {
-            QMessageBox::warning(this, "Bind - v1.2.0", 
+            QMessageBox::warning(this, "Bind - v1.3.0", 
                                "Only the header file was restored successfully. The ASM file could not be restored.");
         } else if (asmRestored && !headerRestored) {
-            QMessageBox::warning(this, "Bind - v1.2.0", 
+            QMessageBox::warning(this, "Bind - v1.3.0", 
                                "Only the ASM file was restored successfully. The header file could not be restored.");
         } else {
-            QMessageBox::critical(this, "Bind - v1.2.0", "Failed to restore both files from backup.");
+            QMessageBox::critical(this, "Bind - v1.3.0", "Failed to restore both files from backup.");
         }
     } catch (...) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "An error occurred while restoring backup files.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "An error occurred while restoring backup files.");
     }
 }
 
