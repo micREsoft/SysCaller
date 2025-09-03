@@ -177,93 +177,18 @@ void StubMapperDialog::initUI() {
     buttonLayout->addWidget(cancelBtn);
     layout->addLayout(buttonLayout);
     connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::reject);
-    setStyleSheet(R"(
-        QDialog {
-            background: #252525;
-            color: white;
-            border-radius: 15px;
-        }
-        QTabWidget::pane {
-            border: 1px solid #333333;
-            border-radius: 5px;
-            background: #1E1E1E;
-        }
-        QTabBar::tab {
-            background: #333333;
-            color: white;
-            padding: 8px 20px;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-        QTabBar::tab:selected {
-            background: #0b5394;
-        }
-        QGroupBox {
-            border: 1px solid #333333;
-            border-radius: 5px;
-            margin-top: 5px;
-            padding-top: 10px;
-            color: white;
-        }
-        QGroupBox::title {
-            subcontrol-origin: margin;
-            left: 10px;
-            padding: 0 5px;
-            margin-top: -10px;
-        }
-        QSpinBox {
-            background: #333333;
-            border: none;
-            border-radius: 3px;
-            padding: 5px;
-            color: white;
-        }
-        QPushButton {
-            background: #0b5394;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            color: white;
-        }
-        QPushButton:hover {
-            background: #67abdb;
-        }
-        QCheckBox, QRadioButton {
-            color: white;
-        }
-        QLabel {
-            color: white;
-        }
-        QListWidget {
-            background: #333333;
-            color: white;
-            border-radius: 5px;
-            padding: 5px;
-        }
-        QLineEdit {
-            background: #333333;
-            border: 1px solid #444444;
-            border-radius: 5px;
-            padding: 8px;
-            color: white;
-        }
-        QComboBox {
-            background: #333333;
-            border: 1px solid #444444;
-            border-radius: 5px;
-            padding: 5px;
-            color: white;
-        }
-        QComboBox::drop-down {
-            border: none;
-        }
-        QComboBox QAbstractItemView {
-            background: #333333;
-            color: white;
-            selection-background-color: #0b5394;
-        }
-    )");
+    setupStylesheet();
     enableControls(false);
+}
+
+void StubMapperDialog::setupStylesheet() {
+    QFile stylesheetFile(":/src/GUI/Stylesheets/StubMapperDialog.qss");
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&stylesheetFile);
+        QString stylesheet = in.readAll();
+        setStyleSheet(stylesheet);
+        stylesheetFile.close();
+    }
 }
 
 void StubMapperDialog::mousePressEvent(QMouseEvent* event) {
