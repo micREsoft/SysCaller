@@ -15,5 +15,6 @@
         <file>src/GUI/Stylesheets/ObfuscationSelectionDialog.qss</file>
         <file>src/GUI/Stylesheets/HashCompareDialog.qss</file>
         <file>src/GUI/Stylesheets/ChangelogDialog.qss</file>
+<file>src/GUI/Stylesheets/ConfirmationDialog.qss</file>
     </qresource>
 </RCC> 
