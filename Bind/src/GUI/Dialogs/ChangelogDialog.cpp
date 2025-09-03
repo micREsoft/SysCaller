@@ -18,52 +18,12 @@
 
 ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
     setWindowTitle("Bind - History");
-    setMinimumSize(950, 600);
-    resize(950, 600);
+    setMinimumSize(1150, 600);
+    resize(1150, 600);
     setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     // setAttribute(Qt::WA_TranslucentBackground);
-    setStyleSheet(
-        "QDialog {"
-        " background: #1A1A1A;"
-        " border-radius: 15px;"
-        "}"
-        "QLabel {"
-        " color: #0077d4;"
-        " font-size: 18px;"
-        " font-weight: bold;"
-        " padding: 10px 0 10px 0;"
-        "}"
-        "QListWidget {"
-        " background: #181818;"
-        " color: #fff;"
-        " border-radius: 8px;"
-        " font-size: 14px;"
-        " min-width: 120px;"
-        "}"
-        "QListWidget::item:selected {"
-        " background: #0077d4;"
-        " color: #fff;"
-        "}"
-        "QTextEdit {"
-        " background: #181818;"
-        " color: #fff;"
-        " border-radius: 8px;"
-        " font-family: 'IBM Plex Mono';"
-        " font-size: 13px;"
-        "}"
-        "QPushButton {"
-        " background: #0077d4;"
-        " color: #fff;"
-        " border-radius: 6px;"
-        " padding: 6px 18px;"
-        " font-weight: bold;"
-        " font-size: 13px;"
-        "}"
-        "QPushButton:hover {"
-        " background: #404040;"
-        "}"
-    );
+    setupStylesheet();
     setupUI();
     populateChangelogs();
     connect(listWidget, &QListWidget::currentItemChanged, 
@@ -73,11 +33,21 @@ ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
     }
 }
 
+void ChangelogDialog::setupStylesheet() {
+    QFile stylesheetFile(":/src/GUI/Stylesheets/ChangelogDialog.qss");
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&stylesheetFile);
+        QString stylesheet = in.readAll();
+        setStyleSheet(stylesheet);
+        stylesheetFile.close();
+    }
+}
+
 void ChangelogDialog::setupUI() {
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    titleBar = new SettingsTitleBar("Changelog History", this);
+    titleBar = new SettingsTitleBar("Bind - Changelog History", this);
     layout->addWidget(titleBar);
     auto* contentLayout = new QVBoxLayout();
     contentLayout->setContentsMargins(20, 20, 20, 20);
@@ -110,12 +80,11 @@ void ChangelogDialog::populateChangelogs() {
     for (const QFileInfo& fileInfo : files) {
         QString fileName = fileInfo.fileName();
         if (fileName.startsWith("CHANGELOG_") && fileName.endsWith(".md")) {
-            QString version = fileName.mid(10, fileName.length() - 13); // remove "CHANGELOG_" and ".md"
+            QString version = fileName.mid(10, fileName.length() - 13);
             changelogFiles[version] = fileInfo.absoluteFilePath();
             changelogs.append(version);
         }
     }
-    // sort in reverse order (newest first)
     std::sort(changelogs.begin(), changelogs.end(), std::greater<QString>());
     for (const QString& version : changelogs) {
         listWidget->addItem(version);
