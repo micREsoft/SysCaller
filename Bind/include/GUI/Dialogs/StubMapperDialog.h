@@ -41,19 +41,16 @@ private slots:
 
 private:
     void initUI();
-
+    void setupStylesheet();
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-
     void loadSyscalls();
     void loadSyscallSpecificSettings(const QString& syscallName);
     void loadGlobalSettings();
     void saveCurrentSyscallSettings(const QString& syscallName);
     void loadSyscallSettings();
-
     void enableControls(bool enabled);
-
     bool validateStubSettings(const QMap<QString, QVariant>& settings, QString& errorMessage);
     void showValidationError(const QString& message);
     void showValidationSuccess(const QString& message);
