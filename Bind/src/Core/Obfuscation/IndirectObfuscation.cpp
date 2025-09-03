@@ -1,5 +1,5 @@
 #include "include/Core/Obfuscation/IndirectObfuscation.h"
-#include "include/Core/Obfuscation/Indirect/Stub/IndirectStub.h"
+#include "include/Core/Obfuscation/Indirect/Stub/IndirectStubGenerator.h"
 #include "include/Core/Obfuscation/Indirect/Stub/IndirectJunkGenerator.h"
 #include "include/Core/Obfuscation/Indirect/ControlFlow/IndirectControlFlow.h"
 #include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
@@ -209,7 +209,7 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
                     continue;
                 }
                 if (line.contains("call GetSyscallNumber")) {
-                    IndirectObfuscation::Stub stub(settings);
+                    IndirectObfuscation::StubGenerator stub(settings);
                     obfuscatedLine = stub.obfuscateResolverCall(line);
                 }
                 if (settings->value("obfuscation/indirect_enable_control_flow", false).toBool()) {
