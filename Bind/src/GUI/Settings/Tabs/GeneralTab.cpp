@@ -1,5 +1,6 @@
 #include "include/GUI/Settings/Tabs/GeneralTab.h"
 #include "include/GUI/Dialogs/HashCompareDialog.h"
+#include "include/GUI/Dialogs/ConfirmationDialog.h"
 #include "include/Core/Utils/PathUtils.h"
 #include <QApplication>
 #include <QDir>
@@ -22,9 +23,12 @@ GeneralTab::GeneralTab(QSettings* settings, QWidget* parent)
       bindingsDisableRadio(nullptr),
       bindingsGroup(nullptr),
       inlineAssemblyGroup(nullptr),
+      assemblyModeGroup(nullptr),
+      directAssemblyRadio(nullptr),
+      inlineAssemblyRadio(nullptr),
+      indirectAssemblyRadio(nullptr),
       hashStubs(nullptr),
-      createBackup(nullptr),
-      inlineAssembly(nullptr) {
+      createBackup(nullptr) {
     initUI();
 }
 
@@ -74,28 +78,43 @@ void GeneralTab::initUI() {
     } else {
         bindingsDisableRadio->setChecked(true);
     }
-    inlineAssemblyGroup = new QGroupBox("Inline Assembly Mode");
+    inlineAssemblyGroup = new QGroupBox("Assembly Mode");
     QVBoxLayout* inlineAssemblyLayout = new QVBoxLayout();
-    QLabel* inlineDesc = new QLabel("Enable inline assembly mode to generate MASM compatible db based stubs instead of traditional instruction mnemonics.");
+    QLabel* inlineDesc = new QLabel("Select the assembly mode for syscall generation.");
     inlineDesc->setWordWrap(true);
     inlineAssemblyLayout->addWidget(inlineDesc);
-    inlineAssembly = new QCheckBox("Enable Inline Assembly Mode");
-    inlineAssembly->setChecked(settings->value("general/inline_assembly", false).toBool());
-    inlineAssembly->setToolTip("If checked, will generate inline db based stubs (user mode only)");
-    inlineAssemblyLayout->addWidget(inlineAssembly);
+    QButtonGroup* assemblyModeGroup = new QButtonGroup(this);
+    QRadioButton* directAssemblyRadio = new QRadioButton("Direct Assembly Mode (Default)");
+    directAssemblyRadio->setToolTip("Use traditional instruction mnemonics for syscall stubs");
+    QRadioButton* inlineAssemblyRadio = new QRadioButton("Inline Assembly Mode");
+    inlineAssemblyRadio->setToolTip("Generate MASM compatible db-based stubs");
+    QRadioButton* indirectAssemblyRadio = new QRadioButton("Indirect Assembly Mode");
+    indirectAssemblyRadio->setToolTip("Generate runtime syscall resolution stubs for enhanced stealth");
+    assemblyModeGroup->addButton(directAssemblyRadio);
+    assemblyModeGroup->addButton(inlineAssemblyRadio);
+    assemblyModeGroup->addButton(indirectAssemblyRadio);
+    bool inlineEnabled = settings->value("general/inline_assembly", false).toBool();
+    bool indirectEnabled = settings->value("general/indirect_assembly", false).toBool();
+    
+    if (inlineEnabled) {
+        inlineAssemblyRadio->setChecked(true);
+    } else if (indirectEnabled) {
+        indirectAssemblyRadio->setChecked(true);
+    } else {
+        directAssemblyRadio->setChecked(true);
+    }
+    inlineAssemblyLayout->addWidget(directAssemblyRadio);
+    inlineAssemblyLayout->addWidget(inlineAssemblyRadio);
+    inlineAssemblyLayout->addWidget(indirectAssemblyRadio);
+    this->directAssemblyRadio = directAssemblyRadio;
+    this->inlineAssemblyRadio = inlineAssemblyRadio;
+    this->indirectAssemblyRadio = indirectAssemblyRadio;
+    this->assemblyModeGroup = assemblyModeGroup;
+    connect(directAssemblyRadio, &QRadioButton::toggled, this, &GeneralTab::onAssemblyModeChanged);
+    connect(inlineAssemblyRadio, &QRadioButton::toggled, this, &GeneralTab::onAssemblyModeChanged);
+    connect(indirectAssemblyRadio, &QRadioButton::toggled, this, &GeneralTab::onAssemblyModeChanged);
     inlineAssemblyGroup->setLayout(inlineAssemblyLayout);
     layout->addWidget(inlineAssemblyGroup);
-    indirectAssemblyGroup = new QGroupBox("Indirect Assembly Mode");
-    QVBoxLayout* indirectAssemblyLayout = new QVBoxLayout();
-    QLabel* indirectDesc = new QLabel("Enable indirect assembly mode to generate runtime syscall resolution stubs for enhanced stealth.");
-    indirectDesc->setWordWrap(true);
-    indirectAssemblyLayout->addWidget(indirectDesc);
-    indirectAssembly = new QCheckBox("Enable Indirect Assembly Mode");
-    indirectAssembly->setChecked(settings->value("general/indirect_assembly", false).toBool());
-    indirectAssembly->setToolTip("If checked, will generate indirect syscall stubs with runtime resolution (user mode only)");
-    indirectAssemblyLayout->addWidget(indirectAssembly);
-    indirectAssemblyGroup->setLayout(indirectAssemblyLayout);
-    layout->addWidget(indirectAssemblyGroup);
     QGroupBox* hashStubsGroup = new QGroupBox("Hash Stubs");
     QVBoxLayout* hashStubsLayout = new QVBoxLayout();
     QLabel* hashDesc = new QLabel("Optionally hash each stub/build with unique hash for future lookups.");
@@ -133,43 +152,55 @@ void GeneralTab::onModeChanged() {
     bool isKernelMode = zwModeRadio->isChecked();
     bindingsGroup->setVisible(!isKernelMode);
     inlineAssemblyGroup->setVisible(!isKernelMode);
-    indirectAssemblyGroup->setVisible(!isKernelMode);
     if (isKernelMode && bindingsEnableRadio->isChecked()) {
         bindingsDisableRadio->setChecked(true);
     }
-    if (inlineAssembly) {
-        inlineAssembly->setEnabled(!isKernelMode);
-        if (isKernelMode && inlineAssembly->isChecked()) {
-            inlineAssembly->setChecked(false);
+    if (isKernelMode) {
+        if (inlineAssemblyRadio && inlineAssemblyRadio->isChecked()) {
+            directAssemblyRadio->setChecked(true);
         }
-    }
-    if (indirectAssembly) {
-        indirectAssembly->setEnabled(!isKernelMode);
-        if (isKernelMode && indirectAssembly->isChecked()) {
-            indirectAssembly->setChecked(false);
+        if (indirectAssemblyRadio && indirectAssemblyRadio->isChecked()) {
+            directAssemblyRadio->setChecked(true);
         }
+        if (inlineAssemblyRadio) inlineAssemblyRadio->setEnabled(false);
+        if (indirectAssemblyRadio) indirectAssemblyRadio->setEnabled(false);
+        if (directAssemblyRadio) directAssemblyRadio->setEnabled(true);
+    } else {
+        if (inlineAssemblyRadio) inlineAssemblyRadio->setEnabled(true);
+        if (indirectAssemblyRadio) indirectAssemblyRadio->setEnabled(true);
+        if (directAssemblyRadio) directAssemblyRadio->setEnabled(true);
     }
+}
+
+void GeneralTab::onAssemblyModeChanged() {
 }
 
 void GeneralTab::saveSettings() {
     settings->setValue("general/create_backup", createBackup->isChecked());
     settings->setValue("general/hash_stubs", hashStubs->isChecked());
     settings->setValue("general/bindings_enabled", bindingsEnableRadio->isChecked());
-    settings->setValue("general/inline_assembly", inlineAssembly->isChecked());
-    settings->setValue("general/indirect_assembly", indirectAssembly->isChecked());
+    if (inlineAssemblyRadio && inlineAssemblyRadio->isChecked()) {
+        settings->setValue("general/inline_assembly", true);
+        settings->setValue("general/indirect_assembly", false);
+    } else if (indirectAssemblyRadio && indirectAssemblyRadio->isChecked()) {
+        settings->setValue("general/inline_assembly", false);
+        settings->setValue("general/indirect_assembly", true);
+    } else {
+        settings->setValue("general/inline_assembly", false);
+        settings->setValue("general/indirect_assembly", false);
+    }
     QString newMode = zwModeRadio->isChecked() ? "Zw" : "Nt";
     bool modeChanged = newMode != originalMode;
     settings->setValue("general/syscall_mode", newMode);
     if (modeChanged) {
-        QMessageBox::information(
-            this,
-            "Bind - v1.3.0",
-            QString("The syscall mode has been changed from %1 to %2.\n\n"
-                   "This change affects which files are processed:\n"
-                   "- Nt Mode: User mode files in SysCaller directory\n"
-                   "- Zw Mode: Kernel mode files in SysCallerK directory\n\n"
-                   "Some changes may take full effect after a restart.").arg(originalMode, newMode)
-        );
+        ConfirmationDialog infoDialog("Bind - v1.3.0", this);
+        infoDialog.setMessage(QString("The syscall mode has been changed from %1 to %2.\n\n"
+                                    "This change affects which files are processed:\n"
+                                    "- Nt Mode: User mode files in SysCaller directory\n"
+                                    "- Zw Mode: Kernel mode files in SysCallerK directory\n\n"
+                                    "Some changes may take full effect after a restart.").arg(originalMode, newMode));
+        infoDialog.setButtons(false, false, true, false);
+        infoDialog.exec();
     }
 }
 
@@ -235,16 +266,12 @@ void GeneralTab::restoreDefaultFiles() {
     QString modeText = isKernelMode ? "kernel mode" : "user mode";
     QString filePathText = isKernelMode ? "SysCallerK directory" : "SysCaller directory";
     QString headerName = isKernelMode ? "sysFunctions_k.h" : "sysFunctions.h";
-    QMessageBox::StandardButton reply = QMessageBox::question(
-        this, 
-        "Bind - v1.3.0", 
-        QString("Are you sure you want to restore default %1 files?\n"
-               "This will overwrite your current syscaller.asm and %2 files in the %3.")
-               .arg(modeText, headerName, filePathText),
-        QMessageBox::Yes | QMessageBox::No, 
-        QMessageBox::No
-    );
-    if (reply == QMessageBox::No) {
+    ConfirmationDialog confirmDialog("Bind - v1.3.0", this);
+    confirmDialog.setMessage(QString("Are you sure you want to restore default %1 files?\n\n"
+                                   "This will overwrite your current syscaller.asm and %2 files in the %3.")
+                                   .arg(modeText, headerName, filePathText));
+
+    if (confirmDialog.exec() != QDialog::Accepted || confirmDialog.getResult() != ConfirmationDialog::Yes) {
         return;
     }
     try {
@@ -253,8 +280,10 @@ void GeneralTab::restoreDefaultFiles() {
         QString asmPath = PathUtils::getSysCallerAsmPath(isKernelMode);
         QString headerPath = PathUtils::getSysFunctionsPath(isKernelMode);
         if (!QFile::exists(defaultAsmPath) || !QFile::exists(defaultHeaderPath)) {
-            QMessageBox::warning(this, "Bind - v1.3.0", 
-                               "Default files not found in Default directory.");
+            ConfirmationDialog warningDialog("Bind - v1.3.0", this);
+            warningDialog.setMessage("Default files not found in Default directory.");
+            warningDialog.setButtons(false, false, true, false);
+            warningDialog.exec();
             return;
         }
         if (createBackup->isChecked()) {
@@ -269,16 +298,23 @@ void GeneralTab::restoreDefaultFiles() {
         bool asmCopied = QFile::copy(defaultAsmPath, asmPath);
         bool headerCopied = QFile::copy(defaultHeaderPath, headerPath);
         if (!asmCopied || !headerCopied) {
-            QMessageBox::critical(this, "Bind - v1.3.0", 
-                QString("Failed to copy files:\nASM: %1\nHeader: %2")
-                .arg(asmCopied ? "Success" : "Failed")
-                .arg(headerCopied ? "Success" : "Failed"));
+            ConfirmationDialog errorDialog("Bind - v1.3.0", this);
+            errorDialog.setMessage(QString("Failed to copy files:\nASM: %1\nHeader: %2")
+                                 .arg(asmCopied ? "Success" : "Failed")
+                                 .arg(headerCopied ? "Success" : "Failed"));
+            errorDialog.setButtons(false, false, true, false);
+            errorDialog.exec();
             return;
         }
-        QMessageBox::information(this, "Bind - v1.3.0", 
-                               QString("Default %1 files have been restored successfully!").arg(modeText));
+        ConfirmationDialog infoDialog("Bind - v1.3.0", this);
+        infoDialog.setMessage(QString("Default %1 files have been restored successfully!").arg(modeText));
+        infoDialog.setButtons(false, false, true, false);
+        infoDialog.exec();
     } catch (...) {
-        QMessageBox::critical(this, "Bind - v1.3.0", "An error occurred while restoring default files.");
+        ConfirmationDialog errorDialog("Bind - v1.3.0", this);
+        errorDialog.setMessage("An error occurred while restoring default files.");
+        errorDialog.setButtons(false, true, false);
+        errorDialog.exec();
     }
 }
 
@@ -287,8 +323,10 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
         QString backupsDir = PathUtils::getBackupsPath();
         QStringList completeBackups = getAvailableBackups();
         if (!completeBackups.contains(timestamp)) {
-            QMessageBox::warning(this, "Bind - v1.3.0", 
-                               QString("Could not find complete backup set for timestamp %1").arg(timestamp));
+            ConfirmationDialog warningDialog("Bind - v1.3.0", this);
+            warningDialog.setMessage(QString("Could not find complete backup set for timestamp %1").arg(timestamp));
+            warningDialog.setButtons(false, false, true, false);
+            warningDialog.exec();
             return;
         }
         QString backupAsmPath = QString("%1/syscaller_%2.asm").arg(backupsDir, timestamp);
@@ -301,18 +339,18 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
             missingFiles << QString("Header file: %1").arg(backupHeaderPath);
         }
         if (!missingFiles.isEmpty()) {
-            QMessageBox::warning(this, "Bind - v1.3.0", 
-                               QString("Could not find the following backup files:\n%1").arg(missingFiles.join("\n")));
+            ConfirmationDialog warningDialog("Bind - v1.3.0", this);
+            warningDialog.setMessage(QString("Could not find the following backup files:\n%1").arg(missingFiles.join("\n")));
+            warningDialog.setButtons(false, false, true, false);
+            warningDialog.exec();
             return;
         }
-        QMessageBox::StandardButton reply = QMessageBox::question(
-            this, "Bind - v1.3.0", 
-            QString("Are you sure you want to restore from backup files dated %1?\n"
-                   "This will overwrite your current syscaller.asm and sysFunctions.h files.")
-                   .arg(formatTimestamp(timestamp)),
-            QMessageBox::Yes | QMessageBox::No, QMessageBox::No
-        );
-        if (reply == QMessageBox::No) {
+        ConfirmationDialog confirmDialog("Bind - v1.3.0", this);
+        confirmDialog.setMessage(QString("Are you sure you want to restore from backup files dated %1?\n\n"
+                                       "This will overwrite your current syscaller.asm and sysFunctions.h files.")
+                                       .arg(formatTimestamp(timestamp)));
+
+        if (confirmDialog.exec() != QDialog::Accepted || confirmDialog.getResult() != ConfirmationDialog::Yes) {
             return;
         }
         bool isKernelMode = settings->value("general/syscall_mode", "Nt").toString() == "Zw";
@@ -321,13 +359,17 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
         QDir().mkpath(QFileInfo(asmPath).absolutePath());
         QDir().mkpath(QFileInfo(headerPath).absolutePath());
         if (QFile::exists(asmPath) && isFileLocked(asmPath)) {
-            QMessageBox::warning(this, "Bind - v1.3.0", 
-                               "The ASM file appears to be locked by another process. Close any applications that might be using it and try again.");
+            ConfirmationDialog warningDialog("Bind - v1.3.0", this);
+            warningDialog.setMessage("The ASM file appears to be locked by another process. Close any applications that might be using it and try again.");
+            warningDialog.setButtons(false, false, true, false);
+            warningDialog.exec();
             return;
         }
         if (QFile::exists(headerPath) && isFileLocked(headerPath)) {
-            QMessageBox::warning(this, "Bind - v1.3.0", 
-                               "The header file appears to be locked by another process. Close any applications that might be using it and try again.");
+            ConfirmationDialog warningDialog("Bind - v1.3.0", this);
+            warningDialog.setMessage("The header file appears to be locked by another process. Close any applications that might be using it and try again.");
+            warningDialog.setButtons(false, false, true, false);
+            warningDialog.exec();
             return;
         }
         if (createBackup->isChecked()) {
@@ -350,20 +392,32 @@ void GeneralTab::restoreBackup(const QString& timestamp) {
             headerRestored = QFile::copy(backupHeaderPath, headerPath);
         }
         if (asmRestored && headerRestored) {
-            QMessageBox::information(this, "Bind - v1.3.0", 
-                                   QString("Files have been restored from backup successfully!\nBackup date: %1")
-                                   .arg(formatTimestamp(timestamp)));
+            ConfirmationDialog infoDialog("Bind - v1.3.0", this);
+            infoDialog.setMessage(QString("Files have been restored from backup successfully!\n\nBackup date: %1")
+                                .arg(formatTimestamp(timestamp)));
+            infoDialog.setButtons(false, false, true, false);
+            infoDialog.exec();
         } else if (!asmRestored && headerRestored) {
-            QMessageBox::warning(this, "Bind - v1.3.0", 
-                               "Only the header file was restored successfully. The ASM file could not be restored.");
+            ConfirmationDialog warningDialog("Bind - v1.3.0", this);
+            warningDialog.setMessage("Only the header file was restored successfully. The ASM file could not be restored.");
+            warningDialog.setButtons(false, false, true, false);
+            warningDialog.exec();
         } else if (asmRestored && !headerRestored) {
-            QMessageBox::warning(this, "Bind - v1.3.0", 
-                               "Only the ASM file was restored successfully. The header file could not be restored.");
+            ConfirmationDialog warningDialog("Bind - v1.3.0", this);
+            warningDialog.setMessage("Only the ASM file was restored successfully. The header file could not be restored.");
+            warningDialog.setButtons(false, false, true, false);
+            warningDialog.exec();
         } else {
-            QMessageBox::critical(this, "Bind - v1.3.0", "Failed to restore both files from backup.");
+            ConfirmationDialog errorDialog("Bind - v1.3.0", this);
+            errorDialog.setMessage("Failed to restore both files from backup.");
+            errorDialog.setButtons(false, false, true, false);
+            errorDialog.exec();
         }
     } catch (...) {
-        QMessageBox::critical(this, "Bind - v1.3.0", "An error occurred while restoring backup files.");
+        ConfirmationDialog errorDialog("Bind - v1.3.0", this);
+        errorDialog.setMessage("An error occurred while restoring backup files.");
+        errorDialog.setButtons(false, true, false);
+        errorDialog.exec();
     }
 }
 
@@ -428,7 +482,6 @@ QStringList GeneralTab::getAvailableBackups() {
             }
         }
     }
-    // Sort in reverse order (newest first)
     std::sort(completeBackups.begin(), completeBackups.end(), std::greater<QString>());
     return completeBackups;
 }

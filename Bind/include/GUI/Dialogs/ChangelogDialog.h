@@ -28,10 +28,11 @@ private slots:
 private:
     void populateChangelogs();
     void setupUI();
+    void setupStylesheet();
     QString markdownToHtml(const QString& markdown);
     QListWidget* listWidget;
     QTextEdit* textEdit;
-    QMap<QString, QString> changelogFiles; // version -> filepath
+    QMap<QString, QString> changelogFiles;
     SettingsTitleBar* titleBar;
     bool m_dragging = false;
     QPoint m_dragPosition;

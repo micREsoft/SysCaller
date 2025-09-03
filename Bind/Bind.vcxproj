@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -188,6 +188,7 @@
     <ClCompile Include="src\Core\Obfuscation\Indirect\ControlFlow\IndirectControlFlow.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Indirect\Encryption\IndirectEncryptor.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Indirect\Stub\IndirectStubGenerator.cpp" />
+    <ClCompile Include="src\Core\Obfuscation\Indirect\Mapping\IndirectStubMapper.cpp" />
     <ClCompile Include="src\Core\Utils\Utils.cpp" />
     <ClCompile Include="src\Core\Utils\PathUtils.cpp" />
     <ClCompile Include="src\GUI\MainWindow.cpp" />
@@ -201,6 +202,7 @@
     <ClCompile Include="src\GUI\Dialogs\ObfuscationSelectionDialog.cpp" />
     <ClCompile Include="src\GUI\Dialogs\StubMapperDialog.cpp" />
     <ClCompile Include="src\GUI\Dialogs\SettingsDialog.cpp" />
+    <ClCompile Include="src\GUI\Dialogs\ConfirmationDialog.cpp" />
     <ClCompile Include="src\GUI\Panels\LeftPanel.cpp" />
     <ClCompile Include="src\GUI\Panels\OutputPanel.cpp" />
     <ClCompile Include="src\GUI\Panels\RightPanel.cpp" />
@@ -209,6 +211,7 @@
     <ClCompile Include="src\GUI\Settings\Tabs\IntegrityTab.cpp" />
     <ClCompile Include="src\GUI\Settings\Tabs\ProfileTab.cpp" />
     <ClCompile Include="src\GUI\Settings\Tabs\IndirectObfuscationTab.cpp" />
+    <ClCompile Include="src\GUI\Settings\Tabs\InlineObfuscationTab.cpp" />
     <ClCompile Include="src\GUI\Threads\VerificationThread.cpp" />
     <ClCompile Include="src\GUI\Threads\CompatibilityThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ObfuscationThread.cpp" />
@@ -227,11 +230,13 @@
     <ClCompile Include="GeneratedFiles\moc_ObfuscationSelectionDialog.cpp" />
     <ClCompile Include="GeneratedFiles\moc_StubMapperDialog.cpp" />
     <ClCompile Include="GeneratedFiles\moc_SettingsDialog.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ConfirmationDialog.cpp" />
     <ClCompile Include="GeneratedFiles\moc_GeneralTab.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ObfuscationTab.cpp" />
     <ClCompile Include="GeneratedFiles\moc_IntegrityTab.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ProfileTab.cpp" />
     <ClCompile Include="GeneratedFiles\moc_IndirectObfuscationTab.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_InlineObfuscationTab.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ValidatorThread.cpp" />
     <ClCompile Include="GeneratedFiles\moc_Validator.cpp" />
     <ClCompile Include="GeneratedFiles\moc_CompatibilityThread.cpp" />
@@ -325,6 +330,12 @@
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
     </QtMoc>
+    <QtMoc Include="include\GUI\Dialogs\ConfirmationDialog.h">
+      <FileType>Document</FileType>
+      <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
+      <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
+    </QtMoc>
     <CustomBuild Include="include\GUI\Panels\LeftPanel.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
@@ -368,6 +379,12 @@
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
     </QtMoc>
     <QtMoc Include="include\GUI\Settings\Tabs\IndirectObfuscationTab.h">
+      <FileType>Document</FileType>
+      <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
+      <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
+    </QtMoc>
+    <QtMoc Include="include\GUI\Settings\Tabs\InlineObfuscationTab.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -425,6 +442,7 @@
     <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectJunkGenerator.h" />
     <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectStubGenerator.h" />
     <ClInclude Include="include\Core\Obfuscation\Indirect\Encryption\IndirectEncryptor.h" />
+    <ClInclude Include="include\Core\Obfuscation\Indirect\Mapping\IndirectStubMapper.h" />
     <ClInclude Include="include\Core\Utils\PathUtils.h" />
     <ClInclude Include="include\Core\Utils\Utils.h" />
     <ClInclude Include="include\GUI\Themes\Colors.h" />
@@ -435,6 +453,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\GUI\Stylesheets\SettingsDialog.qss" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(QtMsBuild)\qt.targets" Condition="Exists('$(QtMsBuild)\qt.targets')" />

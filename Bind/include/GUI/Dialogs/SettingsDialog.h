@@ -12,6 +12,7 @@ class SettingsTitleBar;
 class GeneralTab;
 class ObfuscationTab;
 class IndirectObfuscationTab;
+class InlineObfuscationTab;
 class IntegrityTab;
 class ProfileTab;
 
@@ -28,7 +29,6 @@ private slots:
 private:
     void initUI();
     void setupStylesheet();
-
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
@@ -39,6 +39,7 @@ private:
     GeneralTab* generalTab;
     ObfuscationTab* obfuscationTab;
     IndirectObfuscationTab* indirectObfuscationTab;
+    InlineObfuscationTab* inlineObfuscationTab;
     IntegrityTab* integrityTab;
     ProfileTab* profileTab;
 
