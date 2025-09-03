@@ -1,4 +1,5 @@
 #include "include/GUI/Dialogs/ChangelogDialog.h"
+#include "include/GUI/Bars/SettingsTitleBar.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QListWidget>
@@ -12,54 +13,17 @@
 #include <QRegularExpression>
 #include <QApplication>
 #include <QIcon>
+#include <QMouseEvent>
 #include "include/Core/Utils/PathUtils.h"
 
 ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
     setWindowTitle("Bind - History");
-    setMinimumSize(950, 600);
-    resize(950, 600);
+    setMinimumSize(1150, 600);
+    resize(1150, 600);
     setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
-    setStyleSheet(
-        "QDialog {"
-        " background: #232323;"
-        " border-radius: 12px;"
-        "}"
-        "QLabel {"
-        " color: #0077d4;"
-        " font-size: 18px;"
-        " font-weight: bold;"
-        " padding: 10px 0 10px 0;"
-        "}"
-        "QListWidget {"
-        " background: #181818;"
-        " color: #fff;"
-        " border-radius: 8px;"
-        " font-size: 14px;"
-        " min-width: 120px;"
-        "}"
-        "QListWidget::item:selected {"
-        " background: #0077d4;"
-        " color: #fff;"
-        "}"
-        "QTextEdit {"
-        " background: #181818;"
-        " color: #fff;"
-        " border-radius: 8px;"
-        " font-family: 'IBM Plex Mono';"
-        " font-size: 13px;"
-        "}"
-        "QPushButton {"
-        " background: #0077d4;"
-        " color: #fff;"
-        " border-radius: 6px;"
-        " padding: 6px 18px;"
-        " font-weight: bold;"
-        " font-size: 13px;"
-        "}"
-        "QPushButton:hover {"
-        " background: #404040;"
-        "}"
-    );
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    // setAttribute(Qt::WA_TranslucentBackground);
+    setupStylesheet();
     setupUI();
     populateChangelogs();
     connect(listWidget, &QListWidget::currentItemChanged, 
@@ -69,11 +33,25 @@ ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
     }
 }
 
+void ChangelogDialog::setupStylesheet() {
+    QFile stylesheetFile(":/src/GUI/Stylesheets/ChangelogDialog.qss");
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&stylesheetFile);
+        QString stylesheet = in.readAll();
+        setStyleSheet(stylesheet);
+        stylesheetFile.close();
+    }
+}
+
 void ChangelogDialog::setupUI() {
     auto* layout = new QVBoxLayout(this);
-    auto* title = new QLabel("Changelog History");
-    title->setAlignment(Qt::AlignCenter);
-    layout->addWidget(title);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    titleBar = new SettingsTitleBar("Bind - Changelog History", this);
+    layout->addWidget(titleBar);
+    auto* contentLayout = new QVBoxLayout();
+    contentLayout->setContentsMargins(20, 20, 20, 20);
+    contentLayout->setSpacing(20);
     auto* hbox = new QHBoxLayout();
     listWidget = new QListWidget();
     listWidget->setFixedWidth(200);
@@ -81,13 +59,15 @@ void ChangelogDialog::setupUI() {
     textEdit = new QTextEdit();
     textEdit->setReadOnly(true);
     hbox->addWidget(textEdit, 1);
-    layout->addLayout(hbox);
+    contentLayout->addLayout(hbox);
     auto* btnBox = new QHBoxLayout();
     btnBox->addStretch();
     auto* closeBtn = new QPushButton("Close");
     connect(closeBtn, &QPushButton::clicked, this, &QDialog::accept);
     btnBox->addWidget(closeBtn);
-    layout->addLayout(btnBox);
+    contentLayout->addLayout(btnBox);
+    layout->addLayout(contentLayout);
+    connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::accept);
 }
 
 void ChangelogDialog::populateChangelogs() {
@@ -100,12 +80,11 @@ void ChangelogDialog::populateChangelogs() {
     for (const QFileInfo& fileInfo : files) {
         QString fileName = fileInfo.fileName();
         if (fileName.startsWith("CHANGELOG_") && fileName.endsWith(".md")) {
-            QString version = fileName.mid(10, fileName.length() - 13); // remove "CHANGELOG_" and ".md"
+            QString version = fileName.mid(10, fileName.length() - 13);
             changelogFiles[version] = fileInfo.absoluteFilePath();
             changelogs.append(version);
         }
     }
-    // sort in reverse order (newest first)
     std::sort(changelogs.begin(), changelogs.end(), std::greater<QString>());
     for (const QString& version : changelogs) {
         listWidget->addItem(version);
@@ -160,4 +139,26 @@ QString ChangelogDialog::markdownToHtml(const QString& markdown) {
         "p { margin-bottom: 10px; line-height: 1.4; }"
         "</style>";
     return customCss + result;
+}
+
+void ChangelogDialog::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void ChangelogDialog::mouseMoveEvent(QMouseEvent* event) {
+    if (event->buttons() & Qt::LeftButton && m_dragging) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void ChangelogDialog::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = false;
+        event->accept();
+    }
 }

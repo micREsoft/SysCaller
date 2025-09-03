@@ -1,10 +1,13 @@
-#ifndef HASHCOMPAREDIALOG_H
-#define HASHCOMPAREDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QMap>
 #include <QString>
+#include <QStringList>
 #include <QVariant>
+#include <QMouseEvent>
+
+class SettingsTitleBar;
 
 class QListWidget;
 class QTableWidget;
@@ -29,12 +32,19 @@ private slots:
 
 private:
     void initUI();
+
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+
     void updateHashTable();
     void displayComparison(const QStringList& files);
     QString extractHash(const QString& hashValue, const QString& hashType);
     void exportAsCsv(const QString& exportPath, const QStringList& selectedFiles);
     void exportAsHtml(const QString& exportPath, const QStringList& selectedFiles);
     QString getProjectPaths();
+    void setupStylesheet();
+
     QListWidget* hashFileList;
     QTableWidget* hashTable;
     QPushButton* refreshBtn;
@@ -43,9 +53,11 @@ private:
     QComboBox* hashTypeCombo;
     QCheckBox* showOnlyDifferences;
     QSplitter* splitter;
+    SettingsTitleBar* titleBar;
+
     QStringList hashFiles;
+    bool m_dragging = false;
+    QPoint m_dragPosition;
     QMap<QString, QVariantMap> hashData;
     QString hashType;
 };
-
-#endif

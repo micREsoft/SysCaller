@@ -1,13 +1,23 @@
-# SysCaller SDK
+# SysCaller SDK v1.3.0
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/243f7fe5-b461-460d-8c38-3858512e90de" alt="SysCaller Logo" width="400"/>
 </p>
 
 <p align="center">
-  <b>Direct Windows Syscalls. Dynamic offsets. Validation. Obfuscation.</b><br>
-  <i>Bypass user mode hooks and work across Windows versions with a single SDK.</i>
+  <b>Windows Syscalls. Direct, Indirect, and Inline. Dynamic Offsets. Validation. Obfuscation.</b><br>
+  <i>Bypass user mode hooks and ensure cross version compatibility with one SDK.</i>
 </p>
+
+
+<div align="center">
+
+[![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)](https://github.com/micREsoft/SysCaller)
+[![License](https://img.shields.io/badge/License-GPLv3-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2064--bit-lightgrey.svg)](https://github.com/micREsoft/SysCaller)
+[![C++](https://img.shields.io/badge/C%2B%2B-17%2B-blue.svg)](https://isocpp.org/)
+
+</div>
 
 ---
 
@@ -30,10 +40,16 @@
 
 ## Features
 
-- **Direct Syscall Access:** Bypass Windows API hooks by calling NT kernel syscalls directly.
-- **Dual Mode:** Single codebase, two static libraries:
+### Core Functionality
+- **Three Syscall Modes:**
+  - **Direct Syscalls** (`SYSCALLER_DIRECT`): Fastest execution, compile time resolution
+  - **Indirect Syscalls** (`SYSCALLER_INDIRECT`): Runtime resolution, cross version compatibility
+  - **Inline ASM** (`SYSCALLER_INLINE`): Embedded assembly, maximum stealth
+- **Bindings Support** (`SYSCALLER_BINDINGS`): Optional DLL export for multi language support
+- **Direct Syscall Access:** Bypass Windows API hooks by calling NT kernel syscalls directly
+- **Dual Architecture:** Single codebase, dual libraries:
   - `SysCaller` (user mode, `Nt`/`Sys` prefix)
-  - `SysCallerK` (kernel mode, `Zw`/`SysK` prefix (EXPERIMENTAL)
+  - `SysCallerK` (kernel mode, `Zw`/`SysK` prefix (EXPERIMENTAL))
 - **Dynamic Offset Resolution:** Automatically detects syscall IDs for compatibility across Windows 10/11 (x64).
 - **Obfuscation Layer:** Optional, randomized stub generation and anti pattern junk for stealth.
 - **Comprehensive GUI:** Validate, verify, and protect syscalls with a modern interface.
@@ -80,6 +96,18 @@ Each example demonstrates direct DLL injection using the SysCaller API, with ful
 - Visual Studio 2019+ (with MASM for building SysCaller)
 - C++ 17+ 
 
+### Build Modes
+
+SysCaller supports three build modes that you can configure via preprocessor definitions:
+
+- **`SYSCALLER_DIRECT`** (default): Fastest execution, syscall numbers resolved at compile time
+- **`SYSCALLER_INDIRECT`**: Runtime resolution via ntdll.dll analysis, more flexible across Windows versions  
+- **`SYSCALLER_INLINE`**: Assembly code embedded directly, most stealthy but larger binary size
+
+**Optional**: Add `SYSCALLER_BINDINGS` for multi language DLL support.
+
+For detailed configuration instructions, see [BUILD_MODES.md](Wrapper/BUILD_MODES.md).
+
 ---
 
 ### Bind Prerequisites
@@ -119,14 +147,22 @@ If you want to build Bind yourself:
 6. **Build the project** (Release | x64).
 
 ### CMake (Alternative)
+SysCaller v1.3 CMake Support:
 
-```sh
-# Run integrity checks in the GUI first
-$ cd SysCaller/Wrapper
-# Edit CMakeLists.txt to set your C++ standard (17/20/23)
-$ mkdir build && cd build
-$ cmake .. -A x64
-$ cmake --build . --config Release
+```bash
+# Direct mode
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=DIRECT
+
+# Indirect mode
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=INDIRECT
+
+# Inline asm mode
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=INLINE
+
+# As dynamic link library
+cmake -B build -S . -DBUILD_SHARED_LIBS=ON
+
+cmake -B build -S . \ -DSYSCALLER_BUILD_MODE=INDIRECT \ -DSYSCALLER_BINDINGS=ON \ -DBUILD_SHARED_LIBS=ON
 ```
 
 > **Note:** CMake script for Kernel mode does not exist, but it is planned.

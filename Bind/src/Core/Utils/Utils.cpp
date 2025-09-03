@@ -407,3 +407,21 @@ QPair<bool, QString> StubHashGenerator::saveStubHashes(const QVariantMap& stubHa
         return qMakePair(false, QString("Error Saving Stub Hashes"));
     }
 }
+
+QString InlineAssemblyConverter::convertStubToInline(const QString& stubName, int syscallId) {
+    QString syscallIdHex = QString("%1").arg(syscallId, 8, 16, QChar('0')).toUpper();
+    QString lowByte = syscallIdHex.mid(6, 2);
+    QString highByte = syscallIdHex.mid(4, 2);
+    QString inlineStub = QString("%1 PROC\n"
+                                "    ; mov r10, rcx\n"
+                                "    ; mov eax, %2h\n"
+                                "    ; syscall\n"
+                                "    ; ret\n"
+                                "    db 04Ch, 08Bh, 0D1h, 0B8h, 0%3h, 0%4h, 000h, 000h, 0Fh, 005h, 0C3h\n"
+                                "%1 ENDP")
+                                .arg(stubName)
+                                .arg(syscallId, 0, 16)
+                                .arg(lowByte)
+                                .arg(highByte);
+    return inlineStub;
+}

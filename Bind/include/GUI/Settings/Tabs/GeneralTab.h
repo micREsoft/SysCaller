@@ -1,5 +1,4 @@
-#ifndef GENERALTAB_H
-#define GENERALTAB_H
+#pragma once
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -19,6 +18,7 @@ class GeneralTab : public QWidget {
 
 public:
     explicit GeneralTab(QSettings* settings, QWidget* parent = nullptr);
+
     void saveSettings();
 
 private slots:
@@ -27,6 +27,7 @@ private slots:
     void restoreBackup(const QString& timestamp);
     void openHashCompare();
     void onModeChanged();
+    void onAssemblyModeChanged();
 
 private:
     void initUI();
@@ -36,6 +37,7 @@ private:
     QStringList getAvailableBackups();
     void createBackupFiles();
     bool restoreFileWithRetry(const QString& sourcePath, const QString& destPath, const QString& fileType);
+
     QSettings* settings;
     QButtonGroup* modeButtonGroup;
     QRadioButton* ntModeRadio;
@@ -45,8 +47,11 @@ private:
     QRadioButton* bindingsEnableRadio;
     QRadioButton* bindingsDisableRadio;
     QGroupBox* bindingsGroup;
+    QGroupBox* inlineAssemblyGroup;
+    QButtonGroup* assemblyModeGroup;
+    QRadioButton* directAssemblyRadio;
+    QRadioButton* inlineAssemblyRadio;
+    QRadioButton* indirectAssemblyRadio;
     QCheckBox* hashStubs;
     QCheckBox* createBackup;
 };
-
-#endif

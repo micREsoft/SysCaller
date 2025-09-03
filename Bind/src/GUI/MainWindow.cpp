@@ -4,7 +4,7 @@
 #include "include/GUI/Panels/RightPanel.h"
 #include "include/GUI/Panels/OutputPanel.h"
 #include "include/GUI/Bars/StatusBar.h"
-#include "include/GUI/Settings/SettingsDialog.h"
+#include "include/GUI/Dialogs/SettingsDialog.h"
 #include "include/GUI/Threads/ValidatorThread.h"
 #include "include/GUI/Threads/CompatibilityThread.h"
 #include "include/GUI/Threads/VerificationThread.h"
@@ -23,7 +23,7 @@
 #include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), dragPos(0, 0), validatorThread(nullptr), compatibilityThread(nullptr), verificationThread(nullptr), obfuscationThread(nullptr) {
-    setWindowTitle("Bind - v1.2.0");
+    setWindowTitle("Bind - v1.3.0");
     setMinimumSize(1400, 900);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -113,12 +113,12 @@ void MainWindow::saveAllSettings() {
 
 void MainWindow::runValidation() {
     if (validatorThread && validatorThread->isRunning()) {
-        QMessageBox::information(this, "Bind - v1.2.0", "Validation Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.0", "Validation Check is already running. Please wait for it to complete.");
         return;
     }
     QStringList dllPaths = leftPanel->getDllPaths();
     if (dllPaths.isEmpty()) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "No DLL Paths specified. Please add at least one NTDLL path.");
         return;
     }
     if (validatorThread) {
@@ -146,7 +146,7 @@ void MainWindow::runValidation() {
         } else {
             leftPanel->updateStatus("Validation Failed!");
             statusBar->updateStatus("Validation Failed!");
-            QMessageBox::critical(this, "Bind - v1.2.0", message);
+            QMessageBox::critical(this, "Bind - v1.3.0", message);
         }
         validatorThread->deleteLater();
         validatorThread = nullptr;
@@ -173,12 +173,12 @@ void MainWindow::closeWindow() {
 
 void MainWindow::runCompatibility() {
     if (compatibilityThread && compatibilityThread->isRunning()) {
-        QMessageBox::information(this, "Bind - v1.2.0", "Compatibility Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.0", "Compatibility Check is already running. Please wait for it to complete.");
         return;
     }
     QStringList dllPaths = leftPanel->getDllPaths();
     if (dllPaths.isEmpty()) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "No DLL Paths specified. Please add at least one NTDLL path.");
         return;
     }
     if (compatibilityThread) {
@@ -206,7 +206,7 @@ void MainWindow::runCompatibility() {
         } else {
             leftPanel->updateStatus("Compatibility Failed!");
             statusBar->updateStatus("Compatibility Failed!");
-            QMessageBox::critical(this, "Bind - v1.2.0", message);
+            QMessageBox::critical(this, "Bind - v1.3.0", message);
         }
         compatibilityThread->deleteLater();
         compatibilityThread = nullptr;
@@ -216,12 +216,12 @@ void MainWindow::runCompatibility() {
 
 void MainWindow::runVerification() {
     if (verificationThread && verificationThread->isRunning()) {
-        QMessageBox::information(this, "Bind - v1.2.0", "Verification Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.0", "Verification Check is already running. Please wait for it to complete.");
         return;
     }
     QStringList dllPaths = leftPanel->getDllPaths();
     if (dllPaths.isEmpty()) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "No DLL Paths specified. Please add at least one NTDLL path.");
         return;
     }
     if (verificationThread) {
@@ -253,7 +253,7 @@ void MainWindow::runVerification() {
         } else {
             leftPanel->updateStatus("Verification Failed!");
             statusBar->updateStatus("Verification Failed!");
-            QMessageBox::critical(this, "Bind - v1.2.0", message);
+            QMessageBox::critical(this, "Bind - v1.3.0", message);
         }
         verificationThread->deleteLater();
         verificationThread = nullptr;
@@ -263,7 +263,7 @@ void MainWindow::runVerification() {
 
 void MainWindow::runObfuscation() {
     if (obfuscationThread && obfuscationThread->isRunning()) {
-        QMessageBox::information(this, "Bind - v1.2.0", "Syscall Obfuscation is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.0", "Syscall Obfuscation is already running. Please wait for it to complete.");
         return;
     }
     saveAllSettings();
@@ -311,7 +311,7 @@ void MainWindow::runObfuscation() {
         } else {
             leftPanel->updateStatus("Obfuscation Failed!");
             statusBar->updateStatus("Obfuscation Failed!");
-            QMessageBox::critical(this, "Bind - v1.2.0", message);
+            QMessageBox::critical(this, "Bind - v1.3.0", message);
         }
         QSettings settings(PathUtils::getIniPath(), QSettings::IniFormat);
         settings.remove("obfuscation/force_normal");

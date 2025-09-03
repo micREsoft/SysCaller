@@ -7,6 +7,7 @@ class QVBoxLayout;
 
 class RightPanel : public QFrame {
     Q_OBJECT
+    
 public:
     explicit RightPanel(QWidget* parent = nullptr);
     void appendOutput(const QString& text);

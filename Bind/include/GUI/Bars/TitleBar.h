@@ -3,6 +3,7 @@
 
 class TitleBar : public QFrame {
     Q_OBJECT
+    
 public:
     explicit TitleBar(QWidget* parent = nullptr);
 

@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QObject>
 #include <QList>
+#include <QPair>
 #include <vector>
 #include <cstdint>
 #include <pe-parse/parse.h>
@@ -16,17 +17,18 @@
 
 class Verification : public QObject {
     Q_OBJECT
+
 public:
-    Verification();
+    explicit Verification();
+
     int run(int argc, char* argv[]);
     int runWithDllPaths(const QStringList& dllPaths);
     void setOutputCallback(std::function<void(const QString&)> callback);
-    
+
 signals:
     void progressMessage(const QString& message);
 
 private:
-
     struct Parameter {
         QString type;
         QString name;
@@ -53,12 +55,13 @@ private:
         QString returnType;
         int parameterCount;
         QStringList errors;
-        QList<QPair<QString, QString>> typeDefinitions; // type, source_file
+        QList<QPair<QString, QString>> typeDefinitions;  // type, source_file
     };
 
     class TypeDefinitionTracker {
     public:
         TypeDefinitionTracker();
+
         void parseHeaderFiles();
         std::optional<TypeDefinition> checkType(const QString& typeName, bool isKernelMode);
 
@@ -79,6 +82,7 @@ private:
     QString getIniPath();
     QString getAsmFilePath(bool isKernelMode);
     QString getHeaderFilePath(bool isKernelMode);
+
     QMap<QString, SyscallDefinition> syscalls;
     QList<TestResult> testResults;
     QStringList dllPaths;

@@ -30,6 +30,9 @@
     <ClCompile Include="src\GUI\Bars\TitleBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GUI\Bars\SettingsTitleBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\GUI\MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,19 +51,19 @@
     <ClCompile Include="src\GUI\Dialogs\HashCompareDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\SettingsDialog.cpp">
+    <ClCompile Include="src\GUI\Dialogs\SettingsDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\GeneralTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\GeneralTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\ObfuscationTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\ObfuscationTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\IntegrityTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\IntegrityTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GUI\Settings\tabs\ProfileTab.cpp">
+    <ClCompile Include="src\GUI\Settings\Tabs\ProfileTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Utils\PathUtils.cpp">
@@ -76,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp">
@@ -111,9 +117,6 @@
     <ClCompile Include="GeneratedFiles\moc_ProfileTab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\Integrity\Validator\Validator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\GUI\Threads\ValidatorThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -127,18 +130,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Obfuscation\Obfuscation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Obfuscation\Stub\JunkGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Obfuscation\Stub\NameGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Obfuscation\Stub\StubGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Obfuscation\Encryption\Encryptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\GUI\Threads\CompatibilityThread.cpp">
@@ -157,9 +148,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\Integrity\Verification\Verification.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\Obfuscation\Mapping\StubMapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\GUI\Threads\VerificationThread.cpp">
@@ -186,6 +174,48 @@
     <ClCompile Include="src\Core\Utils\Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Direct\ControlFlow\DirectControlFlow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Direct\Stub\DirectJunkGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Shared\Stub\NameGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Direct\Stub\DirectStubGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Direct\Encryption\DirectEncryptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Direct\Mapping\DirectStubMapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Indirect\ControlFlow\IndirectControlFlow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Indirect\Stub\IndirectStubGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI\Settings\Tabs\IndirectObfuscationTab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\moc_IndirectObfuscationTab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Integrity\Validator\Validator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Indirect\Encryption\IndirectEncryptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\IndirectObfuscation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Obfuscation\Indirect\Stub\IndirectJunkGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="include\GUI\Bars\ProgressBar.h">
@@ -198,6 +228,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\GUI\Bars\TitleBar.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="include\GUI\Bars\SettingsTitleBar.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="include\GUI\MainWindow.h">
@@ -220,28 +253,46 @@
     <ClInclude Include="include\Core\Obfuscation\Obfuscation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Core\Obfuscation\Stub\JunkGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\Obfuscation\Stub\NameGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\Obfuscation\Encryption\Encryptor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\Obfuscation\Stub\StubGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\GUI\Themes\Colors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Core\Obfuscation\Mapping\StubMapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\Utils\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Direct\ControlFlow\DirectControlFlow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Direct\Stub\DirectJunkGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Shared\Stub\NameGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Direct\Stub\DirectStubGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Direct\Encryption\DirectEncryptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Direct\Mapping\DirectStubMapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectStubGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Indirect\ControlFlow\IndirectControlFlow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Indirect\Encryption\IndirectEncryptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\IndirectObfuscation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectJunkGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -281,7 +332,7 @@
     <QtMoc Include="include\GUI\Dialogs\HashCompareDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="include\GUI\Settings\SettingsDialog.h">
+    <QtMoc Include="include\GUI\Dialogs\SettingsDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="include\GUI\Settings\Tabs\GeneralTab.h">
@@ -323,12 +374,19 @@
     <QtMoc Include="include\GUI\Threads\VerificationThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="include\GUI\Settings\Tabs\IndirectObfuscationTab.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="src\Res\Fonts\ibmplexmono.ttf" />
+    <Font Include="src\Res\Fonts\ibmplexmono.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="resources.qrc" />
+    <QtRcc Include="resources.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">

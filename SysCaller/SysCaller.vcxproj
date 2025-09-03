@@ -75,7 +75,14 @@
     <OutDir>$(ProjectDir)Wrapper\build\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Wrapper\build\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(ProjectDir)Wrapper\build\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>false</VcpkgUseStatic>
+    <VcpkgUseMD>false</VcpkgUseMD>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -109,16 +116,17 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;SYSCALLER_DIRECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\devil\vcpkg\installed\x64-windows\include;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.26100.0\km;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.26100.0\km;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\devil\vcpkg\installed\x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>capstone.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>Wrapper\\SysCaller.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,19 +135,24 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;SYSCALLER_DIRECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\devil\vcpkg\installed\x64-windows\include;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.26100.0\km;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.26100.0\km;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\devil\vcpkg\installed\x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>capstone.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>Wrapper\\SysCaller.def</ModuleDefinitionFile>
     </Link>
+    <MASM>
+      <MakeAllSymbolsPublic>false</MakeAllSymbolsPublic>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </MASM>
   </ItemDefinitionGroup>
   <ItemGroup>
     <MASM Include="Wrapper\src\syscaller.asm">
@@ -147,16 +160,21 @@
     </MASM>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Wrapper\include\Nt\sysDynLoader.h" />
-    <ClInclude Include="Wrapper\include\Nt\sysNtConstants.h" />
+    <ClInclude Include="Wrapper\include\Resolver\Resolver.h" />
     <ClInclude Include="Wrapper\include\syscaller.h" />
-    <ClInclude Include="Wrapper\include\Nt\sysNtExternals.h" />
-    <ClInclude Include="Wrapper\include\Nt\sysNtFunctions.h" />
-    <ClInclude Include="Wrapper\include\Nt\sysNtTypes.h" />
+    <ClInclude Include="Wrapper\include\syscaller_config.h" />
     <ClInclude Include="Wrapper\include\Sys\sysConstants.h" />
     <ClInclude Include="Wrapper\include\Sys\sysExternals.h" />
     <ClInclude Include="Wrapper\include\Sys\sysFunctions.h" />
     <ClInclude Include="Wrapper\include\Sys\sysTypes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Wrapper\src\build_info.cpp" />
+    <ClCompile Include="Wrapper\src\DLL\dllmain.cpp" />
+    <ClCompile Include="Wrapper\src\Resolver\Resolver.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Wrapper\SysCaller.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

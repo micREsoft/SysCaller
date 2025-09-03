@@ -1,5 +1,4 @@
-#ifndef OBFUSCATIONTAB_H
-#define OBFUSCATIONTAB_H
+#pragma once
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -17,10 +16,12 @@ class ObfuscationTab : public QWidget {
 
 public:
     explicit ObfuscationTab(QSettings* settings, QWidget* parent = nullptr);
+    
     void saveSettings();
 
 private:
     void initUI();
+
     QSettings* settings;
     QSpinBox* minInstructions;
     QSpinBox* maxInstructions;
@@ -33,6 +34,10 @@ private:
     QComboBox* encryptionMethod;
     QCheckBox* enableChunking;
     QCheckBox* enableInterleaved;
+    QCheckBox* enableControlFlow;
+    QCheckBox* opaquePredicates;
+    QCheckBox* bogusControlFlow;
+    QCheckBox* indirectJumps;
+    QCheckBox* conditionalBranches;
+    QSpinBox* controlFlowComplexity;
 };
-
-#endif

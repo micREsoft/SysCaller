@@ -6,64 +6,29 @@
 #include <QIcon>
 #include <QFont>
 #include <QApplication>
+#include <QFile>
+#include <QTextStream>
 
 ObfuscationSelectionDialog::ObfuscationSelectionDialog(QWidget* parent)
     : QDialog(parent)
     , selection(Cancelled)
 {
-    setWindowTitle("Bind - v1.2.0");
+    setWindowTitle("Bind - v1.3.0");
     setFixedSize(450, 300);
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    
     setupStylesheet();
     initUI();
 }
 
 void ObfuscationSelectionDialog::setupStylesheet() {
-    setStyleSheet(
-        "ObfuscationSelectionDialog {"
-        " background: #252525;"
-        " border: 2px solid #333333;"
-        " border-radius: 15px;"
-        "}"
-        "QLabel {"
-        " color: white;"
-        "}"
-        "QLabel#title {"
-        " font-size: 18px;"
-        " font-weight: bold;"
-        " color: #0077d4;"
-        " padding: 10px;"
-        "}"
-        "QLabel#description {"
-        " font-size: 14px;"
-        " color: #cccccc;"
-        " padding: 10px;"
-        "}"
-        "QPushButton {"
-        " background: #0b5394;"
-        " border: none;"
-        " border-radius: 8px;"
-        " padding: 12px 20px;"
-        " color: white;"
-        " font-weight: bold;"
-        " font-size: 14px;"
-        " min-width: 120px;"
-        "}"
-        "QPushButton:hover {"
-        " background: #67abdb;"
-        "}"
-        "QPushButton:pressed {"
-        " background: #004578;"
-        "}"
-        "QPushButton#cancel {"
-        " background: #555555;"
-        "}"
-        "QPushButton#cancel:hover {"
-        " background: #777777;"
-        "}"
-    );
+    QFile stylesheetFile(":/src/GUI/Stylesheets/ObfuscationSelectionDialog.qss");
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&stylesheetFile);
+        QString stylesheet = in.readAll();
+        setStyleSheet(stylesheet);
+        stylesheetFile.close();
+    }
 }
 
 void ObfuscationSelectionDialog::initUI() {

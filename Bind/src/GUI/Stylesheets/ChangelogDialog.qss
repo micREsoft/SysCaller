@@ -1,0 +1,39 @@
+QDialog {
+    background: #1A1A1A;
+    border-radius: 15px;
+}
+QLabel {
+    color: #0077d4;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 0 10px 0;
+}
+QListWidget {
+    background: #181818;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 14px;
+    min-width: 120px;
+}
+QListWidget::item:selected {
+    background: #0077d4;
+    color: #fff;
+}
+QTextEdit {
+    background: #181818;
+    color: #fff;
+    border-radius: 8px;
+    font-family: 'IBM Plex Mono';
+    font-size: 13px;
+}
+QPushButton {
+    background: #0077d4;
+    color: #fff;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-weight: bold;
+    font-size: 13px;
+}
+QPushButton:hover {
+    background: #404040;
+}

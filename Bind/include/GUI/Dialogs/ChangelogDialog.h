@@ -1,5 +1,4 @@
-#ifndef CHANGELOGDIALOG_H
-#define CHANGELOGDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QMap>
@@ -10,6 +9,7 @@ class QListWidget;
 class QTextEdit;
 class QLabel;
 class QListWidgetItem;
+class SettingsTitleBar;
 
 class ChangelogDialog : public QDialog {
     Q_OBJECT
@@ -17,16 +17,23 @@ class ChangelogDialog : public QDialog {
 public:
     explicit ChangelogDialog(QWidget* parent = nullptr);
 
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+
 private slots:
     void displayChangelog(QListWidgetItem* current, QListWidgetItem* previous);
 
 private:
     void populateChangelogs();
     void setupUI();
+    void setupStylesheet();
     QString markdownToHtml(const QString& markdown);
     QListWidget* listWidget;
     QTextEdit* textEdit;
-    QMap<QString, QString> changelogFiles; // version -> filepath
+    QMap<QString, QString> changelogFiles;
+    SettingsTitleBar* titleBar;
+    bool m_dragging = false;
+    QPoint m_dragPosition;
 };
-
-#endif

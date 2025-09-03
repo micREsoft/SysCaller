@@ -1,5 +1,6 @@
 #include "include/GUI/Dialogs/HashCompareDialog.h"
 #include "include/Core/Utils/PathUtils.h"
+#include "include/GUI/Bars/SettingsTitleBar.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QListWidget>
@@ -25,95 +26,33 @@
 #include <QJsonArray>
 #include <QRegExp>
 #include <QSet>
+#include <QFile>
+#include <QTextStream>
 
 HashCompareDialog::HashCompareDialog(QWidget* parent) : QDialog(parent), hashType("MD5") {
-    setWindowTitle("Bind - Hash Compare");
-    setMinimumSize(900, 600);
-    setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
-    setStyleSheet(
-        "QDialog {"
-        " background: #252525;"
-        " color: white;"
-        "}"
-        "QSplitter::handle {"
-        " background: #444444;"
-        "}"
-        "QGroupBox {"
-        " border: 1px solid #333333;"
-        " border-radius: 5px;"
-        " margin-top: 10px;"
-        " padding-top: 15px;"
-        " color: white;"
-        "}"
-        "QGroupBox::title {"
-        " subcontrol-origin: margin;"
-        " left: 10px;"
-        " padding: 0 5px;"
-        "}"
-        "QPushButton {"
-        " background: #0b5394;"
-        " border: none;"
-        " border-radius: 5px;"
-        " padding: 8px 15px;"
-        " color: white;"
-        "}"
-        "QPushButton:hover {"
-        " background: #67abdb;"
-        "}"
-        "QPushButton:disabled {"
-        " background: #555555;"
-        " color: #aaaaaa;"
-        "}"
-        "QLabel {"
-        " color: white;"
-        "}"
-        "QListWidget, QTableWidget {"
-        " background: #333333;"
-        " color: white;"
-        " border-radius: 5px;"
-        " padding: 5px;"
-        " border: 1px solid #444444;"
-        "}"
-        "QTableWidget::item:alternate {"
-        " background: #2A2A2A;"
-        "}"
-        "QHeaderView::section {"
-        " background: #0b5394;"
-        " color: white;"
-        " padding: 5px;"
-        " border: 1px solid #444444;"
-        "}"
-        "QCheckBox, QComboBox {"
-        " color: white;"
-        "}"
-        "QComboBox {"
-        " background: #333333;"
-        " border: 1px solid #444444;"
-        " border-radius: 3px;"
-        " padding: 5px;"
-        "}"
-        "QComboBox::drop-down {"
-        " border: none;"
-        "}"
-        "QComboBox QAbstractItemView {"
-        " background: #333333;"
-        " color: white;"
-        " selection-background-color: #0b5394;"
-        "}"
-    );
+    setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    setMinimumSize(950, 400);
+    titleBar = new SettingsTitleBar("Hash Compare", this);
+    setupStylesheet();
     initUI();
     loadHashFiles();
 }
 
 void HashCompareDialog::initUI() {
     auto* layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(titleBar);
     auto* topLayout = new QHBoxLayout();
+    topLayout->setContentsMargins(20, 10, 20, 10);
     refreshBtn = new QPushButton("Refresh");
     refreshBtn->setIcon(QIcon(":/src/Res/Icons/refresh.svg"));
     connect(refreshBtn, &QPushButton::clicked, this, &HashCompareDialog::loadHashFiles);
     topLayout->addWidget(refreshBtn);
+    topLayout->addSpacing(20);
     auto* hashTypeLayout = new QHBoxLayout();
     auto* hashTypeLabel = new QLabel("Hash Type:");
+    hashTypeLabel->setStyleSheet("color: white; background: transparent;");
     hashTypeLayout->addWidget(hashTypeLabel);
     hashTypeCombo = new QComboBox();
     hashTypeCombo->addItems({"MD5", "SHA-256"});
@@ -167,6 +106,39 @@ void HashCompareDialog::initUI() {
     connect(closeBtn, &QPushButton::clicked, this, &QDialog::reject);
     buttonLayout->addWidget(closeBtn);
     layout->addLayout(buttonLayout);
+    connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::reject);
+}
+
+void HashCompareDialog::setupStylesheet() {
+    QFile stylesheetFile(":/src/GUI/Stylesheets/HashCompareDialog.qss");
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&stylesheetFile);
+        QString stylesheet = in.readAll();
+        setStyleSheet(stylesheet);
+        stylesheetFile.close();
+    }
+}
+
+void HashCompareDialog::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
+    }
+}
+
+void HashCompareDialog::mouseMoveEvent(QMouseEvent* event) {
+    if (event->buttons() & Qt::LeftButton && m_dragging) {
+        move(event->globalPos() - m_dragPosition);
+        event->accept();
+    }
+}
+
+void HashCompareDialog::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = false;
+        event->accept();
+    }
 }
 
 void HashCompareDialog::loadHashFiles() {
@@ -264,11 +236,11 @@ void HashCompareDialog::updateHashTable() {
 void HashCompareDialog::compareSelected() {
     QList<QListWidgetItem*> selectedItems = hashFileList->selectedItems();
     if (selectedItems.size() < 1) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "Please select at least one Hash File to view.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "Please select at least one Hash File to view.");
         return;
     }
     if (selectedItems.size() > 5) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "Please select at most 5 Hash Files to compare.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "Please select at most 5 Hash Files to compare.");
         return;
     }
     QStringList selectedFiles;
@@ -397,7 +369,7 @@ QString HashCompareDialog::extractHash(const QString& hashValue, const QString& 
 void HashCompareDialog::exportComparison() {
     QList<QListWidgetItem*> selectedItems = hashFileList->selectedItems();
     if (selectedItems.isEmpty()) {
-        QMessageBox::warning(this, "Bind - v1.2.0", "Please select at least one Hash File to export.");
+        QMessageBox::warning(this, "Bind - v1.3.0", "Please select at least one Hash File to export.");
         return;
     }
     QStringList selectedFiles;
@@ -409,7 +381,7 @@ void HashCompareDialog::exportComparison() {
     }
     QString exportPath = QFileDialog::getSaveFileName(
         this,
-        "Bind - v1.2.0",
+        "Bind - v1.3.0",
         "",
         "CSV Files (*.csv);;HTML Files (*.html);;All Files (*.*)"
     );
@@ -427,10 +399,10 @@ void HashCompareDialog::exportComparison() {
             }
             exportAsCsv(exportPath, selectedFiles);
         }
-        QMessageBox::information(this, "Bind - v1.2.0", 
+        QMessageBox::information(this, "Bind - v1.3.0", 
                                QString("Hash Comparison exported successfully to:\n%1").arg(exportPath));
     } catch (...) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "Failed to Export Comparison.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "Failed to Export Comparison.");
     }
 }
 
@@ -451,7 +423,7 @@ void HashCompareDialog::exportAsCsv(const QString& exportPath, const QStringList
     }
     QFile file(exportPath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "Could not create Export File.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "Could not create Export File.");
         return;
     }
     QTextStream stream(&file);
@@ -512,7 +484,7 @@ void HashCompareDialog::exportAsHtml(const QString& exportPath, const QStringLis
     }
     QFile file(exportPath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::critical(this, "Bind - v1.2.0", "Could not create Export File.");
+        QMessageBox::critical(this, "Bind - v1.3.0", "Could not create Export File.");
         return;
     }
     QTextStream stream(&file);
@@ -606,4 +578,3 @@ void HashCompareDialog::exportAsHtml(const QString& exportPath, const QStringLis
 QString HashCompareDialog::getProjectPaths() {
     return PathUtils::getProjectRoot();
 }
- 
