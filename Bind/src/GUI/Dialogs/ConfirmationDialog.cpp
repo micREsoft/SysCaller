@@ -7,7 +7,7 @@
 ConfirmationDialog::ConfirmationDialog(QWidget* parent) : QDialog(parent) {
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setMinimumSize(400, 200);
+    setMinimumSize(405, 205);
     initUI("Confirmation");
     setupStylesheet();
 }
@@ -15,7 +15,7 @@ ConfirmationDialog::ConfirmationDialog(QWidget* parent) : QDialog(parent) {
 ConfirmationDialog::ConfirmationDialog(const QString& title, QWidget* parent) : QDialog(parent) {
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setMinimumSize(400, 200);
+    setMinimumSize(405, 205);
     initUI(title);
     setupStylesheet();
 }
@@ -23,8 +23,6 @@ ConfirmationDialog::ConfirmationDialog(const QString& title, QWidget* parent) : 
 ConfirmationDialog::~ConfirmationDialog() = default;
 
 void ConfirmationDialog::setTitle(const QString& title) {
-    // Note: SettingsTitleBar doesn't support changing title after construction
-    // The title is set in the constructor, so this method is a no-op
     Q_UNUSED(title)
 }
 
