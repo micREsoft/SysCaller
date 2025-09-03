@@ -188,7 +188,6 @@
     <ClCompile Include="src\Core\Obfuscation\Indirect\ControlFlow\IndirectControlFlow.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Indirect\Encryption\IndirectEncryptor.cpp" />
     <ClCompile Include="src\Core\Obfuscation\Indirect\Stub\IndirectStubGenerator.cpp" />
-    <ClCompile Include="src\Core\Obfuscation\Indirect\Mapping\IndirectStubMapper.cpp" />
     <ClCompile Include="src\Core\Utils\Utils.cpp" />
     <ClCompile Include="src\Core\Utils\PathUtils.cpp" />
     <ClCompile Include="src\GUI\MainWindow.cpp" />
@@ -442,7 +441,6 @@
     <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectJunkGenerator.h" />
     <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectStubGenerator.h" />
     <ClInclude Include="include\Core\Obfuscation\Indirect\Encryption\IndirectEncryptor.h" />
-    <ClInclude Include="include\Core\Obfuscation\Indirect\Mapping\IndirectStubMapper.h" />
     <ClInclude Include="include\Core\Utils\PathUtils.h" />
     <ClInclude Include="include\Core\Utils\Utils.h" />
     <ClInclude Include="include\GUI\Themes\Colors.h" />
@@ -462,3 +460,4 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
+
