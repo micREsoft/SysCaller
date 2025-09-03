@@ -10,5 +10,10 @@
         <file>src/Res/Icons/export.svg</file>
         <file>src/Res/Icons/refresh.svg</file>
         <file>src/Res/Fonts/ibmplexmono.ttf</file>
+        <file>src/GUI/Stylesheets/SettingsDialog.qss</file>
+        <file>src/GUI/Stylesheets/StubMapperDialog.qss</file>
+        <file>src/GUI/Stylesheets/ObfuscationSelectionDialog.qss</file>
+        <file>src/GUI/Stylesheets/HashCompareDialog.qss</file>
+        <file>src/GUI/Stylesheets/ChangelogDialog.qss</file>
     </qresource>
 </RCC> 
