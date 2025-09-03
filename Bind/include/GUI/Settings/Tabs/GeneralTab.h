@@ -27,6 +27,7 @@ private slots:
     void restoreBackup(const QString& timestamp);
     void openHashCompare();
     void onModeChanged();
+    void onAssemblyModeChanged();
 
 private:
     void initUI();
@@ -38,22 +39,19 @@ private:
     bool restoreFileWithRetry(const QString& sourcePath, const QString& destPath, const QString& fileType);
 
     QSettings* settings;
-
     QButtonGroup* modeButtonGroup;
     QRadioButton* ntModeRadio;
     QRadioButton* zwModeRadio;
     QString originalMode;
-
     QButtonGroup* bindingsButtonGroup;
     QRadioButton* bindingsEnableRadio;
     QRadioButton* bindingsDisableRadio;
     QGroupBox* bindingsGroup;
-
     QGroupBox* inlineAssemblyGroup;
-    QGroupBox* indirectAssemblyGroup;
-
+    QButtonGroup* assemblyModeGroup;
+    QRadioButton* directAssemblyRadio;
+    QRadioButton* inlineAssemblyRadio;
+    QRadioButton* indirectAssemblyRadio;
     QCheckBox* hashStubs;
     QCheckBox* createBackup;
-    QCheckBox* inlineAssembly;
-    QCheckBox* indirectAssembly;
 };
