@@ -26,84 +26,14 @@
 #include <QJsonArray>
 #include <QRegExp>
 #include <QSet>
+#include <QFile>
+#include <QTextStream>
 
 HashCompareDialog::HashCompareDialog(QWidget* parent) : QDialog(parent), hashType("MD5") {
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setMinimumSize(950, 400);
     titleBar = new SettingsTitleBar("Hash Compare", this);
-    setStyleSheet(
-        "QDialog {"
-        " background: #252525;"
-        " color: white;"
-        " border-radius: 15px;"
-        "}"
-        "QSplitter::handle {"
-        " background: #444444;"
-        "}"
-        "QGroupBox {"
-        " border: 1px solid #333333;"
-        " border-radius: 5px;"
-        " margin-top: 10px;"
-        " padding-top: 15px;"
-        " color: white;"
-        "}"
-        "QGroupBox::title {"
-        " subcontrol-origin: margin;"
-        " left: 10px;"
-        " padding: 0 5px;"
-        "}"
-        "QPushButton {"
-        " background: #0b5394;"
-        " border: none;"
-        " border-radius: 5px;"
-        " padding: 8px 15px;"
-        " color: white;"
-        "}"
-        "QPushButton:hover {"
-        " background: #67abdb;"
-        "}"
-        "QPushButton:disabled {"
-        " background: #555555;"
-        " color: #aaaaaa;"
-        "}"
-        "QLabel {"
-        " color: white;"
-        " background: transparent;"
-        "}"
-        "QListWidget, QTableWidget {"
-        " background: #333333;"
-        " color: white;"
-        " border-radius: 5px;"
-        " padding: 5px;"
-        " border: 1px solid #444444;"
-        "}"
-        "QTableWidget::item:alternate {"
-        " background: #2A2A2A;"
-        "}"
-        "QHeaderView::section {"
-        " background: #0b5394;"
-        " color: white;"
-        " padding: 5px;"
-        " border: 1px solid #444444;"
-        "}"
-        "QCheckBox, QComboBox {"
-        " color: white;"
-        "}"
-        "QComboBox {"
-        " background: #333333;"
-        " border: 1px solid #444444;"
-        " border-radius: 3px;"
-        " padding: 5px;"
-        "}"
-        "QComboBox::drop-down {"
-        " border: none;"
-        "}"
-        "QComboBox QAbstractItemView {"
-        " background: #333333;"
-        " color: white;"
-        " selection-background-color: #0b5394;"
-        "}"
-    );
+    setupStylesheet();
     initUI();
     loadHashFiles();
 }
@@ -177,6 +107,16 @@ void HashCompareDialog::initUI() {
     buttonLayout->addWidget(closeBtn);
     layout->addLayout(buttonLayout);
     connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::reject);
+}
+
+void HashCompareDialog::setupStylesheet() {
+    QFile stylesheetFile(":/src/GUI/Stylesheets/HashCompareDialog.qss");
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&stylesheetFile);
+        QString stylesheet = in.readAll();
+        setStyleSheet(stylesheet);
+        stylesheetFile.close();
+    }
 }
 
 void HashCompareDialog::mousePressEvent(QMouseEvent* event) {
