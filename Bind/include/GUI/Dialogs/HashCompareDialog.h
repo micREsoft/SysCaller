@@ -43,6 +43,7 @@ private:
     void exportAsCsv(const QString& exportPath, const QStringList& selectedFiles);
     void exportAsHtml(const QString& exportPath, const QStringList& selectedFiles);
     QString getProjectPaths();
+    void setupStylesheet();
 
     QListWidget* hashFileList;
     QTableWidget* hashTable;
