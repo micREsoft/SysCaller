@@ -58,17 +58,17 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="$(QtMsBuild)\qt_defaults.props" Condition="Exists('$(QtMsBuild)\qt_defaults.props')" />
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <QTDIR>C:\Qt\5.15.2\msvc2019_64</QTDIR>
+    <QTDIR>$(QTDIR)</QTDIR>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <QTDIR>C:\Qt\5.15.2\msvc2019_64</QTDIR>
+    <QTDIR>$(QTDIR)</QTDIR>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QTDIR>C:\Qt\5.15.2\msvc2019_64</QTDIR>
+    <QTDIR>$(QTDIR)</QTDIR>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QTDIR>C:\Qt\5.15.2\msvc2019_64</QTDIR>
+    <QTDIR>$(QTDIR)</QTDIR>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') OR !Exists('$(QtMsBuild)\Qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
@@ -135,14 +135,14 @@
       <PreprocessorDefinitions>_DEBUG;UNICODE;_UNICODE;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;C:\Qt\5.15.2\msvc2019_64\include;C:\Qt\5.15.2\msvc2019_64\include\QtCore;C:\Qt\5.15.2\msvc2019_64\include\QtGui;C:\Qt\5.15.2\msvc2019_64\include\QtWidgets;C:\Users\devil\vcpkg\installed\x64-windows\include;C:\Users\devil\source\repos\SysCaller\Bind\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(VcpkgRoot)\installed\x64-windows\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Qt\5.15.2\msvc2019_64\lib;C:\Users\devil\vcpkg\installed\x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;cmark.lib;pe-parse.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(VcpkgRoot)\installed\x64-windows\lib;$(ProjectDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;cmark.lib;pe-parse.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,14 +154,14 @@
       <PreprocessorDefinitions>NDEBUG;UNICODE;_UNICODE;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;C:\Qt\5.15.2\msvc2019_64\include;C:\Qt\5.15.2\msvc2019_64\include\QtCore;C:\Qt\5.15.2\msvc2019_64\include\QtGui;C:\Qt\5.15.2\msvc2019_64\include\QtWidgets;C:\Users\devil\vcpkg\installed\x64-windows\include;C:\Users\devil\source\repos\SysCaller\Bind\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(VcpkgRoot)\installed\x64-windows\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Qt\5.15.2\msvc2019_64\lib;C:\Users\devil\vcpkg\installed\x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;capstone.lib;pe-parse.lib;cmark.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(VcpkgRoot)\installed\x64-windows\lib;$(ProjectDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;cmark.lib;pe-parse.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuild>
       <Command>
@@ -243,6 +243,7 @@
     <ClCompile Include="GeneratedFiles\moc_Verification.cpp" />
     <ClCompile Include="GeneratedFiles\moc_VerificationThread.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ObfuscationThread.cpp" />
+    <ClCompile Include="GeneratedFiles\qrc_resources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\Core\Integrity\Compatibility\Compatibility.h">
@@ -460,4 +461,3 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
-
