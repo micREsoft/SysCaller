@@ -3,27 +3,43 @@
 #include <QRandomGenerator>
 #include <QStringList>
 
-DirectObfuscation::JunkGenerator::JunkGenerator(QSettings* settings) : settings(settings) {
-}
+DirectObfuscation::JunkGenerator::JunkGenerator(QSettings* settings)
+    : settings(settings)
+{}
 
-void DirectObfuscation::JunkGenerator::setSettings(QSettings* settings) {
+void DirectObfuscation::JunkGenerator::setSettings(QSettings* settings)
+{
     this->settings = settings;
 }
 
-QString DirectObfuscation::JunkGenerator::generateJunkInstructions(int minInst, int maxInst, bool useAdvanced) {
-    if (!settings) {
+QString DirectObfuscation::JunkGenerator::generateJunkInstructions(int minInst, int maxInst, bool useAdvanced)
+{
+    // rcx, rdx, r8, r9 are function parameters, NEVER touch these!
+    // rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9, NEVER touch these!
+    // r10 is used for function pointer, NEVER touch this!
+    // so we can ONLY safely use: r11, r13, r14, r15, rax
+    
+    if (!settings)
+    {
         return "";
     }
-    if (minInst == -1) {
+
+    if (minInst == -1)
+    {
         minInst = settings->value("obfuscation/min_instructions", 2).toInt();
     }
-    if (maxInst == -1) {
+
+    if (maxInst == -1)
+    {
         maxInst = settings->value("obfuscation/max_instructions", 8).toInt();
     }
-    if (!useAdvanced) {
+
+    if (!useAdvanced)
+    {
         useAdvanced = settings->value("obfuscation/use_advanced_junk", false).toBool();
     }
-    QStringList junkInstructions = {
+    QStringList junkInstructions =
+    {
         "    nop\n",
         "    xchg r11, r11\n",
         "    xchg r13, r13\n",
@@ -51,8 +67,11 @@ QString DirectObfuscation::JunkGenerator::generateJunkInstructions(int minInst, 
         "    xor r14, 0\n",
         "    xor r15, 0\n"
     };
-    if (useAdvanced) {
-        QStringList advancedJunk = {
+
+    if (useAdvanced)
+    {
+        QStringList advancedJunk =
+        {
             "    pause\n",
             "    fnop\n",
             "    cld\n",
@@ -78,37 +97,51 @@ QString DirectObfuscation::JunkGenerator::generateJunkInstructions(int minInst, 
             "    sfence\n",
             "    mfence\n"
         };
+
         int advancedCount = getRandomInt(2, 8);
-        for (int i = 0; i < advancedCount; ++i) {
+
+        for (int i = 0; i < advancedCount; ++i)
+        {
             junkInstructions.append(advancedJunk[getRandomInt(0, advancedJunk.size() - 1)]);
         }
     }
+
     int numInstructions = getRandomInt(minInst, maxInst);
     QString result;
-    for (int i = 0; i < numInstructions; ++i) {
+
+    for (int i = 0; i < numInstructions; ++i)
+    {
         result += junkInstructions[getRandomInt(0, junkInstructions.size() - 1)];
     }
+
     return result;
 }
 
-QString DirectObfuscation::JunkGenerator::getRandomJunkInstruction() {
-    QStringList instructions = {
+QString DirectObfuscation::JunkGenerator::getRandomJunkInstruction()
+{
+    QStringList instructions =
+    {
         "    nop\n",
         "    xchg r8, r8\n",
         "    test r8, r8\n"
     };
+
     return instructions[getRandomInt(0, instructions.size() - 1)];
 }
 
-QString DirectObfuscation::JunkGenerator::getRandomAdvancedJunkInstruction() {
-    QStringList instructions = {
+QString DirectObfuscation::JunkGenerator::getRandomAdvancedJunkInstruction()
+{
+    QStringList instructions =
+    {
         "    pause\n",
         "    fnop\n",
         "    cld\n"
     };
+
     return instructions[getRandomInt(0, instructions.size() - 1)];
 }
 
-int DirectObfuscation::JunkGenerator::getRandomInt(int min, int max) {
+int DirectObfuscation::JunkGenerator::getRandomInt(int min, int max)
+{
     return QRandomGenerator::global()->bounded(min, max + 1);
 }

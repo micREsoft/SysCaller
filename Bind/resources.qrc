@@ -1,20 +1,20 @@
 <RCC>
     <qresource prefix="/">
-        <file>src/Res/Icons/validation.svg</file>
-        <file>src/Res/Icons/compatibility.svg</file>
-        <file>src/Res/Icons/verification.svg</file>
-        <file>src/Res/Icons/obfuscation.svg</file>
-        <file>src/Res/Icons/settings.svg</file>
+        <file>src/Res/Icons/validation.png</file>
+        <file>src/Res/Icons/compatibility.png</file>
+        <file>src/Res/Icons/verification.png</file>
+        <file>src/Res/Icons/obfuscation.png</file>
+        <file>src/Res/Icons/settings.png</file>
         <file>src/Res/Icons/syscaller.png</file>
         <file>src/Res/Icons/logo.ico</file>
-        <file>src/Res/Icons/export.svg</file>
-        <file>src/Res/Icons/refresh.svg</file>
+        <file>src/Res/Icons/export.png</file>
+        <file>src/Res/Icons/refresh.png</file>
         <file>src/Res/Fonts/ibmplexmono.ttf</file>
         <file>src/GUI/Stylesheets/SettingsDialog.qss</file>
         <file>src/GUI/Stylesheets/StubMapperDialog.qss</file>
+        <file>src/GUI/Stylesheets/ConfirmationDialog.qss</file>
         <file>src/GUI/Stylesheets/ObfuscationSelectionDialog.qss</file>
         <file>src/GUI/Stylesheets/HashCompareDialog.qss</file>
         <file>src/GUI/Stylesheets/ChangelogDialog.qss</file>
-<file>src/GUI/Stylesheets/ConfirmationDialog.qss</file>
     </qresource>
 </RCC> 

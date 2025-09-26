@@ -1,6 +1,8 @@
 #include "include/GUI/Panels/OutputPanel.h"
 
-OutputPanel::OutputPanel(QWidget* parent) : QTextEdit(parent) {
+OutputPanel::OutputPanel(QWidget* parent)
+    : QTextEdit(parent)
+{
     setReadOnly(true);
     setStyleSheet(
         "QTextEdit {"
@@ -13,13 +15,15 @@ OutputPanel::OutputPanel(QWidget* parent) : QTextEdit(parent) {
     );
 }
 
-void OutputPanel::appendText(const QString& text) {
+void OutputPanel::appendText(const QString& text)
+{
     append(text);
     QTextCursor cursor = textCursor();
     cursor.movePosition(QTextCursor::End);
     setTextCursor(cursor);
 }
 
-void OutputPanel::clearText() {
+void OutputPanel::clearText()
+{
     clear();
 } 

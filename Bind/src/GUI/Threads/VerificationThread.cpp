@@ -1,26 +1,35 @@
 #include "include/GUI/Threads/VerificationThread.h"
 #include <QDebug>
 
-VerificationThread::VerificationThread(QObject* parent) : QThread(parent) {
-}
+VerificationThread::VerificationThread(QObject* parent)
+    : QThread(parent)
+{}
 
-void VerificationThread::setDllPaths(const QStringList& paths) {
+void VerificationThread::setDllPaths(const QStringList& paths)
+{
     dllPaths = paths;
 }
 
-void VerificationThread::setOutputCallback(std::function<void(const QString&)> callback) {
+void VerificationThread::setOutputCallback(std::function<void(const QString&)> callback)
+{
     outputCallback = callback;
-    verification.setOutputCallback([this](const QString& message) {
+    verification.setOutputCallback([this](const QString& message)
+    {
         emit progressUpdated(message);
     });
 }
 
-void VerificationThread::run() {
+void VerificationThread::run()
+{
     emit verificationStarted();
-    try {
+
+    try
+    {
         int result = verification.runWithDllPaths(dllPaths);
         emit verificationFinished(result == 0, result == 0 ? "Verification Completed Successfully" : "Verification Failed");
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e)
+    {
         qDebug() << "Verification Thread Exception:" << e.what();
         emit verificationFinished(false, QString("Verification Failed: %1").arg(e.what()));
     }

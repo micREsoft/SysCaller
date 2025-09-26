@@ -4,13 +4,16 @@
 #include <QStringList>
 
 IndirectObfuscation::JunkGenerator::JunkGenerator(QSettings* settings)
-    : settings(settings) {}
+    : settings(settings)
+{}
 
-QString IndirectObfuscation::JunkGenerator::generateRegisterSafeJunk() {
+QString IndirectObfuscation::JunkGenerator::generateRegisterSafeJunk()
+{
     // rcx, rdx, r8, r9 are function parameters, NEVER touch these!
     // rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9, NEVER touch these!
     // r10 is used for function pointer, NEVER touch this!
     // so we can ONLY safely use: r11, r13, r14, r15, rax
+    
     QStringList safeJunkInstructions = {
         "    nop\n",
         "    xchg r11, r11\n",
@@ -58,16 +61,29 @@ QString IndirectObfuscation::JunkGenerator::generateRegisterSafeJunk() {
         "    lfence\n",
         "    mfence\n"
     };
-    int numInstructions = QRandomGenerator::global()->bounded(1, 4); // Reduced for safety
+
+    int numInstructions = QRandomGenerator::global()->bounded(1, 4);
     int minJ = settings->value("obfuscation/indirect_min_instructions", 2).toInt();
     int maxJ = settings->value("obfuscation/indirect_max_instructions", 8).toInt();
-    if (minJ < 1) minJ = 1;
-    if (maxJ < minJ) maxJ = minJ;
+
+    if (minJ < 1)
+    {
+        minJ = 1;
+    }
+
+    if (maxJ < minJ)
+    {
+        maxJ = minJ;
+    }
+
     numInstructions = QRandomGenerator::global()->bounded(minJ, maxJ + 1);
+
     QString junkCode;
-    for (int i = 0; i < numInstructions; ++i) {
+    for (int i = 0; i < numInstructions; ++i)
+    {
         int index = QRandomGenerator::global()->bounded(safeJunkInstructions.size());
         junkCode += safeJunkInstructions[index];
     }
+
     return junkCode;
 }
