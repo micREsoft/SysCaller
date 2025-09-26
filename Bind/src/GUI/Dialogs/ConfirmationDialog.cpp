@@ -4,7 +4,9 @@
 #include <QFile>
 #include <QTextStream>
 
-ConfirmationDialog::ConfirmationDialog(QWidget* parent) : QDialog(parent) {
+ConfirmationDialog::ConfirmationDialog(QWidget* parent)
+    : QDialog(parent)
+{
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setMinimumSize(405, 205);
@@ -12,7 +14,9 @@ ConfirmationDialog::ConfirmationDialog(QWidget* parent) : QDialog(parent) {
     setupStylesheet();
 }
 
-ConfirmationDialog::ConfirmationDialog(const QString& title, QWidget* parent) : QDialog(parent) {
+ConfirmationDialog::ConfirmationDialog(const QString& title, QWidget* parent)
+    : QDialog(parent)
+{
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setMinimumSize(405, 205);
@@ -22,24 +26,36 @@ ConfirmationDialog::ConfirmationDialog(const QString& title, QWidget* parent) : 
 
 ConfirmationDialog::~ConfirmationDialog() = default;
 
-void ConfirmationDialog::setTitle(const QString& title) {
+void ConfirmationDialog::setTitle(const QString& title)
+{
     Q_UNUSED(title)
 }
 
-void ConfirmationDialog::setMessage(const QString& message) {
-    if (messageLabel) {
+void ConfirmationDialog::setMessage(const QString& message)
+{
+    if (messageLabel)
+    {
         messageLabel->setText(message);
     }
 }
 
-void ConfirmationDialog::setButtons(bool showYes, bool showNo, bool showOK, bool showCancel) {
-    if (yesButton) yesButton->setVisible(showYes);
-    if (noButton) noButton->setVisible(showNo);
-    if (okButton) okButton->setVisible(showOK);
-    if (cancelButton) cancelButton->setVisible(showCancel);
+void ConfirmationDialog::setButtons(bool showYes, bool showNo, bool showOK, bool showCancel)
+{
+    if (yesButton)
+        yesButton->setVisible(showYes);
+
+    if (noButton)
+        noButton->setVisible(showNo);
+
+    if (okButton)
+        okButton->setVisible(showOK);
+
+    if (cancelButton)
+        cancelButton->setVisible(showCancel);
 }
 
-void ConfirmationDialog::initUI(const QString& title) {
+void ConfirmationDialog::initUI(const QString& title)
+{
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -88,14 +104,19 @@ void ConfirmationDialog::initUI(const QString& title) {
     layout->addWidget(contentWidget);
 }
 
-void ConfirmationDialog::setupStylesheet() {
+void ConfirmationDialog::setupStylesheet()
+{
     QFile stylesheetFile(":/src/GUI/Stylesheets/ConfirmationDialog.qss");
-    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
+    {
         QTextStream in(&stylesheetFile);
         QString stylesheet = in.readAll();
         setStyleSheet(stylesheet);
         stylesheetFile.close();
-    } else {
+    }
+    else
+    {
         setStyleSheet(
             "QDialog { background: #252525; color: white; border-radius: 15px; }"
             "QPushButton { background: #0b5394; border: none; border-radius: 5px; padding: 8px 15px; color: white; font-weight: bold; }"
@@ -106,43 +127,53 @@ void ConfirmationDialog::setupStylesheet() {
     }
 }
 
-void ConfirmationDialog::onYesClicked() {
+void ConfirmationDialog::onYesClicked()
+{
     result = Yes;
     accept();
 }
 
-void ConfirmationDialog::onNoClicked() {
+void ConfirmationDialog::onNoClicked()
+{
     result = No;
     reject();
 }
 
-void ConfirmationDialog::onOKClicked() {
+void ConfirmationDialog::onOKClicked()
+{
     result = OK;
     accept();
 }
 
-void ConfirmationDialog::onCancelClicked() {
+void ConfirmationDialog::onCancelClicked()
+{
     result = Cancel;
     reject();
 }
 
-void ConfirmationDialog::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
+void ConfirmationDialog::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
         m_dragging = true;
         m_dragPosition = event->globalPos() - frameGeometry().topLeft();
         event->accept();
     }
 }
 
-void ConfirmationDialog::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons() & Qt::LeftButton && m_dragging) {
+void ConfirmationDialog::mouseMoveEvent(QMouseEvent* event)
+{
+    if (event->buttons() & Qt::LeftButton && m_dragging)
+    {
         move(event->globalPos() - m_dragPosition);
         event->accept();
     }
 }
 
-void ConfirmationDialog::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
+void ConfirmationDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
         m_dragging = false;
         event->accept();
     }

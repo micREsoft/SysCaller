@@ -1,0 +1,467 @@
+name: "Build SysCaller: Bind"
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: ./Bind
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.3
+
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+        vcpkgGitCommitId: '7e19f3c64cb636ee21f41bfe8558a6dfaae6236f'
+        vcpkgJsonGlob: 'vcpkg.json'
+        runVcpkgInstall: '--triplet=x64-windows --x-wait-for-lock'
+
+    - name: Set Vcpkg Environment
+      run: |
+        echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $env:GITHUB_ENV
+        echo "VcpkgRoot=${{ github.workspace }}/vcpkg" >> $env:GITHUB_ENV
+        echo "VCPKG_DEFAULT_TRIPLET=x64-windows" >> $env:GITHUB_ENV
+        echo "CMAKE_WARN_UNUSED_CLI_VARS=OFF" >> $env:GITHUB_ENV
+        echo "VCPKG_CMAKE_CONFIGURE_OPTIONS=-DCMAKE_WARN_UNUSED_CLI_VARS=OFF" >> $env:GITHUB_ENV
+
+    - name: Setup Vcpkg Binary Caching
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/vcpkg/installed
+          ${{ github.workspace }}/vcpkg/packages
+        key: vcpkg-${{ hashFiles('**/vcpkg.json') }}-${{ runner.os }}-x64-windows
+        restore-keys: |
+          vcpkg-${{ hashFiles('**/vcpkg.json') }}-${{ runner.os }}-
+          vcpkg-${{ runner.os }}-
+
+    - name: Integrate Vcpkg with MSBuild
+      run: |
+        & "${{ github.workspace }}/vcpkg/vcpkg.exe" integrate install
+        
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        cache: true
+
+    - name: Set Qt Environment Variables
+      run: |
+        # The Qt action installs to D:\a\SysCaller\Qt, not in the workspace
+        $qtPath = "D:\a\SysCaller\Qt\5.15.2\msvc2019_64"
+        echo "QTDIR=$qtPath" >> $env:GITHUB_ENV
+        echo "QT_ROOT_DIR=$qtPath" >> $env:GITHUB_ENV
+        echo "QT_PLUGIN_PATH=$qtPath\plugins" >> $env:GITHUB_ENV
+        echo "QML2_IMPORT_PATH=$qtPath\qml" >> $env:GITHUB_ENV
+        echo "PATH=$qtPath\bin;$env:PATH" >> $env:GITHUB_ENV
+
+        # Verify Qt Tools are Available
+        Write-Host "Checking Qt Tools Availability:"
+        Write-Host "Looking for Qt at: $qtPath"
+        if (Test-Path "$qtPath\bin\moc.exe") {
+          Write-Host "moc.exe found"
+          & "$qtPath\bin\moc.exe" -v
+        } else {
+          Write-Host "moc.exe not found, looking for alternatives..."
+          Get-ChildItem "D:\a\SysCaller\Qt" -Recurse -Name "moc.exe" | ForEach-Object { Write-Host "Found: $_" }
+        }
+
+        if (Test-Path "$qtPath\bin\rcc.exe") {
+          Write-Host "rcc.exe found"
+        } else {
+          Write-Host "rcc.exe not found"
+        }
+
+    - name: Setup Qt MSBuild Integration
+      run: |
+        # Create QtMsBuild Directory for Basic Qt Integration
+        $qtPath = "D:\a\SysCaller\Qt\5.15.2\msvc2019_64"
+        $qtMsBuildPath = "QtMsBuild"
+
+        # Create QtMsBuild Directory
+        New-Item -ItemType Directory -Path $qtMsBuildPath -Force
+
+        # Create Qt.props File
+        $qtPropsContent = '<?xml version="1.0" encoding="utf-8"?>' + "`n" +
+                         '<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">' + "`n" +
+                         '  <PropertyGroup>' + "`n" +
+                         "    <QTDIR>$qtPath</QTDIR>" + "`n" +
+                         "    <QtVersion>5.15.2</QtVersion>" + "`n" +
+                         "    <QtMsBuild>true</QtMsBuild>" + "`n" +
+                         '  </PropertyGroup>' + "`n" +
+                         '</Project>'
+        $qtPropsContent | Out-File -FilePath "$qtMsBuildPath\Qt.props" -Encoding UTF8
+
+        # Create qt_defaults.props File
+        $qtDefaultsContent = '<?xml version="1.0" encoding="utf-8"?>' + "`n" +
+                            '<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">' + "`n" +
+                            '  <PropertyGroup>' + "`n" +
+                            "    <QTDIR>$qtPath</QTDIR>" + "`n" +
+                            "    <QtVersion>5.15.2</QtVersion>" + "`n" +
+                            '  </PropertyGroup>' + "`n" +
+                            '</Project>'
+        $qtDefaultsContent | Out-File -FilePath "$qtMsBuildPath\qt_defaults.props" -Encoding UTF8
+
+        # Create qt.targets File with RCC support
+        $qtTargetsContent = '<?xml version="1.0" encoding="utf-8"?>' + "`n" +
+                           '<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">' + "`n" +
+                           '  <PropertyGroup>' + "`n" +
+                           "    <QTDIR>$qtPath</QTDIR>" + "`n" +
+                           "    <QtVersion>5.15.2</QtVersion>" + "`n" +
+                           '  </PropertyGroup>' + "`n" +
+                           '  <Target Name="QtRcc" BeforeTargets="ClCompile" Condition="''@(QtRcc)'' != ''''">' + "`n" +
+                           '    <Message Text="Processing Qt Resource Files..." Importance="high" />' + "`n" +
+                           '    <MakeDir Directories="$(GeneratedFilesDir)" />' + "`n" +
+                           '    <Exec Command="&quot;$(QTDIR)\bin\rcc.exe&quot; -name %(QtRcc.Filename) %(QtRcc.FullPath) -o &quot;$(GeneratedFilesDir)\qrc_%(QtRcc.Filename).cpp&quot;"' + "`n" +
+                           '            Condition="''%(QtRcc.Identity)'' != ''''" />' + "`n" +
+                           '  </Target>' + "`n" +
+                           '</Project>'
+        $qtTargetsContent | Out-File -FilePath "$qtMsBuildPath\qt.targets" -Encoding UTF8
+
+        # Set QtMsBuild Environment Variable
+        echo "QtMsBuild=$qtMsBuildPath" >> $env:GITHUB_ENV
+        Write-Host "QtMsBuild Set to: $qtMsBuildPath"
+        
+    - name: Pre-generate MOC Files
+      run: |
+        $qtPath = "D:\a\SysCaller\Qt\5.15.2\msvc2019_64"
+        $mocPath = "$qtPath\bin\moc.exe"
+        $rccPath = "$qtPath\bin\rcc.exe"
+
+        if (Test-Path $mocPath) {
+          Write-Host "Pre-generating MOC Files..."
+
+          # Create GeneratedFiles Directory if it doesn't exist
+          New-Item -ItemType Directory -Path "GeneratedFiles" -Force
+
+          # List of Header Files that need MOC Generation
+          $mocFiles = @(
+            "include/GUI/MainWindow.h",
+            "include/GUI/Bars/ProgressBar.h",
+            "include/GUI/Bars/StatusBar.h",
+            "include/GUI/Bars/TitleBar.h",
+            "include/GUI/Bars/SettingsTitleBar.h",
+            "include/GUI/Buttons/BindButton.h",
+            "include/GUI/Panels/LeftPanel.h",
+            "include/GUI/Panels/OutputPanel.h",
+            "include/GUI/Panels/RightPanel.h",
+            "include/GUI/Dialogs/ChangelogDialog.h",
+            "include/GUI/Dialogs/HashCompareDialog.h",
+            "include/GUI/Dialogs/ObfuscationSelectionDialog.h",
+            "include/GUI/Dialogs/StubMapperDialog.h",
+            "include/GUI/Dialogs/SettingsDialog.h",
+            "include/GUI/Dialogs/ConfirmationDialog.h",
+            "include/GUI/Settings/Tabs/GeneralTab.h",
+            "include/GUI/Settings/Tabs/ObfuscationTab.h",
+            "include/GUI/Settings/Tabs/IntegrityTab.h",
+            "include/GUI/Settings/Tabs/ProfileTab.h",
+            "include/GUI/Settings/Tabs/IndirectObfuscationTab.h",
+            "include/GUI/Settings/Tabs/InlineObfuscationTab.h",
+            "include/GUI/Threads/ValidatorThread.h",
+            "include/GUI/Threads/CompatibilityThread.h",
+            "include/GUI/Threads/VerificationThread.h",
+            "include/GUI/Threads/ObfuscationThread.h",
+            "include/Core/Integrity/Compatibility/Compatibility.h",
+            "include/Core/Integrity/Validator/Validator.h",
+            "include/Core/Integrity/Verification/Verification.h"
+          )
+
+          foreach ($headerFile in $mocFiles) {
+            if (Test-Path $headerFile) {
+              $outputFile = "GeneratedFiles/moc_" + [System.IO.Path]::GetFileNameWithoutExtension($headerFile) + ".cpp"
+              Write-Host "Generating MOC for: $headerFile -> $outputFile"
+              & $mocPath $headerFile -o $outputFile
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Successfully generated: $outputFile"
+              } else {
+                Write-Host "MOC generation failed for $headerFile with exit code: $LASTEXITCODE"
+              }
+            } else {
+              Write-Host "Header file not found: $headerFile"
+            }
+          }
+
+          # Generate RCC file manually
+          if (Test-Path $rccPath) {
+            Write-Host "Generating RCC file..."
+            $rccOutput = "GeneratedFiles/qrc_resources.cpp"
+            & $rccPath -name resources "resources.qrc" -o $rccOutput
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "Successfully generated RCC file: $rccOutput"
+            } else {
+              Write-Host "RCC generation failed with exit code: $LASTEXITCODE"
+            }
+          } else {
+            Write-Host "RCC tool not found, skipping resource compilation"
+          }
+
+          Write-Host "MOC generation completed"
+        } else {
+          Write-Host "MOC tool not found, skipping pre-generation"
+        }
+        
+    - name: Verify Qt Installation
+      run: |
+        Write-Host "Qt Installation Verification:"
+        Write-Host "QTDIR: $env:QTDIR"
+        if (Test-Path $env:QTDIR) {
+          Write-Host "Qt directory exists"
+          Get-ChildItem $env:QTDIR | Select-Object Name
+        } else {
+          Write-Host "Qt Directory not found!"
+        }
+        
+        if (Test-Path "$env:QTDIR\bin") {
+          Write-Host "Qt bin Directory exists"
+          Get-ChildItem "$env:QTDIR\bin" | Where-Object { $_.Name -like "qmake*" } | Select-Object Name
+        } else {
+          Write-Host "Qt bin Directory not found!"
+        }
+
+    - name: Verify Generated Files
+      run: |
+        Write-Host "Checking Generated Files:"
+        if (Test-Path "GeneratedFiles") {
+          Write-Host "GeneratedFiles directory exists"
+          Get-ChildItem "GeneratedFiles" | Select-Object Name, Length
+          
+          if (Test-Path "GeneratedFiles/qrc_resources.cpp") {
+            Write-Host "RCC file generated successfully!"
+            $rccSize = (Get-Item "GeneratedFiles/qrc_resources.cpp").Length
+            Write-Host "RCC file size: $rccSize bytes"
+          } else {
+            Write-Host "RCC file NOT found!"
+          }
+        } else {
+          Write-Host "GeneratedFiles directory not found!"
+        }
+        
+    - name: Build Solution (Debug x64)
+      run: |
+        # Build with proper Environment Variables
+        Write-Host "Building Debug x64..."
+        Write-Host "QTDIR: $env:QTDIR"
+        Write-Host "VcpkgRoot: $env:VcpkgRoot"
+        Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
+
+        msbuild "Bind.sln" /p:Configuration=Debug /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot"
+
+    - name: Copy Vcpkg Dependencies (Debug)
+      run: |
+        Write-Host "Copying Vcpkg Dependencies for Debug Build..."
+        $outputDir = "x64/Debug"
+        $vcpkgBin = "${{ github.workspace }}/vcpkg/installed/x64-windows/bin"
+
+        # Copy Vcpkg Dependencies (Qt dependencies will be handled by windeployqt)
+        if (Test-Path "$vcpkgBin/pe-parsed.dll") {
+          Copy-Item "$vcpkgBin/pe-parsed.dll" $outputDir
+          Write-Host "Copied pe-parsed.dll"
+        }
+        if (Test-Path "$vcpkgBin/cmark.dll") {
+          Copy-Item "$vcpkgBin/cmark.dll" $outputDir
+          Write-Host "Copied cmark.dll"
+        }
+
+        Write-Host "Vcpkg dependencies copied to $outputDir"
+
+    - name: Deploy Qt Dependencies (Debug)
+      run: |
+        Write-Host "Running Qt deployment for Debug build..."
+        $qtBin = "D:\a\SysCaller\Qt\5.15.2\msvc2019_64\bin"
+        $windeployqt = "$qtBin\windeployqt.exe"
+
+        if (Test-Path $windeployqt) {
+          Write-Host "Running windeployqt on Debug executable..."
+          Write-Host "Checking GeneratedFiles directory before windeployqt..."
+          if (Test-Path "GeneratedFiles") {
+            Get-ChildItem "GeneratedFiles" -Name | Where-Object { $_ -like "*qrc*" } | ForEach-Object { Write-Host "Found RCC file: $_" }
+          }
+
+          & $windeployqt "x64/Debug/Bind.exe" --debug --no-compiler-runtime --no-opengl-sw --force
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Qt deployment completed successfully for Debug build"
+            Get-ChildItem "x64/Debug" -Name | Sort-Object
+          } else {
+            Write-Host "windeployqt failed with exit code: $LASTEXITCODE"
+          }
+        } else {
+          Write-Host "windeployqt.exe not found at: $windeployqt"
+        }
+
+    - name: Build Solution (Release x64)
+      run: |
+        # Build with proper Environment Variables
+        Write-Host "Building Release x64..."
+        Write-Host "QTDIR: $env:QTDIR"
+        Write-Host "VcpkgRoot: $env:VcpkgRoot"
+        Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
+
+        msbuild "Bind.sln" /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot"
+
+    - name: Copy Vcpkg Dependencies (Release)
+      run: |
+        Write-Host "Copying Vcpkg Dependencies for Release Build..."
+        $outputDir = "x64/Release"
+        $vcpkgBin = "${{ github.workspace }}/vcpkg/installed/x64-windows/bin"
+
+        # Copy Vcpkg Dependencies (Qt dependencies will be handled by windeployqt)
+        if (Test-Path "$vcpkgBin/pe-parse.dll") {
+          Copy-Item "$vcpkgBin/pe-parse.dll" $outputDir
+          Write-Host "Copied pe-parse.dll"
+        }
+        if (Test-Path "$vcpkgBin/cmark.dll") {
+          Copy-Item "$vcpkgBin/cmark.dll" $outputDir
+          Write-Host "Copied cmark.dll"
+        }
+
+        Write-Host "Vcpkg dependencies copied to $outputDir"
+
+    - name: Deploy Qt Dependencies (Release)
+      run: |
+        Write-Host "Running Qt deployment for Release build..."
+        $qtBin = "D:\a\SysCaller\Qt\5.15.2\msvc2019_64\bin"
+        $windeployqt = "$qtBin\windeployqt.exe"
+
+        if (Test-Path $windeployqt) {
+          Write-Host "Running windeployqt on Release executable..."
+          & $windeployqt "x64/Release/Bind.exe" --release --no-compiler-runtime --no-opengl-sw --force
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Qt deployment completed successfully for Release build"
+            Get-ChildItem "x64/Release" -Name | Sort-Object
+          } else {
+            Write-Host "windeployqt failed with exit code: $LASTEXITCODE"
+          }
+        } else {
+          Write-Host "windeployqt.exe not found at: $windeployqt"
+        }
+
+    - name: Verify Executables Exist
+      run: |
+        if (Test-Path "x64/Release/Bind.exe") {
+          Write-Host "Bind.exe (Release) Built Successfully!"
+          Get-Item "x64/Release/Bind.exe" | Select-Object Name, Length, LastWriteTime
+        } else {
+          Write-Host "Bind.exe (Release) not found!"
+          Get-ChildItem -Recurse -Name "*.exe" | ForEach-Object { Write-Host "Found: $_" }
+          exit 1
+        }
+
+        if (Test-Path "x64/Debug/Bind.exe") {
+          Write-Host "Bind.exe (Debug) Built Successfully!"
+          Get-Item "x64/Debug/Bind.exe" | Select-Object Name, Length, LastWriteTime
+        } else {
+          Write-Host "Bind.exe (Debug) not found!"
+        }
+        
+    - name: List Build Directory Contents
+      run: |
+        Write-Host "Current Directory Contents:"
+        Get-ChildItem -Recurse | Where-Object { $_.Name -like "*.exe" -or $_.Name -like "*.pdb" -or $_.Name -like "*.zip" } | Select-Object FullName, Length, LastWriteTime
+
+    - name: Upload Build Artifacts (Release)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Bind-Release
+        path: Bind/x64/Release/
+        retention-days: 30
+
+    - name: Upload Build Artifacts (Debug)
+      uses: actions/upload-artifact@v4
+      with:
+        name: Bind-Debug
+        path: Bind/x64/Debug/
+        retention-days: 30
+        
+    - name: Create Release Package
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      run: |
+        $version = "v1.3.1-${{ github.run_number }}"
+        $zipName = "Bind-$version.zip"
+
+        New-Item -ItemType Directory -Path "release-package" -Force
+
+        Copy-Item "x64/Release/*" "release-package\" -Recurse
+
+        # Create README
+        $version = "v1.3.1-${{ github.run_number }}"
+        $readmeText = "# SysCaller: Bind - v1.3.1`n`n"
+        $readmeText += "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')`n"
+        $readmeText += "Commit: ${{ github.sha }}`n"
+        $readmeText += "Platform: Windows x64 (64-bit)`n"
+        $readmeText += "Version: $version`n`n"
+        $readmeText += "## Installation`n"
+        $readmeText += "1. Download Bind.exe`n"
+        $readmeText += "2. Run the executable`n`n"
+        $readmeText += "## Requirements`n"
+        $readmeText += "- Windows 10 or later`n"
+        $readmeText += "- Visual C++ Redistributable (if not already installed)`n"
+        $readmeText += "- Qt5 runtime libraries (if not already installed)"
+        $readmeText | Out-File -FilePath "release-package\README.txt" -Encoding UTF8
+
+        # Create the zip file
+        Compress-Archive -Path "release-package\*" -DestinationPath $zipName -Force
+
+        Write-Host "Created Release Package: $zipName"
+        Get-Item $zipName | Select-Object Name, Length
+
+    - name: Upload Release Package
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-artifact@v4
+      with:
+        name: Release-Package
+        path: Bind/Bind-v1.3.1-*.zip
+        retention-days: 90
+
+    - name: Create GitHub Release
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.3.1-${{ github.run_number }}
+        release_name: "SysCaller: Bind - v1.3.1-${{ github.run_number }}"
+        body: |
+          ## SysCaller: Bind - v1.3.1-${{ github.run_number }}
+
+          **Build Date:** ${{ github.event.head_commit.timestamp }}
+          **Commit:** ${{ github.sha }}
+          **Platform:** Windows x64 (64-bit)
+
+          ## Installation
+          1. Download Bind.zip
+          2. Replace the downloaded Bind directory with the one in SysCaller
+          3. Extract the zip & run the Bind.exe
+
+          ## Requirements
+          - Windows 10 or later
+          - Visual C++ Redistributable (if not already installed)
+          - Qt5 runtime libraries (if not already installed)
+
+    - name: Upload Release Asset
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: Bind/Bind-v1.3.1-${{ github.run_number }}.zip
+        asset_name: Bind-v1.3.1-${{ github.run_number }}.zip
+        asset_content_type: application/zip

@@ -1,4 +1,4 @@
-# SysCaller SDK v1.3.0
+# SysCaller SDK v1.3.1
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/243f7fe5-b461-460d-8c38-3858512e90de" alt="SysCaller Logo" width="400"/>
@@ -12,7 +12,7 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)](https://github.com/micREsoft/SysCaller)
+[![Version](https://img.shields.io/badge/Version-1.3.1-blue.svg)](https://github.com/micREsoft/SysCaller)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2064--bit-lightgrey.svg)](https://github.com/micREsoft/SysCaller)
 [![C++](https://img.shields.io/badge/C%2B%2B-17%2B-blue.svg)](https://isocpp.org/)
@@ -260,7 +260,8 @@ SysCaller includes full featured GUI "Bind" (formerly BuildTools) with capabilit
 
 ## Documentation
 
-> [SysCaller Docs](https://reverseengineeri.ng)
+> [SysCaller Docs](https://reverseengineeri.ng) |
+> Website for documentation is currently down!
 
 > [SysCaller Nt Usage](https://github.com/micREsoft/SysCaller/tree/main/SysCaller/Wrapper/include)
 
@@ -280,6 +281,18 @@ Pull requests, issues, and feature suggestions are welcome! Please:
 - Use issues for bug reports and feature requests
 
 If you find SysCaller useful, consider starring the repo to help others discover it.
+
+---
+
+## Credits
+
+SysCaller wouldnt be possible without:
+
+- [PeParse](https://github.com/trailofbits/pe-parse)
+- [CMark](https://github.com/commonmark/cmark)
+- [Fugue Icons](https://p.yusukekamiyamane.com/)
+- [Microsoft](https://microsoft.com)
+- [NTDoc](https://ntdoc.m417z.com/)
 
 ---
 

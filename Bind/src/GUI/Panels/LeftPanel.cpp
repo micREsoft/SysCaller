@@ -14,7 +14,9 @@
 #include <QFontDatabase>
 #include <QPixmap>
 
-LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
+LeftPanel::LeftPanel(QWidget* parent)
+    : QFrame(parent)
+{
     setMaximumWidth(350);
     setStyleSheet(
         "QFrame {"
@@ -25,16 +27,20 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(20, 20, 20, 20);
     layout->setSpacing(10);
+
     auto* topSection = new QVBoxLayout();
     topSection->setSpacing(5);
     topSection->setAlignment(Qt::AlignCenter);
+
     logoImage = new QLabel(this);
-    logoImage->setPixmap(QPixmap(":/src/Res/Icons/syscaller.png").scaled(128, 128, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    logoImage->setPixmap(QPixmap(":/src/Res/Icons/syscaller.png")
+                               .scaled(128, 128, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     logoImage->setFixedSize(128, 128);
     logoImage->setAlignment(Qt::AlignCenter);
     logoImage->setStyleSheet("QLabel { background: transparent; }");
     logoImage->setContentsMargins(0, 0, 0, 0);
     topSection->addWidget(logoImage, 0, Qt::AlignCenter);
+
     logoLabel = new QLabel("SysCaller: Bind", this);
     logoLabel->setStyleSheet(
         "color: #0077d4;"
@@ -45,13 +51,15 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
     );
     logoLabel->setAlignment(Qt::AlignCenter);
     topSection->addWidget(logoLabel, 0, Qt::AlignCenter);
-    versionLabel = new QLabel("v1.3.0", this);
+
+    versionLabel = new QLabel("v1.3.1", this);
     versionLabel->setStyleSheet("color: #666666; font-size: 12px;");
     versionLabel->setAlignment(Qt::AlignCenter);
     versionLabel->setCursor(Qt::PointingHandCursor);
     versionLabel->setTextFormat(Qt::RichText);
-    versionLabel->setText("<a href='#' style='color: #666666; text-decoration: none;'>v1.3.0</a>");
+    versionLabel->setText("<a href='#' style='color: #666666; text-decoration: none;'>v1.3.1</a>");
     topSection->addWidget(versionLabel, 0, Qt::AlignCenter);
+
     layout->addLayout(topSection);
     layout->addSpacing(15);
     auto* dllFrame = new QFrame(this);
@@ -62,16 +70,20 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
         " padding: 10px;"
         "}"
     );
+
     auto* dllLayout = new QVBoxLayout(dllFrame);
     dllLayout->setContentsMargins(15, 15, 15, 15);
     dllLayout->setSpacing(8);
+
     auto* headerBtnLayout = new QHBoxLayout();
     auto* dllHeader = new QLabel("NTDLL PATHS", this);
     dllHeader->setStyleSheet("color: #888888; font-size: 12px; font-weight: bold;");
     headerBtnLayout->addWidget(dllHeader);
     headerBtnLayout->addStretch();
+
     auto* btnLayout = new QHBoxLayout();
     btnLayout->setSpacing(8);
+
     addDllBtn = new QPushButton("Add DLL", this);
     addDllBtn->setMaximumWidth(100);
     addDllBtn->setMinimumHeight(26);
@@ -93,6 +105,7 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
         "}"
     );
     btnLayout->addWidget(addDllBtn);
+
     removeDllBtn = new QPushButton("Remove", this);
     removeDllBtn->setMaximumWidth(80);
     removeDllBtn->setMinimumHeight(26);
@@ -114,9 +127,11 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
         "}"
     );
     btnLayout->addWidget(removeDllBtn);
+
     headerBtnLayout->addLayout(btnLayout);
     dllLayout->addLayout(headerBtnLayout);
     dllLayout->addSpacing(3);
+
     dllList = new QListWidget(this);
     dllList->setStyleSheet(
         "QListWidget {"
@@ -141,24 +156,27 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
     );
     dllList->setFixedHeight(90);
     dllList->setContextMenuPolicy(Qt::CustomContextMenu);
+
     dllLayout->addWidget(dllList);
     dllFrame->setFixedHeight(175);
     layout->addWidget(dllFrame);
     layout->addSpacing(15);
     auto* buttonsSection = new QVBoxLayout();
     buttonsSection->setSpacing(10);
+
     validateBtn = new BindButton(
-        " Validation Check", 
-        ":/src/Res/Icons/validation.svg",
+        " Validation Check",
+        ":/src/Res/Icons/validation.png",
         "Bind Validation",
         "Analyzes and updates syscall offsets in syscaller.asm by comparing against ntdll.dll. <br><br>"
         "• Disassembles ntdll.dll exports to extract syscall IDs and ensures correct mapping <br>"
         "• Updates or removes syscalls based on their presence in the current systems ntdll.dll"
     );
     buttonsSection->addWidget(validateBtn);
+
     compatibilityBtn = new BindButton(
-        " Compatibility Check", 
-        ":/src/Res/Icons/compatibility.svg",
+        " Compatibility Check",
+        ":/src/Res/Icons/compatibility.png",
         "Bind Compatibility",
         "Performs compatibility analysis of syscalls against ntdll.dll: <br><br>"
         "• Detects duplicate syscall names and offsets <br>"
@@ -167,9 +185,10 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
         "• Reports valid, invalid, and duplicate syscalls with detailed status"
     );
     buttonsSection->addWidget(compatibilityBtn);
+
     verifyBtn = new BindButton(
-        " Verification Check", 
-        ":/src/Res/Icons/verification.svg",
+        " Verification Check",
+        ":/src/Res/Icons/verification.png",
         "Bind Verification",
         "Performs comprehensive syscall verification: <br><br>"
         "• Validates return types (NTSTATUS, BOOL, HANDLE, etc.) <br>"
@@ -178,9 +197,10 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
         "• Traces type definitions in header files"
     );
     buttonsSection->addWidget(verifyBtn);
+
     obfuscateBtn = new BindButton(
-        " Obfuscation", 
-        ":/src/Res/Icons/obfuscation.svg",
+        " Obfuscation",
+        ":/src/Res/Icons/obfuscation.png",
         "Bind Obfuscation",
         "Obfuscates syscalls to enhance protection: <br><br>"
         "• Randomizes syscall names and offsets <br>"
@@ -189,13 +209,15 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
         "• Preserves original syscall functionality"
     );
     buttonsSection->addWidget(obfuscateBtn);
+
     settingsBtn = new BindButton(
         " Settings",
-        ":/src/Res/Icons/settings.svg",
+        ":/src/Res/Icons/settings.png",
         "Bind Settings",
         "Configure SysCaller project settings"
     );
     buttonsSection->addWidget(settingsBtn);
+
     layout->addLayout(buttonsSection);
     layout->addSpacing(10);
     auto* statusFrame = new QFrame(this);
@@ -206,21 +228,28 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
         " padding: 10px;"
         "}"
     );
+
     auto* statusLayout = new QVBoxLayout(statusFrame);
     statusLayout->setContentsMargins(15, 15, 15, 15);
+
     progressBar = new ProgressBar(this);
     statusLayout->addWidget(progressBar);
+
     statusLabel = new QLabel("Ready", this);
     statusLabel->setStyleSheet(
         "color: #666666; font-size: 12px; padding: 5px; border-radius: 5px; background: rgba(102, 102, 102, 0.1);"
     );
     statusLabel->setAlignment(Qt::AlignCenter);
     statusLayout->addWidget(statusLabel);
+
     layout->addWidget(statusFrame);
     layout->addStretch();
+
     dllList->addItem("C:\\Windows\\System32\\ntdll.dll");
+
     connect(addDllBtn, &QPushButton::clicked, this, &LeftPanel::browseDll);
     emit dllPathsChanged(getDllPaths());
+
     connect(removeDllBtn, &QPushButton::clicked, this, &LeftPanel::removeSelectedDll);
     connect(dllList, &QListWidget::customContextMenuRequested, this, &LeftPanel::showContextMenu);
     connect(settingsBtn, &BindButton::clicked, this, &LeftPanel::settingsButtonClicked);
@@ -231,43 +260,60 @@ LeftPanel::LeftPanel(QWidget* parent) : QFrame(parent) {
     connect(versionLabel, &QLabel::linkActivated, this, &LeftPanel::showChangelogDialog);
 }
 
-void LeftPanel::browseDll() {
+void LeftPanel::browseDll()
+{
     QString dllPath = QFileDialog::getOpenFileName(
         this,
-        "Bind - v1.3.0",
+        "Bind - v1.3.1",
         "",
         "DLL Files (*.dll);;All Files (*.*)"
     );
-    if (!dllPath.isEmpty()) {
+
+    if (!dllPath.isEmpty())
+    {
         bool exists = false;
-        for (int i = 0; i < dllList->count(); ++i) {
-            if (dllList->item(i)->text() == dllPath) {
+
+        for (int i = 0; i < dllList->count(); ++i)
+        {
+            if (dllList->item(i)->text() == dllPath)
+            {
                 exists = true;
                 break;
             }
         }
-        if (!exists) {
+
+        if (!exists)
+        {
             dllList->addItem(dllPath);
             emit dllPathsChanged(getDllPaths());
         }
     }
 }
 
-void LeftPanel::removeSelectedDll() {
+void LeftPanel::removeSelectedDll()
+{
     QList<QListWidgetItem*> selectedItems = dllList->selectedItems();
-    if (selectedItems.isEmpty() || dllList->count() <= 1) {
+
+    if (selectedItems.isEmpty() || dllList->count() <= 1)
+    {
         return;
     }
-    for (QListWidgetItem* item : selectedItems) {
+
+    for (QListWidgetItem* item : selectedItems)
+    {
         delete dllList->takeItem(dllList->row(item));
     }
+
     emit dllPathsChanged(getDllPaths());
 }
 
-void LeftPanel::showContextMenu(const QPoint& pos) {
-    if (dllList->count() <= 1) {
+void LeftPanel::showContextMenu(const QPoint& pos)
+{
+    if (dllList->count() <= 1)
+    {
         return;
     }
+
     QMenu menu(this);
     menu.setStyleSheet(
         "QMenu {"
@@ -282,35 +328,48 @@ void LeftPanel::showContextMenu(const QPoint& pos) {
         " background-color: #4880a8;"
         "}"
     );
+
     QAction* removeAction = menu.addAction("Remove");
     QAction* selectedAction = menu.exec(dllList->mapToGlobal(pos));
-    if (selectedAction == removeAction) {
+
+    if (selectedAction == removeAction)
+    {
         removeSelectedDll();
     }
 }
 
-QStringList LeftPanel::getDllPaths() const {
+QStringList LeftPanel::getDllPaths() const
+{
     QStringList paths;
-    for (int i = 0; i < dllList->count(); ++i) {
+
+    for (int i = 0; i < dllList->count(); ++i)
+    {
         paths.append(dllList->item(i)->text());
     }
+
     return paths;
 }
 
-void LeftPanel::setProgressIndeterminate(bool indeterminate) {
-    if (indeterminate) {
+void LeftPanel::setProgressIndeterminate(bool indeterminate)
+{
+    if (indeterminate)
+    {
         progressBar->setRange(0, 0);
-    } else {
+    }
+    else
+    {
         progressBar->setRange(0, 1);
         progressBar->setValue(1);
     }
 }
 
-void LeftPanel::updateStatus(const QString& message) {
+void LeftPanel::updateStatus(const QString& message)
+{
     statusLabel->setText(message);
 }
 
-void LeftPanel::showChangelogDialog() {
+void LeftPanel::showChangelogDialog()
+{
     ChangelogDialog dialog(this);
     dialog.exec();
 }
