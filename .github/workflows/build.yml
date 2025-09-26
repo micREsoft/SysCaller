@@ -1,4 +1,4 @@
-name: Build Bind (SysCaller)
+name: "Build SysCaller: Bind"
 
 on:
   push:
@@ -378,34 +378,34 @@ jobs:
     - name: Upload Build Artifacts (Release)
       uses: actions/upload-artifact@v4
       with:
-        name: Bind-x64-Release
+        name: Bind-Release
         path: Bind/x64/Release/
         retention-days: 30
 
     - name: Upload Build Artifacts (Debug)
       uses: actions/upload-artifact@v4
       with:
-        name: Bind-x64-Debug
+        name: Bind-Debug
         path: Bind/x64/Debug/
         retention-days: 30
         
     - name: Create Release Package
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
       run: |
-        $version = Get-Date -Format "yyyy.MM.dd-HHmm"
-        $zipName = "Bind-x64-$version.zip"
+        $version = "v1.3.1-${{ github.run_number }}"
+        $zipName = "Bind-$version.zip"
 
-        # Create a temporary dir for packaging
         New-Item -ItemType Directory -Path "release-package" -Force
 
-        # Copy the entire Release directory (includes all dependencies from windeployqt + vcpkg)
         Copy-Item "x64/Release/*" "release-package\" -Recurse
 
         # Create README
-        $readmeText = "# Bind (SysCaller) - x64`n`n"
+        $version = "v1.3.1-${{ github.run_number }}"
+        $readmeText = "# SysCaller: Bind - v1.3.1`n`n"
         $readmeText += "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')`n"
         $readmeText += "Commit: ${{ github.sha }}`n"
-        $readmeText += "Platform: Windows x64 (64-bit)`n`n"
+        $readmeText += "Platform: Windows x64 (64-bit)`n"
+        $readmeText += "Version: $version`n`n"
         $readmeText += "## Installation`n"
         $readmeText += "1. Download Bind.exe`n"
         $readmeText += "2. Run the executable`n`n"
@@ -425,6 +425,43 @@ jobs:
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
       uses: actions/upload-artifact@v4
       with:
-        name: Release-Package-x64
-        path: Bind/Bind-x64-*.zip
+        name: Release-Package
+        path: Bind/Bind-v1.3.1-*.zip
         retention-days: 90
+
+    - name: Create GitHub Release
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.3.1-${{ github.run_number }}
+        release_name: "SysCaller: Bind - v1.3.1-${{ github.run_number }}"
+        body: |
+          ## SysCaller: Bind - v1.3.1-${{ github.run_number }}
+
+          **Build Date:** ${{ github.event.head_commit.timestamp }}
+          **Commit:** ${{ github.sha }}
+          **Platform:** Windows x64 (64-bit)
+
+          ## Installation
+          1. Download Bind.zip
+          2. Replace the downloaded Bind directory with the one in SysCaller
+          3. Extract the zip & run the Bind.exe
+
+          ## Requirements
+          - Windows 10 or later
+          - Visual C++ Redistributable (if not already installed)
+          - Qt5 runtime libraries (if not already installed)
+
+    - name: Upload Release Asset
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: Bind/Bind-v1.3.1-${{ github.run_number }}.zip
+        asset_name: Bind-v1.3.1-${{ github.run_number }}.zip
+        asset_content_type: application/zip
