@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -69,6 +69,8 @@
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QTDIR>$(QTDIR)</QTDIR>
+    <QTDIR>C:\Qt\5.15.2\msvc2019_64</QTDIR>
+    <QtInstall>5.15.2_msvc2019_64</QtInstall>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') OR !Exists('$(QtMsBuild)\Qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
@@ -172,6 +174,15 @@
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_RightPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Core\Integrity\Compatibility\Compatibility.cpp" />
     <ClCompile Include="src\Core\Integrity\Validator\Validator.cpp" />
@@ -215,15 +226,6 @@
     <ClCompile Include="src\GUI\Threads\CompatibilityThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ObfuscationThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ValidatorThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_RightPanel.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ChangelogDialog.cpp" />
     <ClCompile Include="GeneratedFiles\moc_HashCompareDialog.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ObfuscationSelectionDialog.cpp" />
