@@ -63,6 +63,9 @@ While Bind is now stable, major architectural changes to the GUI are not current
 ### Experimental Features
 Features that would significantly change the core API or break existing functionality are not currently being accepted.
 
+### Multi-Architectual Support
+I plan on only supporting x64 for the time being, maybe x86 can get support in a way where it wont clutter the project. (ARM is also not planned.)
+
 ---
 
 ## Development Guidelines
