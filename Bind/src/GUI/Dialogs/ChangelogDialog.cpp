@@ -16,7 +16,9 @@
 #include <QMouseEvent>
 #include "include/Core/Utils/PathUtils.h"
 
-ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
+ChangelogDialog::ChangelogDialog(QWidget* parent)
+    : QDialog(parent)
+{
     setWindowTitle("Bind - History");
     setMinimumSize(1150, 600);
     resize(1150, 600);
@@ -26,16 +28,22 @@ ChangelogDialog::ChangelogDialog(QWidget* parent) : QDialog(parent) {
     setupStylesheet();
     setupUI();
     populateChangelogs();
-    connect(listWidget, &QListWidget::currentItemChanged, 
+
+    connect(listWidget, &QListWidget::currentItemChanged,
             this, &ChangelogDialog::displayChangelog);
-    if (listWidget->count() > 0) {
+
+    if (listWidget->count() > 0)
+    {
         listWidget->setCurrentRow(0);
     }
 }
 
-void ChangelogDialog::setupStylesheet() {
+void ChangelogDialog::setupStylesheet()
+{
     QFile stylesheetFile(":/src/GUI/Stylesheets/ChangelogDialog.qss");
-    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text)) {
+
+    if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
+    {
         QTextStream in(&stylesheetFile);
         QString stylesheet = in.readAll();
         setStyleSheet(stylesheet);
@@ -43,84 +51,115 @@ void ChangelogDialog::setupStylesheet() {
     }
 }
 
-void ChangelogDialog::setupUI() {
+void ChangelogDialog::setupUI()
+{
     auto* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
+
     titleBar = new SettingsTitleBar("Bind - Changelog History", this);
     layout->addWidget(titleBar);
+
     auto* contentLayout = new QVBoxLayout();
     contentLayout->setContentsMargins(20, 20, 20, 20);
     contentLayout->setSpacing(20);
+
     auto* hbox = new QHBoxLayout();
     listWidget = new QListWidget();
     listWidget->setFixedWidth(200);
     hbox->addWidget(listWidget);
+
     textEdit = new QTextEdit();
     textEdit->setReadOnly(true);
     hbox->addWidget(textEdit, 1);
     contentLayout->addLayout(hbox);
+
     auto* btnBox = new QHBoxLayout();
     btnBox->addStretch();
+
     auto* closeBtn = new QPushButton("Close");
     connect(closeBtn, &QPushButton::clicked, this, &QDialog::accept);
     btnBox->addWidget(closeBtn);
     contentLayout->addLayout(btnBox);
     layout->addLayout(contentLayout);
+
     connect(titleBar, &SettingsTitleBar::closeClicked, this, &QDialog::accept);
 }
 
-void ChangelogDialog::populateChangelogs() {
+void ChangelogDialog::populateChangelogs()
+{
     QString historyDir = PathUtils::getProjectRoot() + "/History";
     QDir dir(historyDir);
     QStringList changelogs;
     QStringList filters;
     filters << "CHANGELOG_*.md";
+
     QFileInfoList files = dir.entryInfoList(filters, QDir::Files);
-    for (const QFileInfo& fileInfo : files) {
+
+    for (const QFileInfo& fileInfo : files)
+    {
         QString fileName = fileInfo.fileName();
-        if (fileName.startsWith("CHANGELOG_") && fileName.endsWith(".md")) {
+
+        if (fileName.startsWith("CHANGELOG_") && fileName.endsWith(".md"))
+        {
             QString version = fileName.mid(10, fileName.length() - 13);
             changelogFiles[version] = fileInfo.absoluteFilePath();
             changelogs.append(version);
         }
     }
+
     std::sort(changelogs.begin(), changelogs.end(), std::greater<QString>());
-    for (const QString& version : changelogs) {
+
+    for (const QString& version : changelogs)
+    {
         listWidget->addItem(version);
     }
 }
 
-void ChangelogDialog::displayChangelog(QListWidgetItem* current, QListWidgetItem* previous) {
+void ChangelogDialog::displayChangelog(QListWidgetItem* current, QListWidgetItem* previous)
+{
     Q_UNUSED(previous)
-    if (!current) {
+
+    if (!current)
+    {
         textEdit->clear();
         return;
     }
+
     QString version = current->text();
     QString filePath = changelogFiles.value(version);
-    if (!filePath.isEmpty() && QFile::exists(filePath)) {
+
+    if (!filePath.isEmpty() && QFile::exists(filePath))
+    {
         QFile file(filePath);
-        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
             QTextStream stream(&file);
             stream.setCodec("UTF-8");
             QString content = stream.readAll();
             file.close();
             QString html = markdownToHtml(content);
             textEdit->setHtml(html);
-        } else {
+        }
+        else
+        {
             textEdit->setHtml("<i>[Error Reading Changelog File]</i>");
         }
-    } else {
+    }
+    else
+    {
         textEdit->setHtml("<i>[No Changelog Found]</i>");
     }
 }
 
-QString ChangelogDialog::markdownToHtml(const QString& markdown) {
+QString ChangelogDialog::markdownToHtml(const QString& markdown)
+{
     QByteArray utf8 = markdown.toUtf8();
     char* html = cmark_markdown_to_html(utf8.constData(), utf8.size(), CMARK_OPT_DEFAULT);
     QString result = QString::fromUtf8(html);
     free(html);
+
     QString customCss =
         "<style>"
         "body { background: #181818; color: #fff; font-family: 'IBM Plex Mono', monospace; margin: 0; padding: 10px; }"
@@ -138,26 +177,33 @@ QString ChangelogDialog::markdownToHtml(const QString& markdown) {
         "hr { border: 1px solid #333; margin: 20px 0; }"
         "p { margin-bottom: 10px; line-height: 1.4; }"
         "</style>";
+
     return customCss + result;
 }
 
-void ChangelogDialog::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
+void ChangelogDialog::mousePressEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
         m_dragging = true;
         m_dragPosition = event->globalPos() - frameGeometry().topLeft();
         event->accept();
     }
 }
 
-void ChangelogDialog::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons() & Qt::LeftButton && m_dragging) {
+void ChangelogDialog::mouseMoveEvent(QMouseEvent* event)
+{
+    if (event->buttons() & Qt::LeftButton && m_dragging)
+    {
         move(event->globalPos() - m_dragPosition);
         event->accept();
     }
 }
 
-void ChangelogDialog::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
+void ChangelogDialog::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
         m_dragging = false;
         event->accept();
     }

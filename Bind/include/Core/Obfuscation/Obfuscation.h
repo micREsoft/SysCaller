@@ -8,6 +8,26 @@
 #include <QSettings>
 #include "include/GUI/Themes/Colors.h"
 
+enum class ObfuscationMode {
+    Normal = 0,
+    StubMapper = 1
+};
+
+inline QString obfuscationModeToString(ObfuscationMode mode) {
+    switch (mode) {
+        case ObfuscationMode::Normal: return "Normal";
+        case ObfuscationMode::StubMapper: return "Stub Mapper";
+        default: return "Unknown";
+    }
+}
+
+inline ObfuscationMode stringToObfuscationMode(const QString& str) {
+    if (str == "stub_mapper" || str == "Stub Mapper") {
+        return ObfuscationMode::StubMapper;
+    }
+    return ObfuscationMode::Normal;
+}
+
 class Obfuscation {
 private:
     std::function<void(const QString&)> outputCallback;

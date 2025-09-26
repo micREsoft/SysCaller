@@ -2,30 +2,41 @@
 #include <QRandomGenerator>
 #include <QDebug>
 
-DirectObfuscation::ControlFlow::ControlFlow(QSettings* settings) : settings(settings) {
-}
+DirectObfuscation::ControlFlow::ControlFlow(QSettings* settings)
+    : settings(settings)
+{}
 
-void DirectObfuscation::ControlFlow::setSettings(QSettings* settings) {
+void DirectObfuscation::ControlFlow::setSettings(QSettings* settings)
+{
     this->settings = settings;
 }
 
-QString DirectObfuscation::ControlFlow::generateRandomLabel(const QString& prefix) {
+QString DirectObfuscation::ControlFlow::generateRandomLabel(const QString& prefix)
+{
     QString label;
-    do {
+
+    do
+    {
         QString suffix = QString::number(getRandomInt(1000, 999999));
         label = prefix + suffix;
     } while (usedLabels.contains(label));
+
     usedLabels.insert(label);
     return label;
 }
 
-QStringList DirectObfuscation::ControlFlow::generateOpaquePredicates(const QString& labelPrefix) {
-    if (!settings || !isOpaquePredicatesEnabled()) {
+QStringList DirectObfuscation::ControlFlow::generateOpaquePredicates(const QString& labelPrefix)
+{
+    if (!settings || !isOpaquePredicatesEnabled())
+    {
         return QStringList();
     }
+
     QStringList predicates;
     int complexity = getControlFlowComplexity();
-    for (int i = 0; i < complexity; ++i) {
+
+    for (int i = 0; i < complexity; ++i)
+    {
         QString label = generateRandomLabel(labelPrefix);
         QString endLabel = generateRandomLabel(labelPrefix);
         QStringList predicate = generateComplexPredicate();
@@ -34,16 +45,22 @@ QStringList DirectObfuscation::ControlFlow::generateOpaquePredicates(const QStri
         predicates << QString("    jmp %1").arg(endLabel);
         predicates << QString("%1:").arg(endLabel);
     }
+
     return predicates;
 }
 
-QStringList DirectObfuscation::ControlFlow::generateBogusControlFlow(const QString& labelPrefix) {
-    if (!settings || !isBogusControlFlowEnabled()) {
+QStringList DirectObfuscation::ControlFlow::generateBogusControlFlow(const QString& labelPrefix)
+{
+    if (!settings || !isBogusControlFlowEnabled())
+    {
         return QStringList();
     }
+
     QStringList bogusFlow;
     int complexity = getControlFlowComplexity();
-    for (int i = 0; i < complexity; ++i) {
+
+    for (int i = 0; i < complexity; ++i)
+    {
         QString label1 = generateRandomLabel(labelPrefix);
         QString label2 = generateRandomLabel(labelPrefix);
         QString reg = getRandomRegister();
@@ -56,32 +73,44 @@ QStringList DirectObfuscation::ControlFlow::generateBogusControlFlow(const QStri
         bogusFlow << QString("    jmp %2").arg(label2);
         bogusFlow << QString("%2:").arg(label2);
     }
+
     return bogusFlow;
 }
 
-QStringList DirectObfuscation::ControlFlow::generateIndirectJumps(const QString& labelPrefix) {
-    if (!settings || !isIndirectJumpsEnabled()) {
+QStringList DirectObfuscation::ControlFlow::generateIndirectJumps(const QString& labelPrefix)
+{
+    if (!settings || !isIndirectJumpsEnabled())
+    {
         return QStringList();
     }
+
     QStringList indirectJumps;
     int complexity = getControlFlowComplexity();
-    for (int i = 0; i < complexity; ++i) {
+
+    for (int i = 0; i < complexity; ++i)
+    {
         QString targetLabel = generateRandomLabel(labelPrefix);
         QString tempReg = getRandomRegister();
         indirectJumps << QString("    lea %1, %2").arg(tempReg).arg(targetLabel);
         indirectJumps << QString("    jmp %1").arg(tempReg);
         indirectJumps << QString("%1:").arg(targetLabel);
     }
+
     return indirectJumps;
 }
 
-QStringList DirectObfuscation::ControlFlow::generateConditionalBranches(const QString& labelPrefix) {
-    if (!settings || !isConditionalBranchesEnabled()) {
+QStringList DirectObfuscation::ControlFlow::generateConditionalBranches(const QString& labelPrefix)
+{
+    if (!settings || !isConditionalBranchesEnabled())
+    {
         return QStringList();
     }
+
     QStringList branches;
     int complexity = getControlFlowComplexity();
-    for (int i = 0; i < complexity; ++i) {
+
+    for (int i = 0; i < complexity; ++i)
+    {
         QString trueLabel = generateRandomLabel(labelPrefix);
         QString falseLabel = generateRandomLabel(labelPrefix);
         QString endLabel = generateRandomLabel(labelPrefix);
@@ -96,73 +125,98 @@ QStringList DirectObfuscation::ControlFlow::generateConditionalBranches(const QS
         branches << QString("    jmp %3").arg(endLabel);
         branches << QString("%3:").arg(endLabel);
     }
+
     return branches;
 }
 
-QStringList DirectObfuscation::ControlFlow::wrapWithControlFlow(const QStringList& originalCode, const QString& labelPrefix) {
-    if (!settings) {
+QStringList DirectObfuscation::ControlFlow::wrapWithControlFlow(const QStringList& originalCode,
+                                                                const QString& labelPrefix)
+{
+    if (!settings)
+    {
         return originalCode;
     }
+
     QStringList obfuscatedCode;
-    if (isOpaquePredicatesEnabled()) {
+
+    if (isOpaquePredicatesEnabled())
+    {
         obfuscatedCode << generateOpaquePredicates(labelPrefix);
     }
-    if (isBogusControlFlowEnabled()) {
+
+    if (isBogusControlFlowEnabled())
+    {
         obfuscatedCode << generateBogusControlFlow(labelPrefix);
     }
+
     obfuscatedCode << originalCode;
-    if (isIndirectJumpsEnabled()) {
+
+    if (isIndirectJumpsEnabled())
+    {
         obfuscatedCode << generateIndirectJumps(labelPrefix);
     }
-    if (isConditionalBranchesEnabled()) {
+
+    if (isConditionalBranchesEnabled())
+    {
         obfuscatedCode << generateConditionalBranches(labelPrefix);
     }
+
     return obfuscatedCode;
 }
 
-bool DirectObfuscation::ControlFlow::isOpaquePredicatesEnabled() {
+bool DirectObfuscation::ControlFlow::isOpaquePredicatesEnabled()
+{
     return settings ? settings->value("obfuscation/control_flow_opaque_predicates", false).toBool() : false;
 }
 
-bool DirectObfuscation::ControlFlow::isBogusControlFlowEnabled() {
+bool DirectObfuscation::ControlFlow::isBogusControlFlowEnabled()
+{
     return settings ? settings->value("obfuscation/control_flow_bogus_flow", false).toBool() : false;
 }
 
-bool DirectObfuscation::ControlFlow::isIndirectJumpsEnabled() {
+bool DirectObfuscation::ControlFlow::isIndirectJumpsEnabled()
+{
     return settings ? settings->value("obfuscation/control_flow_indirect_jumps", false).toBool() : false;
 }
 
-bool DirectObfuscation::ControlFlow::isConditionalBranchesEnabled() {
+bool DirectObfuscation::ControlFlow::isConditionalBranchesEnabled()
+{
     return settings ? settings->value("obfuscation/control_flow_conditional_branches", false).toBool() : false;
 }
 
-int DirectObfuscation::ControlFlow::getControlFlowComplexity() {
+int DirectObfuscation::ControlFlow::getControlFlowComplexity()
+{
     return settings ? settings->value("obfuscation/control_flow_complexity", 2).toInt() : 2;
 }
 
-int DirectObfuscation::ControlFlow::getRandomInt(int min, int max) {
+int DirectObfuscation::ControlFlow::getRandomInt(int min, int max)
+{
     return QRandomGenerator::global()->bounded(min, max + 1);
 }
 
-QString DirectObfuscation::ControlFlow::getRandomRegister() {
+QString DirectObfuscation::ControlFlow::getRandomRegister()
+{
     QStringList registers = {"rax", "rbx", "rcx", "rdx", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15"};
     return registers[getRandomInt(0, registers.size() - 1)];
 }
 
-QString DirectObfuscation::ControlFlow::getRandomCondition() {
+QString DirectObfuscation::ControlFlow::getRandomCondition()
+{
     QStringList conditions = {"test", "cmp", "and", "or", "xor"};
     return conditions[getRandomInt(0, conditions.size() - 1)];
 }
 
-QStringList DirectObfuscation::ControlFlow::generateAlwaysTrueCondition() {
+QStringList DirectObfuscation::ControlFlow::generateAlwaysTrueCondition()
+{
     QStringList conditions;
-    QString reg = getRandomRegister();    
+    QString reg = getRandomRegister();
     conditions << QString("    mov %1, 1").arg(reg);
     conditions << QString("    test %1, %1").arg(reg);
     return conditions;
 }
 
-QStringList DirectObfuscation::ControlFlow::generateAlwaysFalseCondition() {
+QStringList DirectObfuscation::ControlFlow::generateAlwaysFalseCondition()
+{
     QStringList conditions;
     QString reg = getRandomRegister();
     conditions << QString("    mov %1, 0").arg(reg);
@@ -170,7 +224,8 @@ QStringList DirectObfuscation::ControlFlow::generateAlwaysFalseCondition() {
     return conditions;
 }
 
-QStringList DirectObfuscation::ControlFlow::generateComplexPredicate() {
+QStringList DirectObfuscation::ControlFlow::generateComplexPredicate()
+{
     QStringList predicate;
     QString reg1 = getRandomRegister();
     QString reg2 = getRandomRegister();

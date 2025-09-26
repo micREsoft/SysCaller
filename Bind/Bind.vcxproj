@@ -416,15 +416,15 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="src\Res\Icons\compatibility.svg" />
-    <Image Include="src\Res\Icons\export.svg" />
+    <Image Include="src\Res\Icons\compatibility.png" />
+    <Image Include="src\Res\Icons\export.png" />
     <Image Include="src\Res\Icons\logo.ico" />
-    <Image Include="src\Res\Icons\obfuscation.svg" />
-    <Image Include="src\Res\Icons\reset.svg" />
-    <Image Include="src\Res\Icons\settings.svg" />
+    <Image Include="src\Res\Icons\obfuscation.png" />
+    <Image Include="src\Res\Icons\reset.png" />
+    <Image Include="src\Res\Icons\settings.png" />
     <Image Include="src\Res\Icons\syscaller.png" />
-    <Image Include="src\Res\Icons\validation.svg" />
-    <Image Include="src\Res\Icons\verification.svg" />
+    <Image Include="src\Res\Icons\validation.png" />
+    <Image Include="src\Res\Icons\verification.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="src\Res\Fonts\ibmplexmono.ttf" />
