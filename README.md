@@ -208,13 +208,13 @@ To use SysCaller from C, C++, Rust, Python, Go, or any other language that suppo
    ```
 3. **Call syscalls directly:**
    ```cpp
-   // User mode example
+   /* User mode example */
    NTSTATUS status = SysAllocateVirtualMemory(
        processHandle, &baseAddress, 0, &regionSize,
        MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
    ```
    ```cpp
-   // Kernel mode example
+   /* Kernel mode example */
    NTSTATUS status = SysKAllocateVirtualMemory(
        ZwCurrentProcess(), &base, 0, &regionSize,
        MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);

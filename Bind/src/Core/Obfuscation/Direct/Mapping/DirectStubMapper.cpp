@@ -209,10 +209,10 @@ bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, 
     QSet<int> usedOffsets;
     QSet<QString> usedOffsetNames;
 
-    QMap<int, QString> offsetNameMap;       // maps fake offset to random name
-    QMap<QString, QString> syscallMap;      // maps original syscall to random name
-    QMap<QString, int> syscallOffsets;      // maps original syscall to its offset
-    QMap<int, int> realToFakeOffset;        // maps real offset to fake offset
+    QMap<int, QString> offsetNameMap;       /* maps fake offset to random name */
+    QMap<QString, QString> syscallMap;      /* maps original syscall to random name */
+    QMap<QString, int> syscallOffsets;      /* maps original syscall to its offset */
+    QMap<int, int> realToFakeOffset;        /* maps real offset to fake offset */
 
     QList<QPair<QString, QStringList>> syscallStubs;
     QStringList currentStub;
@@ -345,7 +345,7 @@ bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, 
     QStringList aliases;
     bool enableControlFlow = settings->value("obfuscation/control_flow_enabled", false).toBool();
 
-    QMap<QString, QString> functionSuffixes; // store suffixes for each function
+    QMap<QString, QString> functionSuffixes; /* store suffixes for each function */
 
     if (enableControlFlow)
     {
@@ -444,7 +444,7 @@ bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, 
         QString originalSyscall = stubPair.first;
         QStringList stubLines = stubPair.second;
         bool skipRest = false;
-        QString functionSuffix; // store the random suffix for this function
+        QString functionSuffix; /* store the random suffix for this function */
 
         if (enableControlFlow && functionSuffixes.contains(originalSyscall))
         {
@@ -718,7 +718,7 @@ bool DirectObfuscation::StubMapper::updateHeaderFile(const QString& headerPath,
             newHeaderContent << line;
             continue;
         }
-        // preserve c++ guards and extern blocks
+        /* preserve c++ guards and extern blocks */
         if (line.contains("#ifdef __cplusplus") ||
             line.contains("extern \"C\"") ||
             line.trimmed() == "{" ||
@@ -806,7 +806,7 @@ bool DirectObfuscation::StubMapper::updateHeaderFile(const QString& headerPath,
         }
     }
     newHeaderContent << "";
-    newHeaderContent << "// Syscall Name Mappings";
+    newHeaderContent << "/* Syscall Name Mappings */";
 
     for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it)
     {

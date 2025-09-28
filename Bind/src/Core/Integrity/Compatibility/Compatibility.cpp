@@ -126,15 +126,15 @@ QList<Compatibility::SyscallInfo> Compatibility::readSyscalls(const QString& asm
 
             if (vMatch.hasMatch())
             {
-                QString prefix = vMatch.captured(1);      // "Sys", "SysK", or "SysInline"
-                QString namePart = vMatch.captured(2);    // the actual function name
-                QString versionPart = vMatch.captured(3); // the version letter
+                QString prefix = vMatch.captured(1);      /* "Sys", "SysK", or "SysInline" */
+                QString namePart = vMatch.captured(2);    /* the actual function name */
+                QString versionPart = vMatch.captured(3); /* the version letter */
 
                 baseName = prefix + namePart;
 
                 if (!versionPart.isEmpty())
                 {
-                    // convert letter to version number A=2, B=3, C=4, etc
+                    /* convert letter to version number A=2, B=3, C=4, etc */
                     version = versionPart.at(0).toLatin1() - 'A' + 2;
                 }
                 else
@@ -332,7 +332,7 @@ void Compatibility::validateSyscalls(const QString& asmFile, const QStringList& 
     for (const SyscallInfo& syscall : syscalls)
     {
         int version = syscall.version;
-        int dllIndex = (version == 1) ? 0 : (version - 1); // version 1 = table 0, version 2 = table 1, etc.
+        int dllIndex = (version == 1) ? 0 : (version - 1); /* version 1 = table 0, version 2 = table 1, etc. */
 
         qDebug() << QString("Debug: Checking Syscall '%1' (version %2) against Table %3")
                           .arg(syscall.name).arg(version).arg(dllIndex);
@@ -346,7 +346,7 @@ void Compatibility::validateSyscalls(const QString& asmFile, const QStringList& 
 
         QMap<QString, int> syscallNumbers = syscallTables[dllIndex];
 
-        // remove version suffix for DLL lookup
+        /* remove version suffix for DLL lookup */
         QString baseName = syscall.baseName;
         QString expectedName;
 
@@ -374,7 +374,7 @@ void Compatibility::validateSyscalls(const QString& asmFile, const QStringList& 
         }
 
         int actualOffset = syscallNumbers.value(expectedName, 0);
-        // check for duplicates only within same table
+        /* check for duplicates only within same table */
         bool isDuplicate = false;
         QString dupType, dupWith;
 

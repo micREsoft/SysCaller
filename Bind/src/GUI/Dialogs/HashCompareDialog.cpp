@@ -82,7 +82,7 @@ void HashCompareDialog::initUI()
 
     splitter = new QSplitter(Qt::Horizontal);
 
-    // left side, hash file list
+    /* left side, hash file list */
     auto* leftPanel = new QGroupBox("Hash Files");
     auto* leftLayout = new QVBoxLayout(leftPanel);
 
@@ -102,7 +102,7 @@ void HashCompareDialog::initUI()
     leftLayout->addWidget(compareBtn);
     splitter->addWidget(leftPanel);
 
-    // right side, hash table
+    /* right side, hash table */
     auto* rightPanel = new QGroupBox("Hash Comparison");
     auto* rightLayout = new QVBoxLayout(rightPanel);
 
@@ -193,7 +193,7 @@ void HashCompareDialog::loadHashFiles()
         filters << "stub_hashes_*.json";
         QFileInfoList files = dir.entryInfoList(filters, QDir::Files);
 
-        // sort files in reverse order (newest first)
+        /* sort files in reverse order (newest first) */
         std::sort(files.begin(), files.end(), [](const QFileInfo& a, const QFileInfo& b)
         {
             return a.fileName() > b.fileName();
@@ -397,7 +397,7 @@ void HashCompareDialog::displayComparison(const QStringList& files)
 
     hashTable->setHorizontalHeaderLabels(headers);
 
-    // create hash mapping for duplicate detection
+    /* create hash mapping for duplicate detection */
     QMap<QString, QList<QPair<QString, int>>> hashMapping;
     QStringList sortedSyscalls = allSyscalls.values();
     std::sort(sortedSyscalls.begin(), sortedSyscalls.end());
@@ -448,13 +448,13 @@ void HashCompareDialog::displayComparison(const QStringList& files)
     {
         QList<QColor> duplicateColors =
         {
-            QColor(255, 150, 150),  // red
-            QColor(150, 255, 150),  // green
-            QColor(150, 150, 255),  // blue
-            QColor(255, 255, 150),  // yellow
-            QColor(255, 150, 255),  // purple
-            QColor(150, 255, 255),  // cyan
-            QColor(255, 200, 150),  // orange
+            QColor(255, 150, 150),  /* red */
+            QColor(150, 255, 150),  /* green */
+            QColor(150, 150, 255),  /* blue */
+            QColor(255, 255, 150),  /* yellow */
+            QColor(255, 150, 255),  /* purple */
+            QColor(150, 255, 255),  /* cyan */
+            QColor(255, 200, 150),  /* orange */
         };
 
         int colorIndex = 0;

@@ -320,7 +320,7 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
         scStubs[currentStub].end = lines.size() - 1;
     }
 
-    // extract content for each SC stub
+    /* extract content for each SC stub */
     for (auto it = scStubs.begin(); it != scStubs.end(); ++it)
     {
         int start = it.value().start;
@@ -377,12 +377,12 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
 
             if (inlineAssemblyMode && syscallName.startsWith("SysInline"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(9);
             }
             else if (indirectAssemblyMode && syscallName.startsWith("SysIndirect"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(11);
             }
 
@@ -747,12 +747,12 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
 
             if (inlineAssemblyMode && syscallName.startsWith("SysInline"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(9);
             }
             else if (indirectAssemblyMode && syscallName.startsWith("SysIndirect"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(11);
             }
 
@@ -887,7 +887,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
                                   .arg(funcName) + Colors::ENDC());
             continue;
         }
-        // add non versioned functions for table 0
+        /* add non versioned functions for table 0 */
         if (syscallTables.contains(0))
         {
             QMap<QString, int> table0 = syscallTables[0];
@@ -926,7 +926,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
             }
         }
 
-        // add versioned functions for additional tables
+        /* add versioned functions for additional tables */
         for (int tableIdx = 1; tableIdx < numTables; ++tableIdx)
         {
             if (!syscallTables.contains(tableIdx))

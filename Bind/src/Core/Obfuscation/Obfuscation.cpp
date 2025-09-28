@@ -208,10 +208,10 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     QSet<QString> usedNames;
     QSet<int> usedOffsets;
     QSet<QString> usedOffsetNames;
-    QMap<int, QString> offsetNameMap;      // maps fake offset to random name
-    QMap<QString, QString> syscallMap;     // maps original syscall to random name
-    QMap<QString, int> syscallOffsets;     // maps original syscall to its offset
-    QMap<int, int> realToFakeOffset;       // maps real offset to fake offset
+    QMap<int, QString> offsetNameMap;      /* maps fake offset to random name */
+    QMap<QString, QString> syscallMap;     /* maps original syscall to random name */
+    QMap<QString, int> syscallOffsets;     /* maps original syscall to its offset */
+    QMap<int, int> realToFakeOffset;       /* maps real offset to fake offset */
     QList<QPair<QString, QStringList>> syscallStubs;
     QStringList currentStub;
     QString currentSyscall;
@@ -290,7 +290,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     QStringList publics;
     QStringList aliases;
     bool enableControlFlow = settings->value("obfuscation/control_flow_enabled", false).toBool();
-    QMap<QString, QString> functionSuffixes; // store suffixes for each function
+    QMap<QString, QString> functionSuffixes; /* store suffixes for each function */
 
     if (enableControlFlow)
     {
@@ -371,8 +371,8 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
     {
         QString originalSyscall = stubPair.first;
         QStringList stubLines = stubPair.second;
-        bool skipRest = false;  // flag to skip lines after mov eax
-        QString functionSuffix; // store the random suffix for this function
+        bool skipRest = false;  /* flag to skip lines after mov eax */
+        QString functionSuffix; /* store the random suffix for this function */
 
         if (enableControlFlow && functionSuffixes.contains(originalSyscall))
         {
@@ -404,7 +404,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
         {
             if (skipRest)
             {
-                // only process ENDP line when skipping
+                /* only process ENDP line when skipping */
                 if (originalLine.contains(" ENDP"))
                 {
                     QString line = originalLine;
@@ -434,7 +434,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
                     }
 
                     newContent << line;
-                    skipRest = false; // reset the flag after processing ENDP
+                    skipRest = false; /* reset the flag after processing ENDP */
                 }
 
                 continue;
@@ -482,7 +482,7 @@ bool Obfuscation::processAssemblyFile(const QString& asmPath, const QString& hea
                         QMap<QString, QVariant> encryptionData = encryptionDataMap.value(offsetName);
                         line = stubGen.generateChunkedSequence(offsetName, encryptionData, static_cast<int>(encryptionMethod));
                         newContent << line;
-                        skipRest = true;  // skip original syscall/ret
+                        skipRest = true;  /* skip original syscall/ret */
                         continue;
                     }
                 }
@@ -730,7 +730,7 @@ bool Obfuscation::updateHeaderFile(const QString& headerPath,
             continue;
         }
 
-        // preserve c++ guards and extern blocks
+        /* preserve c++ guards and extern blocks */
         if (line.contains("#ifdef __cplusplus") || line.contains("extern \"C\"") ||
             line.trimmed() == "{" || line.trimmed() == "}" || line.contains("#endif"))
         {
@@ -818,7 +818,7 @@ bool Obfuscation::updateHeaderFile(const QString& headerPath,
     }
 
     newHeaderContent << "";
-    newHeaderContent << "// Syscall Name Mappings";
+    newHeaderContent << "/* Syscall Name Mappings */";
 
     for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it)
     {

@@ -9,10 +9,10 @@
 namespace IndirectObfuscation {
 
     enum class ControlFlowPattern {
-        RegisterBased = 0,  // register based opaque predicate
-        ValueBased = 1,     // value based opaque predicate
-        FlagBased = 2,      // flag based opaque predicate
-        MixedJunkCode = 3   // mixed junk code with opaque predicate
+        RegisterBased = 0,  /* register based opaque predicate */
+        ValueBased = 1,     /* value based opaque predicate */
+        FlagBased = 2,      /* flag based opaque predicate */
+        MixedJunkCode = 3   /* mixed junk code with opaque predicate */
     };
 
     inline QString controlFlowPatternToString(ControlFlowPattern pattern) {
@@ -29,7 +29,7 @@ namespace IndirectObfuscation {
         if (str == "value") return ControlFlowPattern::ValueBased;
         if (str == "flag") return ControlFlowPattern::FlagBased;
         if (str == "mixed") return ControlFlowPattern::MixedJunkCode;
-        return ControlFlowPattern::RegisterBased; // default
+        return ControlFlowPattern::RegisterBased;
     }
 
     class ControlFlow {

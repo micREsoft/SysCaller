@@ -55,7 +55,7 @@ private:
         QString returnType;
         int parameterCount;
         QStringList errors;
-        QList<QPair<QString, QString>> typeDefinitions;  // type, source_file
+        QList<QPair<QString, QString>> typeDefinitions;  /* type, source_file */
     };
 
     class TypeDefinitionTracker {

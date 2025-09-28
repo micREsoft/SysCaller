@@ -464,11 +464,11 @@ QVariantMap StubHashGenerator::generateStubHashes(const QString& asmFilePath,
                 {
                     QString stubCode = asmContent.mid(startPos, endPos - startPos);
 
-                    // generate MD5 hash
+                    /* generate MD5 hash */
                     QByteArray md5Hash = QCryptographicHash::hash(stubCode.toUtf8(), QCryptographicHash::Md5);
                     QString md5Hex = md5Hash.toHex();
 
-                    // generate SHA256 hash
+                    /* generate SHA256 hash */
                     QByteArray sha256Hash = QCryptographicHash::hash(stubCode.toUtf8(), QCryptographicHash::Sha256);
                     QString sha256Hex = sha256Hash.toHex();
 
@@ -579,7 +579,7 @@ QPair<bool, QString> StubHashGenerator::saveStubHashes(const QVariantMap& stubHa
 
         formattedOutput["stubs"] = formattedStubs;
 
-        // generate build ID
+        /* generate build ID */
         QStringList allHashes;
         QStringList sortedSyscalls = stubs.keys();
         std::sort(sortedSyscalls.begin(), sortedSyscalls.end());

@@ -47,22 +47,22 @@ void StatusBar::updateStatus(const QString& message, const QString& statusType)
     if (statusType == "working")
     {
         icon = "⏳";
-        color = "#FFA500"; // orange
+        color = "#FFA500"; /* orange */
     }
     else if (statusType == "success")
     {
         icon = "✅";
-        color = "#00FF00"; // green
+        color = "#00FF00"; /* green */
     }
     else if (statusType == "error")
     {
         icon = "❌";
-        color = "#FF0000"; // red
+        color = "#FF0000"; /* red */
     }
     else
     {
         icon = "⏺";
-        color = "#666666"; // gray
+        color = "#666666"; /* gray */
     }
 
     statusIcon->setText(icon);

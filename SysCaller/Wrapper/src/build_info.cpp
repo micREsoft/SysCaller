@@ -1,6 +1,6 @@
 /*
  * SysCaller Build Information
- * This file is always compiled to show the current build configuration
+ * this file is always compiled to show the current build configuration
  */
 
 #if defined(SYSCALLER_DIRECT)
@@ -27,5 +27,5 @@
 
 #include "../include/syscaller.h"
 
-// Empty function ensures this TU is compiled and processed
+/* empty function ensures this TU is compiled and processed */
 void SysCallerBuildInfo() {}

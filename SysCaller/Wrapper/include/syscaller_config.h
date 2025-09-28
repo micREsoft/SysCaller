@@ -9,13 +9,13 @@
  * Uncomment one of the following lines & add to preprocessor definitions to select your build mode:
  */
 
-// Direct syscalls (default), no runtime resolution
+/* Direct syscalls (default), no runtime resolution */
 #define SYSCALLER_DIRECT
 
-// Indirect syscalls, runtime resolution
+/* Indirect syscalls, runtime resolution */
 // #define SYSCALLER_INDIRECT
 
-// Inline ASM syscalls, embedded assembly
+/* Inline ASM syscalls, embedded assembly */
 // #define SYSCALLER_INLINE
 
 /*

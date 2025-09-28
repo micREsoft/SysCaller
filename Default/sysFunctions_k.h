@@ -4,7 +4,7 @@
 #include "sysExternals_k.h"
 #include "sysConstants_k.h"
 
-#ifdef _WIN64 // Only compile on 64bit systems.
+#ifdef _WIN64 /* only compile on 64bit systems */
 
 #ifdef __cplusplus
 extern "C" {
@@ -559,7 +559,7 @@ NTSTATUS SCCommitEnlistment(
 
 NTSTATUS SCCommitRegistryTransaction(
     HANDLE RegistryTransactionHandle,
-    ULONG Flags // Reserved
+    ULONG Flags /* reserved */
 );
 
 NTSTATUS SCCommitTransaction(
@@ -614,7 +614,7 @@ NTSTATUS SCContinue(
 
 NTSTATUS SCContinueEx(
     PCONTEXT ContextRecord,
-    PVOID ContinueArgument // Can be PKCONTINUE_ARGUMENT or BOOLEAN
+    PVOID ContinueArgument /* can be PKCONTINUE_ARGUMENT or BOOLEAN */
 );
 
 NTSTATUS SCConvertBetweenAuxiliaryCounterAndPerformanceCounter(
@@ -1714,7 +1714,7 @@ NTSTATUS SCNotifyChangeDirectoryFile(
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
     PVOID ApcContext OPTIONAL,
     PIO_STATUS_BLOCK IoStatusBlock,
-    PVOID Buffer, // FILE_NOTIFY_INFORMATION
+    PVOID Buffer, /* FILE_NOTIFY_INFORMATION */
     ULONG Length,
     ULONG CompletionFilter,
     BOOLEAN WatchTree
@@ -2399,7 +2399,7 @@ NTSTATUS SCQuerySecurityAttributesToken(
     HANDLE TokenHandle,
     PUNICODE_STRING Attributes,
     ULONG NumberOfAttributes,
-    PVOID Buffer, // PTOKEN_SECURITY_ATTRIBUTES_INFORMATION
+    PVOID Buffer, /* PTOKEN_SECURITY_ATTRIBUTES_INFORMATION */
     ULONG Length,
     PULONG ReturnLength
 );

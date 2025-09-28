@@ -713,7 +713,7 @@ void GeneralTab::createBackupFiles()
     }
     catch (...)
     {
-        // backup creation failed but dont stop the operation
+        /* backup creation failed but dont stop the operation */
     }
 }
 

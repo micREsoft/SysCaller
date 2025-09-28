@@ -24,7 +24,7 @@ ChangelogDialog::ChangelogDialog(QWidget* parent)
     resize(1150, 600);
     setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    // setAttribute(Qt::WA_TranslucentBackground);
+    /* setAttribute(Qt::WA_TranslucentBackground); */
     setupStylesheet();
     setupUI();
     populateChangelogs();

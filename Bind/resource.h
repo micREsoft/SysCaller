@@ -3,4 +3,4 @@
 
 #define IDI_ICON1 101
 
-#endif // RESOURCE_H
+#endif /* RESOURCE_H */

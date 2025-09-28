@@ -142,7 +142,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
                 typeDefinitions.insert(name, def);
             }
         }
-        // parse comma types
+        /* parse comma types */
         QRegularExpression commaRegex(R"(}\s*(\w+),\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator commaMatches = commaRegex.globalMatch(content);
 
@@ -164,7 +164,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def2.definition = QString("typedef %1* %2").arg(baseType).arg(ptrType);
             typeDefinitions.insert(ptrType, def2);
         }
-        // parse pointer types
+        /* parse pointer types */
         QRegularExpression ptrRegex(R"(typedef\s+(?:struct\s+)?(?:_)?(\w+)\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator ptrMatches = ptrRegex.globalMatch(content);
 
@@ -181,7 +181,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef %1* %2").arg(baseType).arg(ptrType);
             typeDefinitions.insert(ptrType, def);
         }
-        // parse basic types
+        /* parse basic types */
         QRegularExpression basicRegex(R"(typedef\s+(?:struct\s+)?(?:_)?(\w+)\s+(\w+);)");
         QRegularExpressionMatchIterator basicMatches = basicRegex.globalMatch(content);
 
@@ -198,7 +198,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef %1 %2").arg(baseType).arg(newType);
             typeDefinitions.insert(newType, def);
         }
-        // parse structs
+        /* parse structs */
         QRegularExpression structRegex(R"(typedef\s+struct\s+(?:_)?(\w+)\s*\{[^}]+\}\s*(\w+)\s*,\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator structMatches = structRegex.globalMatch(content);
 
@@ -220,7 +220,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def2.definition = QString("typedef %1* %2").arg(structName).arg(ptrName);
             typeDefinitions.insert(ptrName, def2);
         }
-        // parse enums
+        /* parse enums */
         QRegularExpression enumRegex(R"(typedef\s+enum\s+(?:_)?(\w+)\s*\{[^}]+\}\s*(\w+);)");
         QRegularExpressionMatchIterator enumMatches = enumRegex.globalMatch(content);
 
@@ -236,7 +236,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = match.captured(0);
             typeDefinitions.insert(enumName, def);
         }
-        // parse function pointers
+        /* parse function pointers */
         QRegularExpression funcPtrRegex(R"(typedef\s+\w+\s*\(\s*\w+\s*\*\s*(\w+)\s*\)\s*\([^)]*\))");
         QRegularExpressionMatchIterator funcPtrMatches = funcPtrRegex.globalMatch(content);
 
@@ -252,7 +252,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef function_ptr %1").arg(typeName);
             typeDefinitions.insert(typeName, def);
         }
-        // parse const pointer types
+        /* parse const pointer types */
         QRegularExpression constPtrRegex(R"(typedef\s+const\s+(\w+)\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator constPtrMatches = constPtrRegex.globalMatch(content);
 
@@ -269,7 +269,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef const %1* %2").arg(baseType).arg(newType);
             typeDefinitions.insert(newType, def);
         }
-        // parse WNF types
+        /* parse WNF types */
         QRegularExpression wnfRegex(R"(typedef\s+(?:const\s+)?(?:struct\s+)?_?(\w+)\s*(?:\*\s*)?(\w+)(?:\s*,\s*\*\s*(\w+))?;)");
         QRegularExpressionMatchIterator wnfMatches = wnfRegex.globalMatch(content);
 
@@ -698,13 +698,13 @@ std::optional<int> Verification::getOffsetFromDll(const QString& syscallName, co
     {
         auto* verification = static_cast<Verification*>(N);
 
-        // safety check for the callback parameters
+        /* safety check for the callback parameters */
         if (!verification || fn.empty())
         {
             return 0;
         }
 
-        // use a safer string conversion
+        /* use a safer string conversion */
         QString funcName;
 
         try
@@ -721,11 +721,11 @@ std::optional<int> Verification::getOffsetFromDll(const QString& syscallName, co
             return 0;
         }
 
-        // get function RVA (addr is VA, subtract image base to get RVA)
+        /* get function RVA (addr is VA, subtract image base to get RVA) */
         uint32_t funcRVA = static_cast<uint32_t>(addr - verification->imageBase);
         uint32_t fileOffset = 0;
 
-        // safety check for RVA calculation
+        /* safety check for RVA calculation */
         if (addr < verification->imageBase)
         {
             return 0;
@@ -811,7 +811,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         }
     }
 
-    // validate return type
+    /* validate return type */
     QStringList validReturnTypes = {"NTSTATUS", "BOOL", "HANDLE", "VOID", "ULONG", "ULONG_PTR", "UINT32", "UINT64"};
 
     if (!validReturnTypes.contains(syscall.returnType))
@@ -819,7 +819,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         result.errors.append(QString("Unexpected return type: %1").arg(syscall.returnType));
     }
 
-    // validate parameters
+    /* validate parameters */
     for (const Parameter& param : syscall.parameters)
     {
         if (!validateParameterType(param.type))
@@ -828,7 +828,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         }
     }
 
-    // validate offset
+    /* validate offset */
     QString offset = syscall.offset.toLower().replace("h", "");
     bool ok;
     int offsetValue = offset.toInt(&ok, 16);
@@ -854,7 +854,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         result.errors.append(QString("Invalid Syscall Offset Format: %1").arg(syscall.offset));
     }
 
-    // check type definitions
+    /* check type definitions */
     for (const Parameter& param : syscall.parameters)
     {
         std::optional<TypeDefinition> typeInfo = typeTracker.checkType(param.type, isKernelMode);

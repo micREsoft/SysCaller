@@ -27,4 +27,4 @@ void CleanupResolver();
 
 #ifdef __cplusplus
 }
-#endif 
+#endif

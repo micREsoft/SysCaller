@@ -79,7 +79,7 @@ QPair<int, QMap<QString, QVariant>> DirectObfuscation::Encryptor::encryptOffset(
             encryptionData["mask"] = mask;
             break;
         }
-        default: // default to basic xor
+        default: /* default to basic xor */
         {
             int key = getRandomInt(0x11, 0xFF);
             encryptedOffset = realOffset ^ key;
@@ -154,7 +154,7 @@ QStringList DirectObfuscation::Encryptor::generateDecryptionSequence(const QStri
             sequence << QString("    sub eax, 0%1h\n").arg(mask, 0, 16);
             break;
         }
-        default: // default to basic xor
+        default: /* default to basic xor */
         {
             int key = encryptionData["key"].toInt();
             sequence << QString("    mov eax, dword ptr [%1]\n").arg(offsetName);

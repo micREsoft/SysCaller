@@ -13,7 +13,6 @@
 #endif
 
 #ifdef SYSCALLER_INDIRECT
-// Indirect syscall mode,include resolver implementation
 #include "../../include/Resolver/Resolver.h"
 #include <windows.h>
 #include <winternl.h>
@@ -169,6 +168,6 @@ void CleanupResolver()
 }
 
 #else
-// Not in indirect mode file compiles to nothing
+/* not in indirect mode file compiles to nothing */
 #pragma message("SysCaller: Resolver.cpp skipped (SYSCALLER_INDIRECT not defined)")
 #endif
