@@ -36,7 +36,7 @@
  */
 
 #define SYSCALLER_BUILD_CONFIG
-#include "syscaller_config.h"
+#include <syscaller_config.h>
 #undef SYSCALLER_BUILD_CONFIG
 
 #if !defined(SYSCALLER_DIRECT) && !defined(SYSCALLER_INDIRECT) && !defined(SYSCALLER_INLINE)
@@ -74,10 +74,20 @@
 #include <vector>
 #include <fstream>
 
-#include "Sys/sysTypes.h"
-#include "Sys/sysExternals.h"
-#include "Sys/sysFunctions.h"
+#include <Sys/sysTypes.h>
+#include <Sys/sysExternals.h>
+#include <Sys/sysFunctions.h>
 
 #if defined(SYSCALLER_INDIRECT)
-#include "Resolver/Resolver.h"
+
+#if defined(SYSCALLER_RESOLVER_PEB_LDR)
+#include <Resolver/Methods/PebLdrResolver.h>
+#elif defined(SYSCALLER_RESOLVER_MEMORY_EXPORT)
+#include <Resolver/Methods/MemoryExportResolver.h>
+#elif defined(SYSCALLER_RESOLVER_HASHED_EXPORT)
+#include <Resolver/Methods/HashedExportResolver.h>
+#else
+#error "For SYSCALLER_INDIRECT mode, you must define one resolver: SYSCALLER_RESOLVER_PEB_LDR, SYSCALLER_RESOLVER_MEMORY_EXPORT, or SYSCALLER_RESOLVER_HASHED_EXPORT"
+#endif
+
 #endif

@@ -1,44 +1,14 @@
-#if defined(SYSCALLER_DIRECT)
-#pragma message("SysCaller: Building via DIRECT syscall mode")
-#elif defined(SYSCALLER_INDIRECT)
-#pragma message("SysCaller: Building via INDIRECT syscall mode")
-#elif defined(SYSCALLER_INLINE)
-#pragma message("SysCaller: Building via INLINE ASM syscall mode")
-#else
-#pragma message("SysCaller: No build mode specified, defaulting to DIRECT")
-#endif
-
-#if defined(SYSCALLER_BINDINGS)
-#pragma message("SysCaller: Building with BINDINGS support (DLL export)")
-#endif
-
-#ifdef SYSCALLER_INDIRECT
-#include "../../include/Resolver/Resolver.h"
-#include <windows.h>
-#include <winternl.h>
-#include <psapi.h>
+#include "../../include/Resolver/ResolverBase.h"
 #include <string>
 #include <unordered_map>
-#include <vector>
 
+/* shared global state */
 static std::unordered_map<std::string, DWORD> syscallCache;
 static HMODULE ntdllHandle = NULL;
 static BOOL resolverInitialized = FALSE;
 
-HMODULE GetNtdllHandle()
-{
-    if (ntdllHandle == NULL)
-    {
-        ntdllHandle = GetModuleHandleA("ntdll.dll");
-
-        if (ntdllHandle == NULL)
-        {
-            ntdllHandle = LoadLibraryA("ntdll.dll");
-        }
-    }
-
-    return ntdllHandle;
-}
+HMODULE GetNtdllHandleInternal();
+std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllInternal();
 
 DWORD ExtractSyscallNumber(LPVOID functionAddress)
 {
@@ -65,10 +35,16 @@ DWORD ExtractSyscallNumber(LPVOID functionAddress)
     return 0;
 }
 
-std::unordered_map<std::string, DWORD> ExtractSyscallsFromDll()
+std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllInternal()
 {
+#if defined(SYSCALLER_RESOLVER_HASHED_EXPORT)
+    /* forward declaration for the hashed resolver implementation */
+    std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllHashedInternal();
+    return ExtractSyscallsFromDllHashedInternal();
+#else
+    /* default implementation for other resolver methods */
     std::unordered_map<std::string, DWORD> syscallNumbers;
-    HMODULE hNtdll = GetNtdllHandle();
+    HMODULE hNtdll = GetNtdllHandleInternal();
 
     if (!hNtdll)
     {
@@ -121,6 +97,7 @@ std::unordered_map<std::string, DWORD> ExtractSyscallsFromDll()
     }
 
     return syscallNumbers;
+#endif
 }
 
 BOOL InitializeResolver()
@@ -130,7 +107,7 @@ BOOL InitializeResolver()
         return TRUE;
     }
 
-    syscallCache = ExtractSyscallsFromDll();
+    syscallCache = ExtractSyscallsFromDllInternal();
 
     if (syscallCache.empty())
     {
@@ -166,8 +143,3 @@ void CleanupResolver()
     syscallCache.clear();
     resolverInitialized = FALSE;
 }
-
-#else
-/* not in indirect mode file compiles to nothing */
-#pragma message("SysCaller: Resolver.cpp skipped (SYSCALLER_INDIRECT not defined)")
-#endif

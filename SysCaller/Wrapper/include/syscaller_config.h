@@ -5,7 +5,7 @@
 
 /*
  * SysCaller Build Configuration
- * 
+ *
  * Uncomment one of the following lines & add to preprocessor definitions to select your build mode:
  */
 
@@ -23,3 +23,18 @@
  * This will include dllmain.cpp in the build
  */
 // #define SYSCALLER_BINDINGS
+
+/*
+ * Resolver Configuration (for SYSCALLER_INDIRECT mode)
+ *
+ * Choose one resolver method:
+ */
+
+/* Use PEB LDR traversal (no WinAPI calls) */
+// #define SYSCALLER_RESOLVER_PEB_LDR
+
+/* Use memory export parsing with GetModuleHandle (uses WinAPI) */
+// #define SYSCALLER_RESOLVER_MEMORY_EXPORT
+
+/* Use hashed export parsing (no WinAPI calls) */
+// #define SYSCALLER_RESOLVER_HASHED_EXPORT
