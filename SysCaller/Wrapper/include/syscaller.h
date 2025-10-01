@@ -81,13 +81,15 @@
 #if defined(SYSCALLER_INDIRECT)
 
 #if defined(SYSCALLER_RESOLVER_PEB_LDR)
-#include <Resolver/Methods/PebLdrResolver.h>
+#include <Resolver/Resolver.h>
 #elif defined(SYSCALLER_RESOLVER_MEMORY_EXPORT)
-#include <Resolver/Methods/MemoryExportResolver.h>
+#include <Resolver/Resolver.h>
 #elif defined(SYSCALLER_RESOLVER_HASHED_EXPORT)
-#include <Resolver/Methods/HashedExportResolver.h>
+#include <Resolver/Resolver.h>
+#elif defined(SYSCALLER_RESOLVER_DISK_MAPPED)
+#include <Resolver/Resolver.h>
 #else
-#error "For SYSCALLER_INDIRECT mode, you must define one resolver: SYSCALLER_RESOLVER_PEB_LDR, SYSCALLER_RESOLVER_MEMORY_EXPORT, or SYSCALLER_RESOLVER_HASHED_EXPORT"
+#error "For SYSCALLER_INDIRECT mode, you must define one resolver: SYSCALLER_RESOLVER_PEB_LDR, SYSCALLER_RESOLVER_MEMORY_EXPORT, SYSCALLER_RESOLVER_HASHED_EXPORT, or SYSCALLER_RESOLVER_DISK_MAPPED"
 #endif
 
 #endif

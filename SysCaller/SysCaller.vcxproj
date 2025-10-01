@@ -105,9 +105,7 @@
     </MASM>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Wrapper\include\Resolver\Methods\HashedExportResolver.h" />
-    <ClInclude Include="Wrapper\include\Resolver\Methods\MemoryExportResolver.h" />
-    <ClInclude Include="Wrapper\include\Resolver\Methods\PebLdrResolver.h" />
+    <ClInclude Include="Wrapper\include\Resolver\Resolver.h" />
     <ClInclude Include="Wrapper\include\Resolver\ResolverBase.h" />
     <ClInclude Include="Wrapper\include\syscaller.h" />
     <ClInclude Include="Wrapper\include\syscaller_config.h" />
@@ -120,6 +118,7 @@
   <ItemGroup>
     <ClCompile Include="Wrapper\src\build_info.cpp" />
     <ClCompile Include="Wrapper\src\DLL\dllmain.cpp" />
+    <ClCompile Include="Wrapper\src\Resolver\Methods\DiskMappedResolver.cpp" />
     <ClCompile Include="Wrapper\src\Resolver\Methods\MemoryExportResolver.cpp" />
     <ClCompile Include="Wrapper\src\Resolver\Methods\PebLdrResolver.cpp" />
     <ClCompile Include="Wrapper\src\Resolver\Methods\HashedExportResolver.cpp" />

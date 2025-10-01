@@ -16,7 +16,7 @@
 #ifdef SYSCALLER_RESOLVER_HASHED_EXPORT
 
 #include <Resolver/ResolverBase.h>
-#include <Resolver/Methods/HashedExportResolver.h>
+#include <Resolver/Resolver.h>
 #include <Resolver/PebUtils.h>
 
 /* simple djb2 hash function for strings */

@@ -16,7 +16,7 @@
 #ifdef SYSCALLER_RESOLVER_MEMORY_EXPORT
 
 #include <Resolver/ResolverBase.h>
-#include <Resolver/Methods/MemoryExportResolver.h>
+#include <Resolver/Resolver.h>
 
 HMODULE GetNtdllHandleInternal()
 {

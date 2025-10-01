@@ -1,4 +1,4 @@
-#include "../../include/Resolver/ResolverBase.h"
+#include <Resolver/ResolverBase.h>
 #include <string>
 #include <unordered_map>
 
@@ -41,6 +41,10 @@ std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllInternal()
     /* forward declaration for the hashed resolver implementation */
     std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllHashedInternal();
     return ExtractSyscallsFromDllHashedInternal();
+#elif defined(SYSCALLER_RESOLVER_DISK_MAPPED)
+    /* forward declaration for the disk mapped resolver implementation */
+    std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllDiskMappedInternal();
+    return ExtractSyscallsFromDllDiskMappedInternal();
 #else
     /* default implementation for other resolver methods */
     std::unordered_map<std::string, DWORD> syscallNumbers;
@@ -142,4 +146,10 @@ void CleanupResolver()
 {
     syscallCache.clear();
     resolverInitialized = FALSE;
+
+#if defined(SYSCALLER_RESOLVER_DISK_MAPPED)
+    /* cleanup disk mapped resources */
+    extern void UnmapNtdllFromDisk();
+    UnmapNtdllFromDisk();
+#endif
 }

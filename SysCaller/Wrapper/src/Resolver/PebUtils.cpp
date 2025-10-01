@@ -1,4 +1,4 @@
-#include "../../include/Resolver/PebUtils.h"
+#include <Resolver/PebUtils.h>
 
 HMODULE FindNtdllBase()
 {

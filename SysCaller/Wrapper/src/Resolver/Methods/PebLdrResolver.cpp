@@ -16,7 +16,7 @@
 #ifdef SYSCALLER_RESOLVER_PEB_LDR
 
 #include <Resolver/ResolverBase.h>
-#include <Resolver/Methods/PebLdrResolver.h>
+#include <Resolver/Resolver.h>
 #include <Resolver/PebUtils.h>
 
 HMODULE GetNtdllHandleInternal()

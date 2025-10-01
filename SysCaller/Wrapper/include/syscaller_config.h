@@ -33,8 +33,11 @@
 /* Use PEB LDR traversal (no WinAPI calls) */
 // #define SYSCALLER_RESOLVER_PEB_LDR
 
-/* Use memory export parsing with GetModuleHandle (uses WinAPI) */
+/* Use memory export parsing with GetModuleHandle (uses WinAPI to locate ntdll) */
 // #define SYSCALLER_RESOLVER_MEMORY_EXPORT
 
 /* Use hashed export parsing (no WinAPI calls) */
 // #define SYSCALLER_RESOLVER_HASHED_EXPORT
+
+/* Use disk mapped ntdll.dll parsing (uses WinAPI for I/O funcs not locating ntdll) */
+// #define SYSCALLER_RESOLVER_DISK_MAPPED
