@@ -97,19 +97,19 @@ void ProfileTab::exportProfile()
 
         exportSettings.sync();
 
-        QMessageBox::information(this, "Bind - v1.3.1",
+        QMessageBox::information(this, "Bind - v1.3.2",
                                QString("Profile exported to:\n%1")
                                .arg(QDir::toNativeSeparators(QFileInfo(path).absoluteFilePath())));
     }
     catch (...)
     {
-        QMessageBox::critical(this, "Bind - v1.3.1", "Failed to export profile.");
+        QMessageBox::critical(this, "Bind - v1.3.2", "Failed to export profile.");
     }
 }
 
 void ProfileTab::importProfile()
 {
-    QString path = QFileDialog::getOpenFileName(this, "Bind - v1.3.1", "", "INI Files (*.ini);;All Files (*)");
+    QString path = QFileDialog::getOpenFileName(this, "Bind - v1.3.2", "", "INI Files (*.ini);;All Files (*)");
 
     if (path.isEmpty())
     {
@@ -126,7 +126,7 @@ void ProfileTab::importProfile()
         QFile::remove(iniPath);
         QFile::copy(path, iniPath);
 
-        QMessageBox::information(this, "Bind - v1.3.1",
+        QMessageBox::information(this, "Bind - v1.3.2",
                                QString("Profile imported from:\n%1\n\nSysCaller will now restart to use the imported profile.")
                                .arg(QDir::toNativeSeparators(QFileInfo(path).absoluteFilePath())));
 
@@ -135,7 +135,7 @@ void ProfileTab::importProfile()
     }
     catch (...)
     {
-        QMessageBox::critical(this, "Bind - v1.3.1", "Failed to import profile.");
+        QMessageBox::critical(this, "Bind - v1.3.2", "Failed to import profile.");
     }
 }
 

@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     , verificationThread(nullptr)
     , obfuscationThread(nullptr)
 {
-    setWindowTitle("Bind - v1.3.1");
+    setWindowTitle("Bind - v1.3.2");
     setMinimumSize(1400, 900);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -149,7 +149,7 @@ void MainWindow::runValidation()
 {
     if (validatorThread && validatorThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.1", "Validation Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.2", "Validation Check is already running. Please wait for it to complete.");
         return;
     }
 
@@ -157,7 +157,7 @@ void MainWindow::runValidation()
 
     if (dllPaths.isEmpty())
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, "Bind - v1.3.2", "No DLL Paths specified. Please add at least one NTDLL path.");
         return;
     }
 
@@ -197,7 +197,7 @@ void MainWindow::runValidation()
         {
             leftPanel->updateStatus("Validation Failed!");
             statusBar->updateStatus("Validation Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.1", message);
+            QMessageBox::critical(this, "Bind - v1.3.2", message);
         }
 
         validatorThread->deleteLater();
@@ -234,7 +234,7 @@ void MainWindow::runCompatibility()
 {
     if (compatibilityThread && compatibilityThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.1", "Compatibility Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.2", "Compatibility Check is already running. Please wait for it to complete.");
         return;
     }
 
@@ -242,7 +242,7 @@ void MainWindow::runCompatibility()
 
     if (dllPaths.isEmpty())
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, "Bind - v1.3.2", "No DLL Paths specified. Please add at least one NTDLL path.");
         return;
     }
 
@@ -282,7 +282,7 @@ void MainWindow::runCompatibility()
         {
             leftPanel->updateStatus("Compatibility Failed!");
             statusBar->updateStatus("Compatibility Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.1", message);
+            QMessageBox::critical(this, "Bind - v1.3.2", message);
         }
 
         compatibilityThread->deleteLater();
@@ -296,7 +296,7 @@ void MainWindow::runVerification()
 {
     if (verificationThread && verificationThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.1", "Verification Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.2", "Verification Check is already running. Please wait for it to complete.");
         return;
     }
 
@@ -304,7 +304,7 @@ void MainWindow::runVerification()
 
     if (dllPaths.isEmpty())
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, "Bind - v1.3.2", "No DLL Paths specified. Please add at least one NTDLL path.");
         return;
     }
 
@@ -351,7 +351,7 @@ void MainWindow::runVerification()
         {
             leftPanel->updateStatus("Verification Failed!");
             statusBar->updateStatus("Verification Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.1", message);
+            QMessageBox::critical(this, "Bind - v1.3.2", message);
         }
 
         verificationThread->deleteLater();
@@ -365,7 +365,7 @@ void MainWindow::runObfuscation()
 {
     if (obfuscationThread && obfuscationThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.1", "Syscall Obfuscation is already running. Please wait for it to complete.");
+        QMessageBox::information(this, "Bind - v1.3.2", "Syscall Obfuscation is already running. Please wait for it to complete.");
         return;
     }
 
@@ -437,7 +437,7 @@ void MainWindow::runObfuscation()
         {
             leftPanel->updateStatus("Obfuscation Failed!");
             statusBar->updateStatus("Obfuscation Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.1", message);
+            QMessageBox::critical(this, "Bind - v1.3.2", message);
         }
 
         QSettings settings(PathUtils::getIniPath(), QSettings::IniFormat);

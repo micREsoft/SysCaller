@@ -555,7 +555,7 @@ void StubMapperDialog::validateCurrentSettings()
     }
     else
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "Please select a Syscall first.");
+        QMessageBox::warning(this, "Bind - v1.3.2", "Please select a Syscall first.");
     }
 }
 
@@ -596,7 +596,7 @@ void StubMapperDialog::saveSettings()
     }
 
     settings->setValue("stub_mapper/syscall_settings", QVariant::fromValue(syscallSettings));
-    QMessageBox::information(this, "Bind - v1.3.1", "Custom Syscall Settings have been saved successfully.");
+    QMessageBox::information(this, "Bind - v1.3.2", "Custom Syscall Settings have been saved successfully.");
     accept();
 }
 
@@ -668,10 +668,10 @@ bool StubMapperDialog::validateStubSettings(const QMap<QString, QVariant>& setti
 
 void StubMapperDialog::showValidationError(const QString& message)
 {
-    QMessageBox::critical(this, "Bind - v1.3.1", message);
+    QMessageBox::critical(this, "Bind - v1.3.2", message);
 }
 
 void StubMapperDialog::showValidationSuccess(const QString& message)
 {
-    QMessageBox::information(this, "Bind - v1.3.1", message);
+    QMessageBox::information(this, "Bind - v1.3.2", message);
 }

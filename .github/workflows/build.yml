@@ -405,7 +405,7 @@ jobs:
 
         # Create README
         $version = "v1.3.2"
-        $readmeText = "# SysCaller: Bind - v1.3.1`n`n"
+        $readmeText = "# SysCaller: Bind - v1.3.2`n`n"
         $readmeText += "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')`n"
         $readmeText += "Commit: ${{ github.sha }}`n"
         $readmeText += "Platform: Windows x64 (64-bit)`n"

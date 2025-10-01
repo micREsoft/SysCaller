@@ -281,7 +281,7 @@ void GeneralTab::saveSettings()
 
     if (modeChanged)
     {
-        ConfirmationDialog infoDialog("Bind - v1.3.1", this);
+        ConfirmationDialog infoDialog("Bind - v1.3.2", this);
         infoDialog.setMessage(QString("The syscall mode has been changed from %1 to %2.\n\n"
                                     "This change affects which files are processed:\n"
                                     "- Nt Mode: User mode files in SysCaller directory\n"
@@ -377,7 +377,7 @@ void GeneralTab::restoreDefaultFiles()
     QString filePathText = isKernelMode ? "SysCallerK directory" : "SysCaller directory";
     QString headerName = isKernelMode ? "sysFunctions_k.h" : "sysFunctions.h";
 
-    ConfirmationDialog confirmDialog("Bind - v1.3.1", this);
+    ConfirmationDialog confirmDialog("Bind - v1.3.2", this);
     confirmDialog.setMessage(QString("Are you sure you want to restore default %1 files?\n\n"
                                    "This will overwrite your current syscaller.asm and %2 files in the %3.")
                                    .arg(modeText, headerName, filePathText));
@@ -396,7 +396,7 @@ void GeneralTab::restoreDefaultFiles()
 
         if (!QFile::exists(defaultAsmPath) || !QFile::exists(defaultHeaderPath))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog("Bind - v1.3.2", this);
             warningDialog.setMessage("Default files not found in Default directory.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
@@ -423,7 +423,7 @@ void GeneralTab::restoreDefaultFiles()
 
         if (!asmCopied || !headerCopied)
         {
-            ConfirmationDialog errorDialog("Bind - v1.3.1", this);
+            ConfirmationDialog errorDialog("Bind - v1.3.2", this);
             errorDialog.setMessage(QString("Failed to copy files:\nASM: %1\nHeader: %2")
                                  .arg(asmCopied ? "Success" : "Failed")
                                  .arg(headerCopied ? "Success" : "Failed"));
@@ -432,14 +432,14 @@ void GeneralTab::restoreDefaultFiles()
             return;
         }
 
-        ConfirmationDialog infoDialog("Bind - v1.3.1", this);
+        ConfirmationDialog infoDialog("Bind - v1.3.2", this);
         infoDialog.setMessage(QString("Default %1 files have been restored successfully!").arg(modeText));
         infoDialog.setButtons(false, false, true, false);
         infoDialog.exec();
     }
     catch (...)
     {
-        ConfirmationDialog errorDialog("Bind - v1.3.1", this);
+        ConfirmationDialog errorDialog("Bind - v1.3.2", this);
         errorDialog.setMessage("An error occurred while restoring default files.");
         errorDialog.setButtons(false, true, false);
         errorDialog.exec();
@@ -455,7 +455,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (!completeBackups.contains(timestamp))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog("Bind - v1.3.2", this);
             warningDialog.setMessage(QString("Could not find complete backup set for timestamp %1").arg(timestamp));
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
@@ -478,14 +478,14 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (!missingFiles.isEmpty())
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog("Bind - v1.3.2", this);
             warningDialog.setMessage(QString("Could not find the following backup files:\n%1").arg(missingFiles.join("\n")));
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
             return;
         }
 
-        ConfirmationDialog confirmDialog("Bind - v1.3.1", this);
+        ConfirmationDialog confirmDialog("Bind - v1.3.2", this);
         confirmDialog.setMessage(QString("Are you sure you want to restore from backup files dated %1?\n\n"
                                        "This will overwrite your current syscaller.asm and sysFunctions.h files.")
                                        .arg(formatTimestamp(timestamp)));
@@ -504,7 +504,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (QFile::exists(asmPath) && isFileLocked(asmPath))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog("Bind - v1.3.2", this);
             warningDialog.setMessage("The ASM file appears to be locked by another process. Close any applications that might be using it and try again.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
@@ -513,7 +513,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (QFile::exists(headerPath) && isFileLocked(headerPath))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog("Bind - v1.3.2", this);
             warningDialog.setMessage("The header file appears to be locked by another process. Close any applications that might be using it and try again.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
@@ -554,7 +554,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (asmRestored && headerRestored)
         {
-            ConfirmationDialog infoDialog("Bind - v1.3.1", this);
+            ConfirmationDialog infoDialog("Bind - v1.3.2", this);
             infoDialog.setMessage(QString("Files have been restored from backup successfully!\n\nBackup date: %1")
                                 .arg(formatTimestamp(timestamp)));
             infoDialog.setButtons(false, false, true, false);
@@ -562,21 +562,21 @@ void GeneralTab::restoreBackup(const QString& timestamp)
         }
         else if (!asmRestored && headerRestored)
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog("Bind - v1.3.2", this);
             warningDialog.setMessage("Only the header file was restored successfully. The ASM file could not be restored.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
         }
         else if (asmRestored && !headerRestored)
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog("Bind - v1.3.2", this);
             warningDialog.setMessage("Only the ASM file was restored successfully. The header file could not be restored.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
         }
         else
         {
-            ConfirmationDialog errorDialog("Bind - v1.3.1", this);
+            ConfirmationDialog errorDialog("Bind - v1.3.2", this);
             errorDialog.setMessage("Failed to restore both files from backup.");
             errorDialog.setButtons(false, false, true, false);
             errorDialog.exec();
@@ -584,7 +584,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
     }
     catch (...)
     {
-        ConfirmationDialog errorDialog("Bind - v1.3.1", this);
+        ConfirmationDialog errorDialog("Bind - v1.3.2", this);
         errorDialog.setMessage("An error occurred while restoring backup files.");
         errorDialog.setButtons(false, true, false);
         errorDialog.exec();

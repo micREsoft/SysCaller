@@ -52,12 +52,12 @@ LeftPanel::LeftPanel(QWidget* parent)
     logoLabel->setAlignment(Qt::AlignCenter);
     topSection->addWidget(logoLabel, 0, Qt::AlignCenter);
 
-    versionLabel = new QLabel("v1.3.1", this);
+    versionLabel = new QLabel("v1.3.2", this);
     versionLabel->setStyleSheet("color: #666666; font-size: 12px;");
     versionLabel->setAlignment(Qt::AlignCenter);
     versionLabel->setCursor(Qt::PointingHandCursor);
     versionLabel->setTextFormat(Qt::RichText);
-    versionLabel->setText("<a href='#' style='color: #666666; text-decoration: none;'>v1.3.1</a>");
+    versionLabel->setText("<a href='#' style='color: #666666; text-decoration: none;'>v1.3.2</a>");
     topSection->addWidget(versionLabel, 0, Qt::AlignCenter);
 
     layout->addLayout(topSection);
@@ -264,7 +264,7 @@ void LeftPanel::browseDll()
 {
     QString dllPath = QFileDialog::getOpenFileName(
         this,
-        "Bind - v1.3.1",
+        "Bind - v1.3.2",
         "",
         "DLL Files (*.dll);;All Files (*.*)"
     );
