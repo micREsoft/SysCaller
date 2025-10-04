@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sysExternals_k.h"
-#include "sysConstants_k.h"
+#include <SysK/sysExternals_k.h>
+#include <SysK/sysConstants_k.h>
 
 /* Forward declarations for cyclic dependencies */
 typedef struct _ACTIVATION_CONTEXT* PACTIVATION_CONTEXT;

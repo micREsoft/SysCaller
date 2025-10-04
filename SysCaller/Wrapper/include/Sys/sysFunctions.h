@@ -1,9 +1,9 @@
 #pragma once
-#include "../syscaller.h"
-#include "sysTypes.h"
-#include "sysExternals.h"
+#include <syscaller.h>
+#include <Sys/sysTypes.h>
+#include <Sys/sysExternals.h>
 
-#ifdef _WIN64 // Only compile on 64bit systems.
+#ifdef _WIN64 /* only compile on 64bit systems */
 
 #ifdef __cplusplus
 extern "C" {
@@ -558,7 +558,7 @@ NTSTATUS SCCommitEnlistment(
 
 NTSTATUS SCCommitRegistryTransaction(
     HANDLE RegistryTransactionHandle,
-    ULONG Flags // Reserved
+    ULONG Flags /* reserved */
 );
 
 NTSTATUS SCCommitTransaction(
@@ -613,7 +613,7 @@ NTSTATUS SCContinue(
 
 NTSTATUS SCContinueEx(
     PCONTEXT ContextRecord,
-    PVOID ContinueArgument // Can be PKCONTINUE_ARGUMENT or BOOLEAN
+    PVOID ContinueArgument /* can be PKCONTINUE_ARGUMENT or BOOLEAN */
 );
 
 NTSTATUS SCConvertBetweenAuxiliaryCounterAndPerformanceCounter(
@@ -1596,7 +1596,7 @@ NTSTATUS SCLoadKeyEx(
     HANDLE Event OPTIONAL,
     ACCESS_MASK DesiredAccess OPTIONAL,
     PHANDLE RootHandle OPTIONAL,
-    PVOID Reserved OPTIONAL // previously PIO_STATUS_BLOCK
+    PVOID Reserved OPTIONAL /* previously PIO_STATUS_BLOCK */
 );
 
 NTSTATUS SCLockFile(
@@ -1713,7 +1713,7 @@ NTSTATUS SCNotifyChangeDirectoryFile(
     PIO_APC_ROUTINE ApcRoutine OPTIONAL,
     PVOID ApcContext OPTIONAL,
     PIO_STATUS_BLOCK IoStatusBlock,
-    PVOID Buffer, // FILE_NOTIFY_INFORMATION
+    PVOID Buffer, /* FILE_NOTIFY_INFORMATION */
     ULONG Length,
     ULONG CompletionFilter,
     BOOLEAN WatchTree
@@ -2398,7 +2398,7 @@ NTSTATUS SCQuerySecurityAttributesToken(
     HANDLE TokenHandle,
     PUNICODE_STRING Attributes,
     ULONG NumberOfAttributes,
-    PVOID Buffer, // PTOKEN_SECURITY_ATTRIBUTES_INFORMATION
+    PVOID Buffer, /* PTOKEN_SECURITY_ATTRIBUTES_INFORMATION */
     ULONG Length,
     PULONG ReturnLength
 );
@@ -2446,7 +2446,7 @@ NTSTATUS SCQuerySystemEnvironmentValueEx(
     PCGUID VendorGuid,
     PVOID Buffer OPTIONAL,
     PULONG BufferLength,
-    PULONG Attributes OPTIONAL // EFI_VARIABLE_*
+    PULONG Attributes OPTIONAL /* EFI_VARIABLE_* */
 );
 
 NTSTATUS SCQuerySystemInformation(
@@ -2786,7 +2786,7 @@ NTSTATUS SCRollbackEnlistment(
 
 NTSTATUS SCRollbackRegistryTransaction(
     HANDLE RegistryTransactionHandle,
-    ULONG Flags // Reserved
+    ULONG Flags /* reserved */
 );
 
 NTSTATUS SCRollbackTransaction(
@@ -3102,8 +3102,8 @@ NTSTATUS SCSetSystemEnvironmentValueEx(
     PCUNICODE_STRING VariableName,
     PCGUID VendorGuid,
     PVOID Buffer OPTIONAL,
-    ULONG BufferLength, // 0 = delete variable
-    ULONG Attributes // EFI_VARIABLE_*
+    ULONG BufferLength, /* 0 = delete variable */
+    ULONG Attributes /* EFI_VARIABLE_* */
 );
 
 NTSTATUS SCSetSystemInformation(
@@ -3115,7 +3115,7 @@ NTSTATUS SCSetSystemInformation(
 NTSTATUS SCSetSystemPowerState(
     POWER_ACTION SystemAction,
     SYSTEM_POWER_STATE LightestSystemState,
-    ULONG Flags // POWER_ACTION_* flags
+    ULONG Flags /* POWER_ACTION_* flags */
 );
 
 NTSTATUS SCSetSystemTime(
@@ -3124,7 +3124,7 @@ NTSTATUS SCSetSystemTime(
 );
 
 NTSTATUS SCSetThreadExecutionState(
-    EXECUTION_STATE NewFlags, // ES_* flags
+    EXECUTION_STATE NewFlags, /* ES_* flags */
     EXECUTION_STATE * PreviousFlags
 );
 
@@ -3246,7 +3246,7 @@ NTSTATUS SCSystemDebugControl(
 
 NTSTATUS SCTerminateEnclave(
     PVOID BaseAddress,
-    ULONG Flags // TERMINATE_ENCLAVE_FLAG_*
+    ULONG Flags /* TERMINATE_ENCLAVE_FLAG_* */
 );
 
 NTSTATUS SCTerminateJobObject(

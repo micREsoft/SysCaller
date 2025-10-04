@@ -1,8 +1,8 @@
 #pragma once
-#include "../syscaller_k.h"
-#include "sysTypes_k.h"
-#include "sysExternals_k.h"
-#include "sysConstants_k.h"
+#include <syscaller_k.h>
+#include <SysK/sysTypes_k.h>
+#include <SysK/sysExternals_k.h>
+#include <SysK/sysConstants_k.h>
 
 #ifdef _WIN64 /* only compile on 64bit systems */
 

@@ -15,8 +15,8 @@
  * For more information, see https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-#include "ntifs.h"
+#include <ntifs.h>
 
-#include "SysK/sysTypes_k.h"
-#include "SysK/sysExternals_k.h"
-#include "SysK/sysFunctions_k.h"
+#include <SysK/sysTypes_k.h>
+#include <SysK/sysExternals_k.h>
+#include <SysK/sysFunctions_k.h>

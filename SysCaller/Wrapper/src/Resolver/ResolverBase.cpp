@@ -1,14 +1,27 @@
 #include <Resolver/ResolverBase.h>
 #include <string>
 #include <unordered_map>
+#include <windows.h>
 
 /* shared global state */
 static std::unordered_map<std::string, DWORD> syscallCache;
 static HMODULE ntdllHandle = NULL;
 static BOOL resolverInitialized = FALSE;
+static CRITICAL_SECTION resolverLock;
 
 HMODULE GetNtdllHandleInternal();
 std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllInternal();
+
+/* initialize the critical section for thread safety */
+void InitializeResolverLock()
+{
+    static BOOL lockInitialized = FALSE;
+    if (!lockInitialized)
+    {
+        InitializeCriticalSection(&resolverLock);
+        lockInitialized = TRUE;
+    }
+}
 
 DWORD ExtractSyscallNumber(LPVOID functionAddress)
 {
@@ -106,19 +119,37 @@ std::unordered_map<std::string, DWORD> ExtractSyscallsFromDllInternal()
 
 BOOL InitializeResolver()
 {
+    /* ensure the lock is initialized */
+    InitializeResolverLock();
+
+    /* first check if already initialized (without lock for performance) */
     if (resolverInitialized)
     {
         return TRUE;
     }
 
+    /* acquire lock for initialization */
+    EnterCriticalSection(&resolverLock);
+
+    /* double check to see if another thread has initialized while we waited */
+    if (resolverInitialized)
+    {
+        LeaveCriticalSection(&resolverLock);
+        return TRUE;
+    }
+
+    /* clear the cache first to prevent destructor issues with corrupted state */
+    syscallCache.clear();
     syscallCache = ExtractSyscallsFromDllInternal();
 
     if (syscallCache.empty())
     {
+        LeaveCriticalSection(&resolverLock);
         return FALSE;
     }
 
     resolverInitialized = TRUE;
+    LeaveCriticalSection(&resolverLock);
     return TRUE;
 }
 
@@ -144,8 +175,13 @@ DWORD GetSyscallNumber(const char* functionName)
 
 void CleanupResolver()
 {
+    /* ensure the lock is initialized */
+    InitializeResolverLock();
+
+    EnterCriticalSection(&resolverLock);
     syscallCache.clear();
     resolverInitialized = FALSE;
+    LeaveCriticalSection(&resolverLock);
 
 #if defined(SYSCALLER_RESOLVER_DISK_MAPPED)
     /* cleanup disk mapped resources */

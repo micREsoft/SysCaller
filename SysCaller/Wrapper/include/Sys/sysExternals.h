@@ -1,6 +1,6 @@
 #pragma once
-#include "../syscaller.h"
-#include "sysTypes.h"
+#include <syscaller.h>
+#include <Sys/sysTypes.h>
 
 typedef struct _WNF_STATE_NAME
 {

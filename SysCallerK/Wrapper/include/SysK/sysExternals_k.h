@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sysTypes_k.h"
+#include <SysK/sysTypes_k.h>
 
 typedef struct _SYSK_WNF_STATE_NAME
 {
