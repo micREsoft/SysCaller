@@ -986,17 +986,27 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
     for (int i = qMax(0, updatedLines.size() - searchWindow); i < updatedLines.size(); ++i)
     {
         tail += updatedLines[i];
+        tail += "\n";
     }
 
-    QRegularExpression externCloseRegex(R"(#ifdef\s+__cplusplus[\s\S]*?\}\s*\n\s*#endif)");
+    QRegularExpression externCloseRegex(R"(#ifdef\s+__cplusplus[\s\S]*?\}\s*#endif)");
+    QRegularExpression externPartialCloseRegex(R"(#ifdef\s+__cplusplus[\s\S]*?\}\s*$)");
 
     if (!externCloseRegex.match(tail).hasMatch())
     {
-        updatedLines.append("");
-        updatedLines.append("#ifdef __cplusplus");
-        updatedLines.append("}");
-        updatedLines.append("#endif");
-        updatedLines.append("");
+        if (externPartialCloseRegex.match(tail).hasMatch())
+        {
+            updatedLines.append("#endif");
+            updatedLines.append("");
+        }
+        else
+        {
+            updatedLines.append("");
+            updatedLines.append("#ifdef __cplusplus");
+            updatedLines.append("}");
+            updatedLines.append("#endif");
+            updatedLines.append("");
+        }
     }
 
     int externOpenIdx = -1;
