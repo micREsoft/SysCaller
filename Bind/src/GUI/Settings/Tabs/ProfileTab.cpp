@@ -1,7 +1,5 @@
-#include "include/GUI/Settings/Tabs/ProfileTab.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QDir>
-#include <QProcess>
+#include <Core/Utils/Common.h>
+#include <GUI/Settings.h>
 
 ProfileTab::ProfileTab(QSettings* settings, QWidget* parent)
     : QWidget(parent)
@@ -97,19 +95,19 @@ void ProfileTab::exportProfile()
 
         exportSettings.sync();
 
-        QMessageBox::information(this, "Bind - v1.3.1",
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE,
                                QString("Profile exported to:\n%1")
                                .arg(QDir::toNativeSeparators(QFileInfo(path).absoluteFilePath())));
     }
     catch (...)
     {
-        QMessageBox::critical(this, "Bind - v1.3.1", "Failed to export profile.");
+        QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, "Failed to export profile.");
     }
 }
 
 void ProfileTab::importProfile()
 {
-    QString path = QFileDialog::getOpenFileName(this, "Bind - v1.3.1", "", "INI Files (*.ini);;All Files (*)");
+    QString path = QFileDialog::getOpenFileName(this, SYSCALLER_WINDOW_TITLE, "", "INI Files (*.ini);;All Files (*)");
 
     if (path.isEmpty())
     {
@@ -118,15 +116,60 @@ void ProfileTab::importProfile()
 
     try
     {
+        QFileInfo sourceInfo(path);
+        if (!sourceInfo.exists() || !sourceInfo.isFile() || !sourceInfo.isReadable())
+        {
+            QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, 
+                QString("Cannot read source profile file:\n%1").arg(path));
+            return;
+        }
+        
         QString iniPath = PathUtils::getIniPath();
+        
+        QString backupPath = iniPath + ".backup";
+        if (QFile::exists(iniPath))
+        {
+            if (!QFile::copy(iniPath, backupPath))
+            {
+                qWarning() << "Failed to create backup of current settings before import";
+            }
+        }
+        
         settings->sync();
         delete settings;
         settings = nullptr;
 
-        QFile::remove(iniPath);
-        QFile::copy(path, iniPath);
+        if (QFile::exists(iniPath))
+        {
+            if (!QFile::remove(iniPath))
+            {
+                QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, 
+                    QString("Failed to remove existing settings file:\n%1\n\nFile may be locked.")
+                    .arg(iniPath));
+                return;
+            }
+        }
+        
+        if (!QFile::copy(path, iniPath))
+        {
+            if (QFile::exists(backupPath))
+            {
+                QFile::copy(backupPath, iniPath);
+                QFile::remove(backupPath);
+            }
+            
+            QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, 
+                QString("Failed to copy profile file:\n%1\nto:\n%2")
+                .arg(path, iniPath));
+            return;
+        }
+        
+        if (QFile::exists(backupPath))
+        {
+            QFile::remove(backupPath);
+        }
 
-        QMessageBox::information(this, "Bind - v1.3.1",
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE,
                                QString("Profile imported from:\n%1\n\nSysCaller will now restart to use the imported profile.")
                                .arg(QDir::toNativeSeparators(QFileInfo(path).absoluteFilePath())));
 
@@ -135,10 +178,9 @@ void ProfileTab::importProfile()
     }
     catch (...)
     {
-        QMessageBox::critical(this, "Bind - v1.3.1", "Failed to import profile.");
+        QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, "Failed to import profile.");
     }
 }
 
 void ProfileTab::saveSettings()
-{
-}
+{}

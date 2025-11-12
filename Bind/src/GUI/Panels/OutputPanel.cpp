@@ -1,4 +1,4 @@
-#include "include/GUI/Panels/OutputPanel.h"
+#include <GUI/Panels.h>
 
 OutputPanel::OutputPanel(QWidget* parent)
     : QTextEdit(parent)
@@ -26,4 +26,4 @@ void OutputPanel::appendText(const QString& text)
 void OutputPanel::clearText()
 {
     clear();
-} 
+}

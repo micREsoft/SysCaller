@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QWidget>
-#include <QSettings>
-#include <QSpinBox>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QGroupBox>
 #include <QFormLayout>
+#include <QGroupBox>
+#include <QSettings>
+#include <QSpinBox>
+#include <QWidget>
 
 class IndirectObfuscationTab : public QWidget {
     Q_OBJECT
@@ -43,7 +43,6 @@ private:
     void initUI();
     void setupJunkInstructionsGroup();
     void setupResolverObfuscationGroup();
-    void setupNameRandomizationGroup();
     void setupEncryptionGroup();
     void setupControlFlowGroup();
 };

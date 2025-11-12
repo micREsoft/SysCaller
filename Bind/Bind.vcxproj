@@ -1,14 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -29,19 +21,6 @@
     <ProjectName>Bind</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -57,18 +36,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="$(QtMsBuild)\qt_defaults.props" Condition="Exists('$(QtMsBuild)\qt_defaults.props')" />
-  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <QTDIR>$(QTDIR)</QTDIR>
-  </PropertyGroup>
-  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <QTDIR>$(QTDIR)</QTDIR>
-  </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QTDIR>$(QTDIR)</QTDIR>
+    <QTDIR Condition="'$(QTDIR)' == ''">C:\Qt\5.15.2\msvc2019_64</QTDIR>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QTDIR>$(QTDIR)</QTDIR>
+    <QTDIR Condition="'$(QTDIR)' == ''">C:\Qt\5.15.2\msvc2019_64</QTDIR>
+    <QtInstall>5.15.2_msvc2019_64</QtInstall>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') OR !Exists('$(QtMsBuild)\Qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
@@ -76,14 +50,6 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(QtMsBuild)\Qt.props" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(QtMsBuild)\Qt.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -94,40 +60,20 @@
     <Import Project="$(QtMsBuild)\Qt.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)Build\Bind\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Bind\int\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Build\Bind\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\Bind\int\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -135,14 +81,14 @@
       <PreprocessorDefinitions>_DEBUG;UNICODE;_UNICODE;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(VcpkgRoot)\installed\x64-windows\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(VcpkgRoot)\installed\x64-windows\include;$(MSBuildProjectDirectory)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(VcpkgRoot)\installed\x64-windows\lib;$(ProjectDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;cmark.lib;pe-parse.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(VcpkgRoot)\installed\x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;qtmain.lib;cmark.lib;pe-parse.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,33 +100,20 @@
       <PreprocessorDefinitions>NDEBUG;UNICODE;_UNICODE;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(VcpkgRoot)\installed\x64-windows\include;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>GeneratedFiles\$(ConfigurationName);GeneratedFiles;$(QTDIR)\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtWidgets;$(VcpkgRoot)\installed\x64-windows\include;$(MSBuildProjectDirectory)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(VcpkgRoot)\installed\x64-windows\lib;$(ProjectDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;cmark.lib;pe-parse.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(VcpkgRoot)\installed\x64-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;qtmain.lib;pe-parse.lib;cmark.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <CustomBuild>
-      <Command>
-      </Command>
-      <Outputs>
-      </Outputs>
-      <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
+    <PostBuildEvent>
+      <Command>"$(QTDIR)\bin\windeployqt.exe" "$(TargetPath)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_RightPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Core\Integrity\Compatibility\Compatibility.cpp" />
     <ClCompile Include="src\Core\Integrity\Validator\Validator.cpp" />
@@ -224,6 +157,15 @@
     <ClCompile Include="src\GUI\Threads\CompatibilityThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ObfuscationThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ValidatorThread.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_RightPanel.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ChangelogDialog.cpp" />
     <ClCompile Include="GeneratedFiles\moc_HashCompareDialog.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ObfuscationSelectionDialog.cpp" />
@@ -237,13 +179,12 @@
     <ClCompile Include="GeneratedFiles\moc_IndirectObfuscationTab.cpp" />
     <ClCompile Include="GeneratedFiles\moc_InlineObfuscationTab.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ValidatorThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_Validator.cpp" />
     <ClCompile Include="GeneratedFiles\moc_CompatibilityThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_Compatibility.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_Verification.cpp" />
     <ClCompile Include="GeneratedFiles\moc_VerificationThread.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ObfuscationThread.cpp" />
-    <ClCompile Include="GeneratedFiles\qrc_resources.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_Compatibility.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_Validator.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_Verification.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\Core\Integrity\Compatibility\Compatibility.h">
@@ -264,42 +205,42 @@
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
     </QtMoc>
-    <CustomBuild Include="include\GUI\MainWindow.h">
+    <QtMoc Include="include\GUI\MainWindow.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="include\GUI\Bars\ProgressBar.h">
+    </QtMoc>
+    <QtMoc Include="include\GUI\Bars\ProgressBar.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="include\GUI\Bars\StatusBar.h">
+    </QtMoc>
+    <QtMoc Include="include\GUI\Bars\StatusBar.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="include\GUI\Bars\TitleBar.h">
+    </QtMoc>
+    <QtMoc Include="include\GUI\Bars\TitleBar.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="include\GUI\Bars\SettingsTitleBar.h">
+    </QtMoc>
+    <QtMoc Include="include\GUI\Bars\SettingsTitleBar.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="include\GUI\Buttons\BindButton.h">
+    </QtMoc>
+    <QtMoc Include="include\GUI\Buttons\BindButton.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
+    </QtMoc>
     <QtMoc Include="include\GUI\Dialogs\ChangelogDialog.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
@@ -336,24 +277,24 @@
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
     </QtMoc>
-    <CustomBuild Include="include\GUI\Panels\LeftPanel.h">
+    <QtMoc Include="include\GUI\Panels\LeftPanel.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="include\GUI\Panels\OutputPanel.h">
+    </QtMoc>
+    <QtMoc Include="include\GUI\Panels\OutputPanel.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="include\GUI\Panels\RightPanel.h">
+    </QtMoc>
+    <QtMoc Include="include\GUI\Panels\RightPanel.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
       <Outputs>GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>%(AdditionalDependencies)</AdditionalInputs>
-    </CustomBuild>
+    </QtMoc>
     <QtMoc Include="include\GUI\Settings\Tabs\GeneralTab.h">
       <FileType>Document</FileType>
       <Command>$(QTDIR)\bin\moc.exe "%(FullPath)" -o "GeneratedFiles\moc_%(Filename).cpp"</Command>
@@ -430,28 +371,27 @@
     <Font Include="src\Res\Fonts\ibmplexmono.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Core\Integrity\Integrity.h" />
+    <ClInclude Include="include\Core\Obfuscation\Direct\Direct.h" />
+    <ClInclude Include="include\Core\Obfuscation\Indirect\Indirect.h" />
     <ClInclude Include="include\Core\Obfuscation\Obfuscation.h" />
     <ClInclude Include="include\Core\Obfuscation\IndirectObfuscation.h" />
-    <ClInclude Include="include\Core\Obfuscation\Shared\Stub\NameGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Direct\ControlFlow\DirectControlFlow.h" />
-    <ClInclude Include="include\Core\Obfuscation\Direct\Stub\DirectJunkGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Direct\Stub\DirectStubGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Direct\Encryption\DirectEncryptor.h" />
-    <ClInclude Include="include\Core\Obfuscation\Direct\Mapping\DirectStubMapper.h" />
-    <ClInclude Include="include\Core\Obfuscation\Indirect\ControlFlow\IndirectControlFlow.h" />
-    <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectJunkGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Indirect\Stub\IndirectStubGenerator.h" />
-    <ClInclude Include="include\Core\Obfuscation\Indirect\Encryption\IndirectEncryptor.h" />
-    <ClInclude Include="include\Core\Utils\PathUtils.h" />
-    <ClInclude Include="include\Core\Utils\Utils.h" />
-    <ClInclude Include="include\GUI\Themes\Colors.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="include\Core\Obfuscation\Shared\Shared.h" />
+    <ClInclude Include="include\Core\Utils\Common.h" />
+    <ClInclude Include="include\GUI\Bars.h" />
+    <ClInclude Include="include\GUI\Buttons.h" />
+    <ClInclude Include="include\GUI\Dialogs.h" />
+    <ClInclude Include="include\GUI\Panels.h" />
+    <ClInclude Include="include\GUI\Settings.h" />
+    <ClInclude Include="include\GUI\Themes.h" />
+    <ClInclude Include="include\GUI\Threads.h" />
+    <ClInclude Include="src\Res\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="resources.qrc" />
+    <QtRcc Include="src\Res\resources.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="app.rc" />
+    <ResourceCompile Include="src\Res\app.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\GUI\Stylesheets\SettingsDialog.qss" />
@@ -460,5 +400,4 @@
   <Import Project="$(QtMsBuild)\qt.targets" Condition="Exists('$(QtMsBuild)\qt.targets')" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-
 </Project>

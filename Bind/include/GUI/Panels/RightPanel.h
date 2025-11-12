@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QFrame>
 
 class QLabel;
@@ -17,4 +18,4 @@ public:
 private:
     QLabel* headerLabel;
     OutputPanel* outputText;
-}; 
+};

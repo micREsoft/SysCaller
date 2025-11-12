@@ -1,20 +1,6 @@
-#include "include/Core/Utils/Utils.h"
-#include "include/Core/Utils/PathUtils.h"
-#include "include/Core/Obfuscation/Obfuscation.h"
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include <QDebug>
-#include <QByteArray>
-#include <cstring>
-#include <QFile>
-#include <QCryptographicHash>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#include <QDateTime>
-#include <QDir>
-#include <QSettings>
+#include <Core/Obfuscation/Obfuscation.h>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/Common.h>
 
 QMap<QString, int> SyscallExtractor::getSyscallsFromDll(const QString& dllPath)
 {
@@ -62,7 +48,7 @@ QMap<QString, int> SyscallExtractor::getSyscallsFromDll(const QString& dllPath)
 
         try
         {
-            funcName = QString::fromUtf8(fn.c_str(), fn.length());
+            funcName = QString::fromUtf8(fn.c_str(), static_cast<int>(fn.length()));
         }
         catch (...)
         {
@@ -464,11 +450,11 @@ QVariantMap StubHashGenerator::generateStubHashes(const QString& asmFilePath,
                 {
                     QString stubCode = asmContent.mid(startPos, endPos - startPos);
 
-                    // generate MD5 hash
+                    /* generate MD5 hash */
                     QByteArray md5Hash = QCryptographicHash::hash(stubCode.toUtf8(), QCryptographicHash::Md5);
                     QString md5Hex = md5Hash.toHex();
 
-                    // generate SHA256 hash
+                    /* generate SHA256 hash */
                     QByteArray sha256Hash = QCryptographicHash::hash(stubCode.toUtf8(), QCryptographicHash::Sha256);
                     QString sha256Hex = sha256Hash.toHex();
 
@@ -579,7 +565,7 @@ QPair<bool, QString> StubHashGenerator::saveStubHashes(const QVariantMap& stubHa
 
         formattedOutput["stubs"] = formattedStubs;
 
-        // generate build ID
+        /* generate build ID */
         QStringList allHashes;
         QStringList sortedSyscalls = stubs.keys();
         std::sort(sortedSyscalls.begin(), sortedSyscalls.end());

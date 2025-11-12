@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icons/validation.png</file>
+        <file>Icons/compatibility.png</file>
+        <file>Icons/verification.png</file>
+        <file>Icons/obfuscation.png</file>
+        <file>Icons/settings.png</file>
+        <file>Icons/syscaller.png</file>
+        <file>Icons/logo.ico</file>
+        <file>Icons/export.png</file>
+        <file>Icons/refresh.png</file>
+        <file>Icons/xmark.png</file>
+        <file>Icons/green.png</file>
+        <file>Icons/record.png</file>
+        <file>Icons/hourglass.png</file>
+        <file>Fonts/ibmplexmono.ttf</file>
+        <file>../GUI/Stylesheets/SettingsDialog.qss</file>
+        <file>../GUI/Stylesheets/StubMapperDialog.qss</file>
+        <file>../GUI/Stylesheets/ConfirmationDialog.qss</file>
+        <file>../GUI/Stylesheets/ObfuscationSelectionDialog.qss</file>
+        <file>../GUI/Stylesheets/HashCompareDialog.qss</file>
+        <file>../GUI/Stylesheets/ChangelogDialog.qss</file>
+    </qresource>
+</RCC> 

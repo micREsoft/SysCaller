@@ -1,10 +1,10 @@
 #pragma once
 
+#include <QMap>
 #include <QSettings>
 #include <QString>
 #include <QStringList>
-#include <QMap>
-#include <functional>
+#include <Core/Utils/Dependencies.h>
 
 class IndirectObfuscationManager {
 private:

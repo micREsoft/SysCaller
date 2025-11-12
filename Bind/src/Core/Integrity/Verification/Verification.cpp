@@ -1,18 +1,12 @@
-#include "include/Core/Integrity/Verification/Verification.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QFile>
-#include <QDir>
-#include <QTextStream>
-#include <QRegularExpression>
-#include <QDebug>
+#include <Core/Integrity/Integrity.h>
+#include <Core/Utils/Common.h>
 #include <pe-parse/parse.h>
-#include <cstring>
-#include <algorithm>
 
 Verification::Verification()
     : QObject(nullptr)
     , pe(nullptr)
     , imageBase(0)
+    , processedCount(0)
 {}
 
 void Verification::setOutputCallback(std::function<void(const QString&)> callback)
@@ -24,19 +18,58 @@ void Verification::outputProgress(const QString& message)
 {
     if (outputCallback)
     {
-        outputCallback(message);
+        /* for important system messages (startup, summary, errors) send immediately */
+        /* for result details (syscall names, status, offsets, etc.) batch them for performance */
+        bool isImportantMessage = message.isEmpty() || 
+                                  message.contains("Testing") || 
+                                  message.contains("Summary") || 
+                                  message.contains("Starting") || 
+                                  message.contains("Using DLL") ||
+                                  message.contains("Found") ||
+                                  message.contains("Failed to open") ||
+                                  message.contains("Error Testing");
+        
+        if (isImportantMessage)
+        {
+            flushOutputBuffer();
+            outputCallback(message);
+        }
+        else
+        {
+            outputBuffer.append(message);
+            
+            if (outputBuffer.size() >= OUTPUT_BATCH_SIZE)
+            {
+                flushOutputBuffer();
+            }
+        }
+    }
+}
+
+void Verification::flushOutputBuffer()
+{
+    if (outputCallback && !outputBuffer.isEmpty())
+    {
+        for (const QString& line : outputBuffer)
+        {
+            outputCallback(line);
+        }
+        outputBuffer.clear();
     }
 }
 
 int Verification::run(int argc, char* argv[])
 {
-    return runWithDllPaths(QStringList() << "C:\\Windows\\System32\\ntdll.dll");
+    return runWithDllPaths(QStringList() << Constants::DEFAULT_NTDLL_PATH);
 }
 
 int Verification::runWithDllPaths(const QStringList& dllPaths)
 {
     qDebug() << QString("Verification::runWithDllPaths() called with paths: %1")
                       .arg(dllPaths.join(", "));
+    /* reset performance counters and buffers */
+    outputBuffer.clear();
+    processedCount = 0;
 
     QSettings settings(getIniPath(), QSettings::IniFormat);
     QString syscallMode = settings.value("general/syscall_mode", "Nt").toString();
@@ -50,7 +83,7 @@ int Verification::runWithDllPaths(const QStringList& dllPaths)
 
     if (dllPathsToUse.isEmpty())
     {
-        dllPathsToUse << "C:\\Windows\\System32\\ntdll.dll";
+        dllPathsToUse << Constants::DEFAULT_NTDLL_PATH;
     }
 
     this->dllPaths = dllPathsToUse;
@@ -98,15 +131,15 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
 
     if (isKernelMode)
     {
-        headerFiles["constants"] = basePath + "/SysCallerK/Wrapper/include/SysK/sysConstants_k.h";
-        headerFiles["types"] = basePath + "/SysCallerK/Wrapper/include/SysK/sysTypes_k.h";
-        headerFiles["externals"] = basePath + "/SysCallerK/Wrapper/include/SysK/sysExternals_k.h";
+        headerFiles["constants"] = basePath + "/SysCallerK/Wrapper/include/SysK/SysKConstants.h";
+        headerFiles["types"] = basePath + "/SysCallerK/Wrapper/include/SysK/SysKTypes.h";
+        headerFiles["externals"] = basePath + "/SysCallerK/Wrapper/include/SysK/SysKExternals.h";
     }
     else
     {
-        headerFiles["constants"] = basePath + "/SysCaller/Wrapper/include/Sys/sysConstants.h";
-        headerFiles["types"] = basePath + "/SysCaller/Wrapper/include/Sys/sysTypes.h";
-        headerFiles["externals"] = basePath + "/SysCaller/Wrapper/include/Sys/sysExternals.h";
+        headerFiles["constants"] = basePath + "/SysCaller/Wrapper/include/Sys/SysConstants.h";
+        headerFiles["types"] = basePath + "/SysCaller/Wrapper/include/Sys/SysTypes.h";
+        headerFiles["externals"] = basePath + "/SysCaller/Wrapper/include/Sys/SysExternals.h";
     }
 
     for (auto it = headerFiles.begin(); it != headerFiles.end(); ++it)
@@ -137,12 +170,12 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
                 QString value = match.captured(2);
 
                 TypeDefinition def;
-                def.file = QString("sysConstants%1.h").arg(isKernelMode ? "_k" : "");
+                def.file = QString("SysConstants%1.h").arg(isKernelMode ? "_k" : "");
                 def.definition = QString("#define %1 %2").arg(name).arg(value);
                 typeDefinitions.insert(name, def);
             }
         }
-        // parse comma types
+        /* parse comma types */
         QRegularExpression commaRegex(R"(}\s*(\w+),\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator commaMatches = commaRegex.globalMatch(content);
 
@@ -151,7 +184,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             QRegularExpressionMatch match = commaMatches.next();
             QString baseType = match.captured(1);
             QString ptrType = match.captured(2);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def1;
@@ -164,7 +197,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def2.definition = QString("typedef %1* %2").arg(baseType).arg(ptrType);
             typeDefinitions.insert(ptrType, def2);
         }
-        // parse pointer types
+        /* parse pointer types */
         QRegularExpression ptrRegex(R"(typedef\s+(?:struct\s+)?(?:_)?(\w+)\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator ptrMatches = ptrRegex.globalMatch(content);
 
@@ -173,7 +206,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             QRegularExpressionMatch match = ptrMatches.next();
             QString baseType = match.captured(1);
             QString ptrType = match.captured(2);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def;
@@ -181,7 +214,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef %1* %2").arg(baseType).arg(ptrType);
             typeDefinitions.insert(ptrType, def);
         }
-        // parse basic types
+        /* parse basic types */
         QRegularExpression basicRegex(R"(typedef\s+(?:struct\s+)?(?:_)?(\w+)\s+(\w+);)");
         QRegularExpressionMatchIterator basicMatches = basicRegex.globalMatch(content);
 
@@ -190,7 +223,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             QRegularExpressionMatch match = basicMatches.next();
             QString baseType = match.captured(1);
             QString newType = match.captured(2);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def;
@@ -198,7 +231,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef %1 %2").arg(baseType).arg(newType);
             typeDefinitions.insert(newType, def);
         }
-        // parse structs
+        /* parse structs */
         QRegularExpression structRegex(R"(typedef\s+struct\s+(?:_)?(\w+)\s*\{[^}]+\}\s*(\w+)\s*,\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator structMatches = structRegex.globalMatch(content);
 
@@ -207,7 +240,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             QRegularExpressionMatch match = structMatches.next();
             QString structName = match.captured(2);
             QString ptrName = match.captured(3);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def1;
@@ -220,7 +253,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def2.definition = QString("typedef %1* %2").arg(structName).arg(ptrName);
             typeDefinitions.insert(ptrName, def2);
         }
-        // parse enums
+        /* parse enums */
         QRegularExpression enumRegex(R"(typedef\s+enum\s+(?:_)?(\w+)\s*\{[^}]+\}\s*(\w+);)");
         QRegularExpressionMatchIterator enumMatches = enumRegex.globalMatch(content);
 
@@ -228,7 +261,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
         {
             QRegularExpressionMatch match = enumMatches.next();
             QString enumName = match.captured(2);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def;
@@ -236,7 +269,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = match.captured(0);
             typeDefinitions.insert(enumName, def);
         }
-        // parse function pointers
+        /* parse function pointers */
         QRegularExpression funcPtrRegex(R"(typedef\s+\w+\s*\(\s*\w+\s*\*\s*(\w+)\s*\)\s*\([^)]*\))");
         QRegularExpressionMatchIterator funcPtrMatches = funcPtrRegex.globalMatch(content);
 
@@ -244,7 +277,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
         {
             QRegularExpressionMatch match = funcPtrMatches.next();
             QString typeName = match.captured(1);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def;
@@ -252,7 +285,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef function_ptr %1").arg(typeName);
             typeDefinitions.insert(typeName, def);
         }
-        // parse const pointer types
+        /* parse const pointer types */
         QRegularExpression constPtrRegex(R"(typedef\s+const\s+(\w+)\s*\*\s*(\w+);)");
         QRegularExpressionMatchIterator constPtrMatches = constPtrRegex.globalMatch(content);
 
@@ -261,7 +294,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             QRegularExpressionMatch match = constPtrMatches.next();
             QString baseType = match.captured(1);
             QString newType = match.captured(2);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def;
@@ -269,7 +302,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             def.definition = QString("typedef const %1* %2").arg(baseType).arg(newType);
             typeDefinitions.insert(newType, def);
         }
-        // parse WNF types
+        /* parse WNF types */
         QRegularExpression wnfRegex(R"(typedef\s+(?:const\s+)?(?:struct\s+)?_?(\w+)\s*(?:\*\s*)?(\w+)(?:\s*,\s*\*\s*(\w+))?;)");
         QRegularExpressionMatchIterator wnfMatches = wnfRegex.globalMatch(content);
 
@@ -279,7 +312,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
             QString baseType = match.captured(1);
             QString newType = match.captured(2);
             QString ptrType = match.captured(3);
-            QString fileName = QString("sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
+            QString fileName = QString("Sys%1%2.h").arg(fileType.at(0).toUpper() + fileType.mid(1))
                                      .arg(isKernelMode ? "_k" : "");
 
             TypeDefinition def1;
@@ -307,7 +340,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
         for (const QString& typeName : commonTypes)
         {
             TypeDefinition def;
-            def.file = QString("sysTypes%1.h").arg(isKernelMode ? "_k" : "");
+            def.file = QString("SysTypes%1.h").arg(isKernelMode ? "_k" : "");
             def.definition = QString("typedef base %1").arg(typeName);
             typeDefinitions.insert(typeName, def);
         }
@@ -316,7 +349,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
     if (!typeDefinitions.contains("WNF_CHANGE_STAMP"))
     {
         TypeDefinition def;
-        def.file = QString("sysExternals%1.h").arg(isKernelMode ? "_k" : "");
+        def.file = QString("SysExternals%1.h").arg(isKernelMode ? "_k" : "");
         def.definition = "typedef ULONG WNF_CHANGE_STAMP";
         typeDefinitions.insert("WNF_CHANGE_STAMP", def);
     }
@@ -324,7 +357,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
     if (!typeDefinitions.contains("PCWNF_STATE_NAME"))
     {
         TypeDefinition def;
-        def.file = QString("sysExternals%1.h").arg(isKernelMode ? "_k" : "");
+        def.file = QString("SysExternals%1.h").arg(isKernelMode ? "_k" : "");
         def.definition = "typedef WNF_STATE_NAME* PCWNF_STATE_NAME";
         typeDefinitions.insert("PCWNF_STATE_NAME", def);
     }
@@ -332,7 +365,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
     if (!typeDefinitions.contains("PCWNF_TYPE_ID"))
     {
         TypeDefinition def;
-        def.file = QString("sysExternals%1.h").arg(isKernelMode ? "_k" : "");
+        def.file = QString("SysExternals%1.h").arg(isKernelMode ? "_k" : "");
         def.definition = "typedef WNF_TYPE_ID* PCWNF_TYPE_ID";
         typeDefinitions.insert("PCWNF_TYPE_ID", def);
     }
@@ -340,7 +373,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
     if (!typeDefinitions.contains("WAIT_TYPE"))
     {
         TypeDefinition def;
-        def.file = QString("sysExternals%1.h").arg(isKernelMode ? "_k" : "");
+        def.file = QString("SysExternals%1.h").arg(isKernelMode ? "_k" : "");
         def.definition = "typedef enum WAIT_TYPE";
         typeDefinitions.insert("WAIT_TYPE", def);
     }
@@ -348,7 +381,7 @@ void Verification::TypeDefinitionTracker::parseHeaderFiles()
     if (!typeDefinitions.contains("PIO_APC_ROUTINE"))
     {
         TypeDefinition def;
-        def.file = QString("sysTypes%1.h").arg(isKernelMode ? "_k" : "");
+        def.file = QString("SysTypes%1.h").arg(isKernelMode ? "_k" : "");
         def.definition = "typedef function_ptr PIO_APC_ROUTINE";
         typeDefinitions.insert("PIO_APC_ROUTINE", def);
     }
@@ -443,7 +476,7 @@ std::optional<Verification::TypeDefinition> Verification::TypeDefinitionTracker:
     };
     if (basicTypes.contains(cleanTypeName)) {
         TypeDefinition def;
-        def.file = QString("sysTypes%1.h").arg(isKernelMode ? "_k" : "");
+        def.file = QString("SysTypes%1.h").arg(isKernelMode ? "_k" : "");
         def.definition = QString("typedef base %1").arg(cleanTypeName);
         return def;
     }
@@ -698,18 +731,18 @@ std::optional<int> Verification::getOffsetFromDll(const QString& syscallName, co
     {
         auto* verification = static_cast<Verification*>(N);
 
-        // safety check for the callback parameters
+        /* safety check for the callback parameters */
         if (!verification || fn.empty())
         {
             return 0;
         }
 
-        // use a safer string conversion
+        /* use a safer string conversion */
         QString funcName;
 
         try
         {
-            funcName = QString::fromUtf8(fn.c_str(), fn.length());
+            funcName = QString::fromUtf8(fn.c_str(), static_cast<int>(fn.length()));
         }
         catch (...)
         {
@@ -721,11 +754,11 @@ std::optional<int> Verification::getOffsetFromDll(const QString& syscallName, co
             return 0;
         }
 
-        // get function RVA (addr is VA, subtract image base to get RVA)
+        /* get function RVA (addr is VA, subtract image base to get RVA) */
         uint32_t funcRVA = static_cast<uint32_t>(addr - verification->imageBase);
         uint32_t fileOffset = 0;
 
-        // safety check for RVA calculation
+        /* safety check for RVA calculation */
         if (addr < verification->imageBase)
         {
             return 0;
@@ -811,7 +844,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         }
     }
 
-    // validate return type
+    /* validate return type */
     QStringList validReturnTypes = {"NTSTATUS", "BOOL", "HANDLE", "VOID", "ULONG", "ULONG_PTR", "UINT32", "UINT64"};
 
     if (!validReturnTypes.contains(syscall.returnType))
@@ -819,7 +852,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         result.errors.append(QString("Unexpected return type: %1").arg(syscall.returnType));
     }
 
-    // validate parameters
+    /* validate parameters */
     for (const Parameter& param : syscall.parameters)
     {
         if (!validateParameterType(param.type))
@@ -828,7 +861,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         }
     }
 
-    // validate offset
+    /* validate offset */
     QString offset = syscall.offset.toLower().replace("h", "");
     bool ok;
     int offsetValue = offset.toInt(&ok, 16);
@@ -854,7 +887,7 @@ Verification::TestResult Verification::testSyscall(const SyscallDefinition& sysc
         result.errors.append(QString("Invalid Syscall Offset Format: %1").arg(syscall.offset));
     }
 
-    // check type definitions
+    /* check type definitions */
     for (const Parameter& param : syscall.parameters)
     {
         std::optional<TypeDefinition> typeInfo = typeTracker.checkType(param.type, isKernelMode);
@@ -1008,12 +1041,24 @@ void Verification::runTests(const QString& outputFormat)
             TestResult result = testSyscall(it.value());
             testResults.append(result);
             printResult(result);
+            
+            processedCount++;
+            
+            /* flush buffer periodically during processing */
+            if (processedCount % OUTPUT_BATCH_SIZE == 0)
+            {
+                flushOutputBuffer();
+            }
         }
         catch (const std::exception& e)
         {
             outputProgress(Colors::FAIL() + QString("Error Testing %1: %2").arg(it.key()).arg(e.what()) + Colors::ENDC());
+            processedCount++;
         }
     }
+    
+    /* flush any remaining buffered output */
+    flushOutputBuffer();
 
     int successCount = 0, failureCount = 0;
 

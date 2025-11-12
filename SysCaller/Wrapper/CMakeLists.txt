@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(SysCaller VERSION 1.3.0 LANGUAGES C CXX ASM_MASM)
+project(SysCaller VERSION 1.3.2 LANGUAGES C CXX ASM_MASM)
 
 # require x64 build
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -22,6 +22,12 @@ set_property(CACHE SYSCALLER_BUILD_MODE PROPERTY STRINGS "DIRECT" "INDIRECT" "IN
 
 option(SYSCALLER_BINDINGS "Build with multi-language bindings support" OFF)
 
+# Resolver options (for INDIRECT mode)
+option(SYSCALLER_RESOLVER_MEMORY_EXPORT "Use GetModuleHandle for ntdll resolution" OFF)
+option(SYSCALLER_RESOLVER_PEB_LDR "Use PEB LDR traversal for ntdll resolution" OFF)
+option(SYSCALLER_RESOLVER_HASHED_EXPORT "Use hashed export parsing" OFF)
+option(SYSCALLER_RESOLVER_DISK_MAPPED "Use disk-mapped ntdll parsing" OFF)
+
 option(BUILD_SHARED_LIBS "Build as shared library (DLL)" OFF)
 
 if(SYSCALLER_BUILD_MODE STREQUAL "DIRECT")
@@ -42,29 +48,61 @@ if(SYSCALLER_BINDINGS)
 endif()
 
 set(CORE_HEADERS
-    include/syscaller.h
-    include/syscaller_config.h
-    include/Sys/sysFunctions.h
-    include/Sys/sysTypes.h
-    include/Sys/sysExternals.h
-    include/Sys/sysConstants.h
+    include/SysCaller.h
+    include/SysCallerConfig.h
+    include/Sys/SysFunctions.h
+    include/Sys/SysTypes.h
+    include/Sys/SysExternals.h
+    include/Sys/SysConstants.h
 )
 
 set(CORE_SOURCES
-    src/syscaller.asm
-    src/build_info.cpp
+    src/SysCaller.asm
+    src/BuildInfo.cpp
 )
 
 if(SYSCALLER_BUILD_MODE STREQUAL "INDIRECT")
-    list(APPEND CORE_HEADERS include/Resolver/Resolver.h)
-    list(APPEND CORE_SOURCES src/Resolver/Resolver.cpp)
-    message(STATUS "[SysCaller] Resolver: INCLUDED (indirect mode requires resolver)")
+    # Always include base resolver files
+    list(APPEND CORE_HEADERS
+        include/Resolver/ResolverBase.h
+        include/Resolver/Resolver.h
+        include/Resolver/PebUtils.h
+    )
+    list(APPEND CORE_SOURCES
+        src/Resolver/ResolverBase.cpp
+        src/Resolver/PebUtils.cpp
+    )
+
+    # Include resolver method based on configuration
+    if(SYSCALLER_RESOLVER_MEMORY_EXPORT)
+        list(APPEND CORE_HEADERS include/Resolver/Resolver.h)
+        list(APPEND CORE_SOURCES src/Resolver/Methods/MemoryExportResolver.cpp)
+        message(STATUS "[SysCaller] Resolver: Memory Export")
+    elseif(SYSCALLER_RESOLVER_PEB_LDR)
+        list(APPEND CORE_HEADERS
+            include/Resolver/Resolver.h
+        )
+        list(APPEND CORE_SOURCES
+            src/Resolver/Methods/PebLdrResolver.cpp
+        )
+        message(STATUS "[SysCaller] Resolver: PEB LDR Traversal")
+    elseif(SYSCALLER_RESOLVER_HASHED_EXPORT)
+        list(APPEND CORE_HEADERS include/Resolver/Resolver.h)
+        list(APPEND CORE_SOURCES src/Resolver/Methods/HashedExportResolver.cpp)
+        message(STATUS "[SysCaller] Resolver: Hashed Export")
+    elseif(SYSCALLER_RESOLVER_DISK_MAPPED)
+        list(APPEND CORE_HEADERS include/Resolver/Resolver.h)
+        list(APPEND CORE_SOURCES src/Resolver/Methods/DiskMappedResolver.cpp)
+        message(STATUS "[SysCaller] Resolver: Disk Mapped")
+    else()
+        message(FATAL_ERROR "No resolver method selected! Define one of: SYSCALLER_RESOLVER_MEMORY_EXPORT, SYSCALLER_RESOLVER_PEB_LDR, SYSCALLER_RESOLVER_HASHED_EXPORT, or SYSCALLER_RESOLVER_DISK_MAPPED")
+    endif()
 else()
     message(STATUS "[SysCaller] Resolver: SKIPPED (not required for ${SYSCALLER_BUILD_MODE})")
 endif()
 
 if(SYSCALLER_BINDINGS)
-    list(APPEND CORE_SOURCES src/DLL/dllmain.cpp)
+    list(APPEND CORE_SOURCES src/DLL/DllMain.cpp)
     message(STATUS "[SysCaller] DLL Main: INCLUDED (bindings mode)")
 else()
     message(STATUS "[SysCaller] DLL Main: SKIPPED (bindings not enabled)")
@@ -81,6 +119,10 @@ endif()
 target_compile_definitions(SysCaller PRIVATE
     ${SYSCALLER_MODE_DEFINE}
     $<$<BOOL:${SYSCALLER_BINDINGS}>:SYSCALLER_BINDINGS>
+    $<$<BOOL:${SYSCALLER_RESOLVER_MEMORY_EXPORT}>:SYSCALLER_RESOLVER_MEMORY_EXPORT>
+    $<$<BOOL:${SYSCALLER_RESOLVER_PEB_LDR}>:SYSCALLER_RESOLVER_PEB_LDR>
+    $<$<BOOL:${SYSCALLER_RESOLVER_HASHED_EXPORT}>:SYSCALLER_RESOLVER_HASHED_EXPORT>
+    $<$<BOOL:${SYSCALLER_RESOLVER_DISK_MAPPED}>:SYSCALLER_RESOLVER_DISK_MAPPED>
 )
 
 target_include_directories(SysCaller PUBLIC
@@ -125,6 +167,19 @@ message(STATUS "============================================================")
 message(STATUS "SysCaller v${PROJECT_VERSION} Configuration Summary")
 message(STATUS "============================================================")
 message(STATUS "Build Mode:     ${SYSCALLER_BUILD_MODE}")
+if(SYSCALLER_BUILD_MODE STREQUAL "INDIRECT")
+    if(SYSCALLER_RESOLVER_MEMORY_EXPORT)
+        message(STATUS "Resolver:       Memory Export (GetModuleHandle)")
+    elseif(SYSCALLER_RESOLVER_PEB_LDR)
+        message(STATUS "Resolver:       PEB LDR Traversal (No WinAPI)")
+    elseif(SYSCALLER_RESOLVER_HASHED_EXPORT)
+        message(STATUS "Resolver:       Hashed Export (No Strings)")
+    elseif(SYSCALLER_RESOLVER_DISK_MAPPED)
+        message(STATUS "Resolver:       Disk Mapped (Anti-Hook)")
+    else()
+        message(STATUS "Resolver:       NOT SELECTED (Will fail to build)")
+    endif()
+endif()
 message(STATUS "Bindings:       ${SYSCALLER_BINDINGS}")
 if(SYSCALLER_BINDINGS)
     message(STATUS "Bindings Mode:  Exports enabled (.def file used)")

@@ -1,30 +1,16 @@
-#include "include/GUI/Dialogs/ChangelogDialog.h"
-#include "include/GUI/Bars/SettingsTitleBar.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QListWidget>
-#include <QTextEdit>
-#include <QLabel>
-#include <QPushButton>
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
-#include <QRegExp>
-#include <QRegularExpression>
-#include <QApplication>
-#include <QIcon>
-#include <QMouseEvent>
-#include "include/Core/Utils/PathUtils.h"
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
+#include <GUI/Dialogs.h>
 
 ChangelogDialog::ChangelogDialog(QWidget* parent)
     : QDialog(parent)
 {
-    setWindowTitle("Bind - History");
+    setWindowTitle("History");
     setMinimumSize(1150, 600);
     resize(1150, 600);
-    setWindowIcon(QIcon(":/src/Res/Icons/logo.ico"));
+    setWindowIcon(QIcon(":/Icons/logo.ico"));
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
-    // setAttribute(Qt::WA_TranslucentBackground);
+    /* setAttribute(Qt::WA_TranslucentBackground); */
     setupStylesheet();
     setupUI();
     populateChangelogs();
@@ -40,7 +26,7 @@ ChangelogDialog::ChangelogDialog(QWidget* parent)
 
 void ChangelogDialog::setupStylesheet()
 {
-    QFile stylesheetFile(":/src/GUI/Stylesheets/ChangelogDialog.qss");
+    QFile stylesheetFile(":/GUI/Stylesheets/ChangelogDialog.qss");
 
     if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
     {
@@ -57,20 +43,29 @@ void ChangelogDialog::setupUI()
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    titleBar = new SettingsTitleBar("Bind - Changelog History", this);
+    titleBar = new SettingsTitleBar("Changelog History", this);
+    titleBar->setStyleSheet("QFrame {"
+                           " background: #252525;"
+                           " border-top-left-radius: 0px;"
+                           " border-top-right-radius: 0px;"
+                           "}");
     layout->addWidget(titleBar);
 
     auto* contentLayout = new QVBoxLayout();
-    contentLayout->setContentsMargins(20, 20, 20, 20);
-    contentLayout->setSpacing(20);
+    contentLayout->setContentsMargins(25, 25, 25, 25);
+    contentLayout->setSpacing(25);
 
     auto* hbox = new QHBoxLayout();
+    hbox->setSpacing(20);
+    
     listWidget = new QListWidget();
-    listWidget->setFixedWidth(200);
+    listWidget->setFixedWidth(220);
+    listWidget->setSpacing(4);
     hbox->addWidget(listWidget);
 
     textEdit = new QTextEdit();
     textEdit->setReadOnly(true);
+    textEdit->setFrameShape(QFrame::NoFrame);
     hbox->addWidget(textEdit, 1);
     contentLayout->addLayout(hbox);
 
@@ -162,20 +157,146 @@ QString ChangelogDialog::markdownToHtml(const QString& markdown)
 
     QString customCss =
         "<style>"
-        "body { background: #181818; color: #fff; font-family: 'IBM Plex Mono', monospace; margin: 0; padding: 10px; }"
-        "h1, h2, h3 { color: #0077d4; margin-top: 20px; margin-bottom: 10px; }"
-        "h1 { font-size: 24px; }"
-        "h2 { font-size: 20px; }"
-        "h3 { font-size: 16px; }"
-        "code, pre { background: #232323; color: #00ffea; border-radius: 6px; padding: 2px 6px; font-family: 'IBM Plex Mono', monospace; }"
-        "pre { padding: 10px; margin: 10px 0; overflow-x: auto; }"
-        "ul, ol { margin-left: 20px; margin-bottom: 10px; }"
-        "li { margin-bottom: 5px; }"
-        "strong { color: #ffd700; font-weight: bold; }"
-        "em { color: #ffb347; font-style: italic; }"
-        "a { color: #4ec9b0; text-decoration: underline; }"
-        "hr { border: 1px solid #333; margin: 20px 0; }"
-        "p { margin-bottom: 10px; line-height: 1.4; }"
+        "body { "
+        "  background: #1E1E1E; "
+        "  color: #E8E8E8; "
+        "  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif; "
+        "  margin: 0; "
+        "  padding: 20px 25px; "
+        "  line-height: 1.7; "
+        "}"
+        "h1 { "
+        "  color: #0077d4; "
+        "  font-size: 32px; "
+        "  font-weight: 700; "
+        "  margin-top: 0; "
+        "  margin-bottom: 16px; "
+        "  padding-bottom: 12px; "
+        "  border-bottom: 2px solid #2A2A2A; "
+        "}"
+        "h2 { "
+        "  color: #0b5394; "
+        "  font-size: 24px; "
+        "  font-weight: 600; "
+        "  margin-top: 32px; "
+        "  margin-bottom: 16px; "
+        "  padding-bottom: 8px; "
+        "  border-bottom: 1px solid #2A2A2A; "
+        "}"
+        "h3 { "
+        "  color: #67abdb; "
+        "  font-size: 18px; "
+        "  font-weight: 600; "
+        "  margin-top: 24px; "
+        "  margin-bottom: 12px; "
+        "}"
+        "h4 { "
+        "  color: #8BB8E8; "
+        "  font-size: 16px; "
+        "  font-weight: 600; "
+        "  margin-top: 20px; "
+        "  margin-bottom: 10px; "
+        "}"
+        "p { "
+        "  margin-bottom: 14px; "
+        "  line-height: 1.7; "
+        "  color: #D0D0D0; "
+        "}"
+        "code { "
+        "  background: #252525; "
+        "  color: #67abdb; "
+        "  border-radius: 4px; "
+        "  padding: 3px 8px; "
+        "  font-family: 'Consolas', 'Courier New', monospace; "
+        "  font-size: 13px; "
+        "  border: 1px solid #2A2A2A; "
+        "}"
+        "pre { "
+        "  background: #252525; "
+        "  color: #E8E8E8; "
+        "  border-radius: 8px; "
+        "  padding: 16px; "
+        "  margin: 16px 0; "
+        "  overflow-x: auto; "
+        "  border: 1px solid #2A2A2A; "
+        "  font-family: 'Consolas', 'Courier New', monospace; "
+        "  font-size: 13px; "
+        "  line-height: 1.5; "
+        "}"
+        "pre code { "
+        "  background: transparent; "
+        "  border: none; "
+        "  padding: 0; "
+        "  color: inherit; "
+        "}"
+        "ul, ol { "
+        "  margin-left: 24px; "
+        "  margin-bottom: 16px; "
+        "  padding-left: 8px; "
+        "}"
+        "li { "
+        "  margin-bottom: 10px; "
+        "  line-height: 1.6; "
+        "  color: #D0D0D0; "
+        "}"
+        "ul li::marker { "
+        "  color: #0077d4; "
+        "}"
+        "ol li::marker { "
+        "  color: #0077d4; "
+        "  font-weight: 600; "
+        "}"
+        "strong { "
+        "  color: #FFFFFF; "
+        "  font-weight: 600; "
+        "}"
+        "em { "
+        "  color: #B8B8B8; "
+        "  font-style: italic; "
+        "}"
+        "a { "
+        "  color: #67abdb; "
+        "  text-decoration: none; "
+        "  border-bottom: 1px solid #67abdb; "
+        "  transition: color 0.2s; "
+        "}"
+        "a:hover { "
+        "  color: #8BB8E8; "
+        "  border-bottom-color: #8BB8E8; "
+        "}"
+        "hr { "
+        "  border: none; "
+        "  border-top: 2px solid #2A2A2A; "
+        "  margin: 32px 0; "
+        "}"
+        "blockquote { "
+        "  border-left: 4px solid #0077d4; "
+        "  background: #252525; "
+        "  margin: 16px 0; "
+        "  padding: 12px 20px; "
+        "  border-radius: 4px; "
+        "  color: #C8C8C8; "
+        "  font-style: italic; "
+        "}"
+        "table { "
+        "  border-collapse: collapse; "
+        "  width: 100%; "
+        "  margin: 16px 0; "
+        "}"
+        "th, td { "
+        "  border: 1px solid #2A2A2A; "
+        "  padding: 10px 14px; "
+        "  text-align: left; "
+        "}"
+        "th { "
+        "  background: #252525; "
+        "  color: #0077d4; "
+        "  font-weight: 600; "
+        "}"
+        "td { "
+        "  background: #1E1E1E; "
+        "  color: #D0D0D0; "
+        "}"
         "</style>";
 
     return customCss + result;

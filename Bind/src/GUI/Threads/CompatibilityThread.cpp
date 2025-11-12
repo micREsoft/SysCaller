@@ -1,7 +1,6 @@
-#include "include/GUI/Threads/CompatibilityThread.h"
-#include "include/Core/Integrity/Compatibility/Compatibility.h"
-#include <QProcessEnvironment>
-#include <QDebug>
+#include <Core/Integrity/Integrity.h>
+#include <Core/Utils/Common.h>
+#include <GUI/Threads.h>
 
 CompatibilityThread::CompatibilityThread(QObject* parent)
     : QThread(parent)

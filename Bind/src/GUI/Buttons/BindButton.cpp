@@ -1,7 +1,5 @@
-#include "include/GUI/Buttons/BindButton.h"
-#include <QIcon>
-#include <QFont>
-#include <QFontDatabase>
+#include <Core/Utils/Common.h>
+#include <GUI/Buttons.h>
 
 BindButton::BindButton(const QString& text,
                        const QString& iconPath,
@@ -37,5 +35,12 @@ void BindButton::setupStyle()
                   "}"
                   "QPushButton:pressed {"
                   " background: #0A7AD1;"
+                  "}"
+                  "QPushButton:disabled {"
+                  " background: #333333;"
+                  " color: #666666;"
+                  "}"
+                  "QPushButton:disabled:hover {"
+                  " background: #333333;"
                   "}");
 }

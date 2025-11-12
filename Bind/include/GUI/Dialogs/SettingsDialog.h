@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QDialog>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QTabWidget>
-#include <QPushButton>
-#include <QSettings>
 #include <QMouseEvent>
+#include <QPushButton>
+#include <QResizeEvent>
+#include <QSettings>
+#include <QTabWidget>
+#include <QVBoxLayout>
 
 class SettingsTitleBar;
 class GeneralTab;
@@ -32,6 +33,7 @@ private:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
     QSettings* settings;
     QTabWidget* tabs;

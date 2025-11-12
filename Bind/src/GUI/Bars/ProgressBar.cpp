@@ -1,4 +1,4 @@
-#include "include/GUI/Bars/ProgressBar.h"
+#include <GUI/Bars.h>
 
 ProgressBar::ProgressBar(QWidget* parent) : QProgressBar(parent) {
     setTextVisible(false);

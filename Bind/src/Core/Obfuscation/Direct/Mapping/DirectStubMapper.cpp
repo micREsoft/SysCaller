@@ -1,17 +1,6 @@
-#include "include/Core/Obfuscation/Direct/Mapping/DirectStubMapper.h"
-#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
-#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include "include/Core/Obfuscation/Direct/Stub/DirectStubGenerator.h"
-#include "include/Core/Obfuscation/Direct/ControlFlow/DirectControlFlow.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QFile>
-#include <QTextStream>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#include <QDebug>
-#include <QRandomGenerator>
-#include <QDir>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Obfuscation/Shared/Shared.h>
+#include <Core/Utils/Common.h>
 
 DirectObfuscation::StubMapper::StubMapper(QSettings* settings)
     : settings(settings)
@@ -62,11 +51,11 @@ QString DirectObfuscation::StubMapper::getAsmFilePath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return PathUtils::getSysCallerKPath() + "/Wrapper/src/syscaller.asm";
+        return PathUtils::getSysCallerKPath() + "/Wrapper/src/SysCaller.asm";
     }
     else
     {
-        return PathUtils::getSysCallerPath() + "/Wrapper/src/syscaller.asm";
+        return PathUtils::getSysCallerPath() + "/Wrapper/src/SysCaller.asm";
     }
 }
 
@@ -74,11 +63,11 @@ QString DirectObfuscation::StubMapper::getHeaderFilePath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/sysFunctions_k.h";
+        return PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/SysKFunctions.h";
     }
     else
     {
-        return PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/sysFunctions.h";
+        return PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/SysFunctions.h";
     }
 }
 
@@ -209,10 +198,10 @@ bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, 
     QSet<int> usedOffsets;
     QSet<QString> usedOffsetNames;
 
-    QMap<int, QString> offsetNameMap;       // maps fake offset to random name
-    QMap<QString, QString> syscallMap;      // maps original syscall to random name
-    QMap<QString, int> syscallOffsets;      // maps original syscall to its offset
-    QMap<int, int> realToFakeOffset;        // maps real offset to fake offset
+    QMap<int, QString> offsetNameMap;       /* maps fake offset to random name */
+    QMap<QString, QString> syscallMap;      /* maps original syscall to random name */
+    QMap<QString, int> syscallOffsets;      /* maps original syscall to its offset */
+    QMap<int, int> realToFakeOffset;        /* maps real offset to fake offset */
 
     QList<QPair<QString, QStringList>> syscallStubs;
     QStringList currentStub;
@@ -345,7 +334,7 @@ bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, 
     QStringList aliases;
     bool enableControlFlow = settings->value("obfuscation/control_flow_enabled", false).toBool();
 
-    QMap<QString, QString> functionSuffixes; // store suffixes for each function
+    QMap<QString, QString> functionSuffixes; /* store suffixes for each function */
 
     if (enableControlFlow)
     {
@@ -444,7 +433,7 @@ bool DirectObfuscation::StubMapper::processAssemblyFile(const QString& asmPath, 
         QString originalSyscall = stubPair.first;
         QStringList stubLines = stubPair.second;
         bool skipRest = false;
-        QString functionSuffix; // store the random suffix for this function
+        QString functionSuffix; /* store the random suffix for this function */
 
         if (enableControlFlow && functionSuffixes.contains(originalSyscall))
         {
@@ -718,7 +707,7 @@ bool DirectObfuscation::StubMapper::updateHeaderFile(const QString& headerPath,
             newHeaderContent << line;
             continue;
         }
-        // preserve c++ guards and extern blocks
+        /* preserve c++ guards and extern blocks */
         if (line.contains("#ifdef __cplusplus") ||
             line.contains("extern \"C\"") ||
             line.trimmed() == "{" ||
@@ -806,7 +795,7 @@ bool DirectObfuscation::StubMapper::updateHeaderFile(const QString& headerPath,
         }
     }
     newHeaderContent << "";
-    newHeaderContent << "// Syscall Name Mappings";
+    newHeaderContent << "/* Syscall Name Mappings */";
 
     for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it)
     {

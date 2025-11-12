@@ -12,5 +12,4 @@ public:
     static QString ENDC() { return "</span>"; }
     static QString BOLD() { return "<span style='font-weight: bold;'>"; }
     static QString UNDERLINE() { return "<span style='text-decoration: underline;'>"; }
-    
 };

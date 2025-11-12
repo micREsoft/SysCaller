@@ -1,16 +1,6 @@
-#include "include/GUI/Settings/Tabs/GeneralTab.h"
-#include "include/GUI/Dialogs/HashCompareDialog.h"
-#include "include/GUI/Dialogs/ConfirmationDialog.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QFileDialog>
-#include <QStandardPaths>
-#include <QProcess>
-#include <QDateTime>
-#include <QThread>
-#include <algorithm>
+#include <Core/Utils/Common.h>
+#include <GUI/Dialogs.h>
+#include <GUI/Settings.h>
 
 GeneralTab::GeneralTab(QSettings* settings, QWidget* parent)
     : QWidget(parent)
@@ -100,7 +90,7 @@ void GeneralTab::initUI()
     {
         bindingsDisableRadio->setChecked(true);
     }
-    inlineAssemblyGroup = new QGroupBox("Syscall Mode");
+    inlineAssemblyGroup = new QGroupBox("Assembly Mode");
     QVBoxLayout* inlineAssemblyLayout = new QVBoxLayout();
 
     QLabel* inlineDesc = new QLabel("Select a mode for syscall generation.");
@@ -147,9 +137,6 @@ void GeneralTab::initUI()
     this->indirectAssemblyRadio = indirectAssemblyRadio;
     this->assemblyModeGroup = assemblyModeGroup;
 
-    connect(directAssemblyRadio, &QRadioButton::toggled, this, &GeneralTab::onAssemblyModeChanged);
-    connect(inlineAssemblyRadio, &QRadioButton::toggled, this, &GeneralTab::onAssemblyModeChanged);
-    connect(indirectAssemblyRadio, &QRadioButton::toggled, this, &GeneralTab::onAssemblyModeChanged);
     inlineAssemblyGroup->setLayout(inlineAssemblyLayout);
     layout->addWidget(inlineAssemblyGroup);
     QGroupBox* hashStubsGroup = new QGroupBox("Hash Stubs");
@@ -250,11 +237,44 @@ void GeneralTab::onModeChanged()
     }
 }
 
-void GeneralTab::onAssemblyModeChanged() {
+bool GeneralTab::validateSettings()
+{
+    if (inlineAssemblyRadio && indirectAssemblyRadio && directAssemblyRadio)
+    {
+        bool hasSelection = inlineAssemblyRadio->isChecked() || 
+                           indirectAssemblyRadio->isChecked() || 
+                           directAssemblyRadio->isChecked();
+        
+        if (!hasSelection)
+        {
+            QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, 
+                "No assembly mode selected. Defaulting to Direct Syscall Mode.");
+            directAssemblyRadio->setChecked(true);
+        }
+    }
+
+    if (!ntModeRadio || !zwModeRadio)
+    {
+        qWarning() << "Mode radio buttons not initialized";
+        return false;
+    }
+
+    if (!settings)
+    {
+        qWarning() << "Settings object is null";
+        return false;
+    }
+
+    return true;
 }
 
 void GeneralTab::saveSettings()
 {
+    if (!validateSettings())
+    {
+        return;
+    }
+
     settings->setValue("general/create_backup", createBackup->isChecked());
     settings->setValue("general/hash_stubs", hashStubs->isChecked());
     settings->setValue("general/bindings_enabled", bindingsEnableRadio->isChecked());
@@ -281,7 +301,7 @@ void GeneralTab::saveSettings()
 
     if (modeChanged)
     {
-        ConfirmationDialog infoDialog("Bind - v1.3.1", this);
+        ConfirmationDialog infoDialog(SYSCALLER_WINDOW_TITLE, this);
         infoDialog.setMessage(QString("The syscall mode has been changed from %1 to %2.\n\n"
                                     "This change affects which files are processed:\n"
                                     "- Nt Mode: User mode files in SysCaller directory\n"
@@ -375,11 +395,11 @@ void GeneralTab::restoreDefaultFiles()
     bool isKernelMode = settings->value("general/syscall_mode", "Nt").toString() == "Zw";
     QString modeText = isKernelMode ? "kernel mode" : "user mode";
     QString filePathText = isKernelMode ? "SysCallerK directory" : "SysCaller directory";
-    QString headerName = isKernelMode ? "sysFunctions_k.h" : "sysFunctions.h";
+    QString headerName = isKernelMode ? "SysKFunctions.h" : "SysFunctions.h";
 
-    ConfirmationDialog confirmDialog("Bind - v1.3.1", this);
+    ConfirmationDialog confirmDialog(SYSCALLER_WINDOW_TITLE, this);
     confirmDialog.setMessage(QString("Are you sure you want to restore default %1 files?\n\n"
-                                   "This will overwrite your current syscaller.asm and %2 files in the %3.")
+                                   "This will overwrite your current SysCaller.asm and %2 files in the %3.")
                                    .arg(modeText, headerName, filePathText));
 
     if (confirmDialog.exec() != QDialog::Accepted || confirmDialog.getResult() != ConfirmationDialog::Yes)
@@ -396,7 +416,7 @@ void GeneralTab::restoreDefaultFiles()
 
         if (!QFile::exists(defaultAsmPath) || !QFile::exists(defaultHeaderPath))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog(SYSCALLER_WINDOW_TITLE, this);
             warningDialog.setMessage("Default files not found in Default directory.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
@@ -408,38 +428,67 @@ void GeneralTab::restoreDefaultFiles()
             createBackupFiles();
         }
 
+        QDir().mkpath(QFileInfo(asmPath).absolutePath());
+        QDir().mkpath(QFileInfo(headerPath).absolutePath());
+        
         if (QFile::exists(asmPath))
         {
-            QFile::remove(asmPath);
+            if (!QFile::remove(asmPath))
+            {
+                ConfirmationDialog errorDialog(SYSCALLER_WINDOW_TITLE, this);
+                errorDialog.setMessage(QString("Failed to remove existing ASM file:\n%1\n\nFile may be locked by another process.")
+                                     .arg(asmPath));
+                errorDialog.setButtons(false, false, true, false);
+                errorDialog.exec();
+                return;
+            }
         }
-
+        
         if (QFile::exists(headerPath))
         {
-            QFile::remove(headerPath);
+            if (!QFile::remove(headerPath))
+            {
+                ConfirmationDialog errorDialog(SYSCALLER_WINDOW_TITLE, this);
+                errorDialog.setMessage(QString("Failed to remove existing header file:\n%1\n\nFile may be locked by another process.")
+                                     .arg(headerPath));
+                errorDialog.setButtons(false, false, true, false);
+                errorDialog.exec();
+                return;
+            }
         }
-
+        
         bool asmCopied = QFile::copy(defaultAsmPath, asmPath);
         bool headerCopied = QFile::copy(defaultHeaderPath, headerPath);
 
         if (!asmCopied || !headerCopied)
         {
-            ConfirmationDialog errorDialog("Bind - v1.3.1", this);
-            errorDialog.setMessage(QString("Failed to copy files:\nASM: %1\nHeader: %2")
-                                 .arg(asmCopied ? "Success" : "Failed")
-                                 .arg(headerCopied ? "Success" : "Failed"));
+            QString errorDetails;
+            if (!asmCopied)
+            {
+                errorDetails += QString("Failed to copy ASM file from:\n%1\nto:\n%2\n\n")
+                              .arg(defaultAsmPath, asmPath);
+            }
+            if (!headerCopied)
+            {
+                errorDetails += QString("Failed to copy header file from:\n%1\nto:\n%2\n\n")
+                              .arg(defaultHeaderPath, headerPath);
+            }
+            
+            ConfirmationDialog errorDialog(SYSCALLER_WINDOW_TITLE, this);
+            errorDialog.setMessage(errorDetails + "Please check file permissions and disk space.");
             errorDialog.setButtons(false, false, true, false);
             errorDialog.exec();
             return;
         }
 
-        ConfirmationDialog infoDialog("Bind - v1.3.1", this);
+        ConfirmationDialog infoDialog(SYSCALLER_WINDOW_TITLE, this);
         infoDialog.setMessage(QString("Default %1 files have been restored successfully!").arg(modeText));
         infoDialog.setButtons(false, false, true, false);
         infoDialog.exec();
     }
     catch (...)
     {
-        ConfirmationDialog errorDialog("Bind - v1.3.1", this);
+        ConfirmationDialog errorDialog(SYSCALLER_WINDOW_TITLE, this);
         errorDialog.setMessage("An error occurred while restoring default files.");
         errorDialog.setButtons(false, true, false);
         errorDialog.exec();
@@ -455,15 +504,15 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (!completeBackups.contains(timestamp))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog(SYSCALLER_WINDOW_TITLE, this);
             warningDialog.setMessage(QString("Could not find complete backup set for timestamp %1").arg(timestamp));
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
             return;
         }
 
-        QString backupAsmPath = QString("%1/syscaller_%2.asm").arg(backupsDir, timestamp);
-        QString backupHeaderPath = QString("%1/sysFunctions_%2.h").arg(backupsDir, timestamp);
+        QString backupAsmPath = QString("%1/SysCaller_%2.asm").arg(backupsDir, timestamp);
+        QString backupHeaderPath = QString("%1/SysFunctions_%2.h").arg(backupsDir, timestamp);
         QStringList missingFiles;
 
         if (!QFile::exists(backupAsmPath))
@@ -478,16 +527,16 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (!missingFiles.isEmpty())
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog(SYSCALLER_WINDOW_TITLE, this);
             warningDialog.setMessage(QString("Could not find the following backup files:\n%1").arg(missingFiles.join("\n")));
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
             return;
         }
 
-        ConfirmationDialog confirmDialog("Bind - v1.3.1", this);
+        ConfirmationDialog confirmDialog(SYSCALLER_WINDOW_TITLE, this);
         confirmDialog.setMessage(QString("Are you sure you want to restore from backup files dated %1?\n\n"
-                                       "This will overwrite your current syscaller.asm and sysFunctions.h files.")
+                                       "This will overwrite your current SysCaller.asm and SysFunctions.h files.")
                                        .arg(formatTimestamp(timestamp)));
 
         if (confirmDialog.exec() != QDialog::Accepted || confirmDialog.getResult() != ConfirmationDialog::Yes)
@@ -504,7 +553,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (QFile::exists(asmPath) && isFileLocked(asmPath))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog(SYSCALLER_WINDOW_TITLE, this);
             warningDialog.setMessage("The ASM file appears to be locked by another process. Close any applications that might be using it and try again.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
@@ -513,7 +562,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (QFile::exists(headerPath) && isFileLocked(headerPath))
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog(SYSCALLER_WINDOW_TITLE, this);
             warningDialog.setMessage("The header file appears to be locked by another process. Close any applications that might be using it and try again.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
@@ -554,7 +603,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
 
         if (asmRestored && headerRestored)
         {
-            ConfirmationDialog infoDialog("Bind - v1.3.1", this);
+            ConfirmationDialog infoDialog(SYSCALLER_WINDOW_TITLE, this);
             infoDialog.setMessage(QString("Files have been restored from backup successfully!\n\nBackup date: %1")
                                 .arg(formatTimestamp(timestamp)));
             infoDialog.setButtons(false, false, true, false);
@@ -562,21 +611,21 @@ void GeneralTab::restoreBackup(const QString& timestamp)
         }
         else if (!asmRestored && headerRestored)
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog(SYSCALLER_WINDOW_TITLE, this);
             warningDialog.setMessage("Only the header file was restored successfully. The ASM file could not be restored.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
         }
         else if (asmRestored && !headerRestored)
         {
-            ConfirmationDialog warningDialog("Bind - v1.3.1", this);
+            ConfirmationDialog warningDialog(SYSCALLER_WINDOW_TITLE, this);
             warningDialog.setMessage("Only the ASM file was restored successfully. The header file could not be restored.");
             warningDialog.setButtons(false, false, true, false);
             warningDialog.exec();
         }
         else
         {
-            ConfirmationDialog errorDialog("Bind - v1.3.1", this);
+            ConfirmationDialog errorDialog(SYSCALLER_WINDOW_TITLE, this);
             errorDialog.setMessage("Failed to restore both files from backup.");
             errorDialog.setButtons(false, false, true, false);
             errorDialog.exec();
@@ -584,7 +633,7 @@ void GeneralTab::restoreBackup(const QString& timestamp)
     }
     catch (...)
     {
-        ConfirmationDialog errorDialog("Bind - v1.3.1", this);
+        ConfirmationDialog errorDialog(SYSCALLER_WINDOW_TITLE, this);
         errorDialog.setMessage("An error occurred while restoring backup files.");
         errorDialog.setButtons(false, true, false);
         errorDialog.exec();
@@ -659,7 +708,7 @@ QStringList GeneralTab::getAvailableBackups()
     }
 
     QStringList filters;
-    filters << "syscaller_*.asm";
+    filters << "SysCaller_*.asm";
 
     QFileInfoList asmFiles = dir.entryInfoList(filters, QDir::Files);
 
@@ -667,10 +716,10 @@ QStringList GeneralTab::getAvailableBackups()
     {
         QString fileName = asmFile.fileName();
 
-        if (fileName.startsWith("syscaller_") && fileName.endsWith(".asm"))
+        if (fileName.startsWith("SysCaller_") && fileName.endsWith(".asm"))
         {
             QString timestamp = fileName.mid(10, fileName.length() - 14);
-            QString headerFile = QString("sysFunctions_%1.h").arg(timestamp);
+            QString headerFile = QString("SysFunctions_%1.h").arg(timestamp);
             QString headerPath = QString("%1/%2").arg(backupsDir, headerFile);
 
             if (QFile::exists(headerPath))
@@ -698,22 +747,28 @@ void GeneralTab::createBackupFiles()
         QString asmPath = PathUtils::getSysCallerAsmPath(isKernelMode);
         QString headerPath = PathUtils::getSysFunctionsPath(isKernelMode);
 
-        QString backupAsmPath = QString("%1/syscaller_%2.asm").arg(backupsDir, timestamp);
-        QString backupHeaderPath = QString("%1/sysFunctions_%2.h").arg(backupsDir, timestamp);
+        QString backupAsmPath = QString("%1/SysCaller_%2.asm").arg(backupsDir, timestamp);
+        QString backupHeaderPath = QString("%1/SysFunctions_%2.h").arg(backupsDir, timestamp);
 
         if (QFile::exists(asmPath))
         {
-            QFile::copy(asmPath, backupAsmPath);
+            if (!QFile::copy(asmPath, backupAsmPath))
+            {
+                qWarning() << "Failed to create backup of ASM file:" << asmPath;
+            }
         }
 
         if (QFile::exists(headerPath))
         {
-            QFile::copy(headerPath, backupHeaderPath);
+            if (!QFile::copy(headerPath, backupHeaderPath))
+            {
+                qWarning() << "Failed to create backup of header file:" << headerPath;
+            }
         }
     }
     catch (...)
     {
-        // backup creation failed but dont stop the operation
+        /* backup creation failed but dont stop the operation */
     }
 }
 

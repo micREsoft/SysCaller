@@ -1,7 +1,5 @@
-#include "include/Core/Obfuscation/Indirect/Stub/IndirectJunkGenerator.h"
-#include <QRandomGenerator>
-#include <QMap>
-#include <QStringList>
+#include <Core/Obfuscation/Indirect/Indirect.h>
+#include <Core/Utils/QtDependencies.h>
 
 IndirectObfuscation::JunkGenerator::JunkGenerator(QSettings* settings)
     : settings(settings)
@@ -9,10 +7,10 @@ IndirectObfuscation::JunkGenerator::JunkGenerator(QSettings* settings)
 
 QString IndirectObfuscation::JunkGenerator::generateRegisterSafeJunk()
 {
-    // rcx, rdx, r8, r9 are function parameters, NEVER touch these!
-    // rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9, NEVER touch these!
-    // r10 is used for function pointer, NEVER touch this!
-    // so we can ONLY safely use: r11, r13, r14, r15, rax
+    /* rcx, rdx, r8, r9 are function parameters, NEVER touch these!
+       rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9, NEVER touch these!
+       r10 is used for function pointer, NEVER touch this!
+       so we can ONLY safely use: r11, r13, r14, r15, rax */
     
     QStringList safeJunkInstructions = {
         "    nop\n",

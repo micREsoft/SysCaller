@@ -1,17 +1,4 @@
-#include "include/Core/Utils/PathUtils.h"
-#include <QApplication>
-#include <QStandardPaths>
-#include <QDebug>
-#include <QFile>
-#include <QCryptographicHash>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#include <QDateTime>
-#include <QDir>
-#include <QSettings>
+#include <Core/Utils/Common.h>
 
 static QString s_projectRoot;
 
@@ -27,38 +14,38 @@ QString PathUtils::getProjectRoot()
 
 QString PathUtils::getBackupsPath()
 {
-    return getProjectRoot() + "/Backups";
+    return QDir(getProjectRoot()).filePath("Backups");
 }
 
 QString PathUtils::getHashBackupsPath()
 {
-    return getBackupsPath() + "/Hashes";
+    return QDir(getBackupsPath()).filePath("Hashes");
 }
 
 QString PathUtils::getDefaultPath()
 {
-    return getProjectRoot() + "/Default";
+    return QDir(getProjectRoot()).filePath("Default");
 }
 
 QString PathUtils::getSysCallerPath()
 {
-    return getProjectRoot() + "/SysCaller";
+    return QDir(getProjectRoot()).filePath("SysCaller");
 }
 
 QString PathUtils::getSysCallerKPath()
 {
-    return getProjectRoot() + "/SysCallerK";
+    return QDir(getProjectRoot()).filePath("SysCallerK");
 }
 
 QString PathUtils::getSysFunctionsPath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return getSysCallerKPath() + "/Wrapper/include/SysK/sysFunctions_k.h";
+        return QDir(getSysCallerKPath()).filePath("Wrapper/include/SysK/SysKFunctions.h");
     }
     else
     {
-        return getSysCallerPath() + "/Wrapper/include/Sys/sysFunctions.h";
+        return QDir(getSysCallerPath()).filePath("Wrapper/include/Sys/SysFunctions.h");
     }
 }
 
@@ -66,11 +53,11 @@ QString PathUtils::getSysCallerAsmPath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return getSysCallerKPath() + "/Wrapper/src/syscaller.asm";
+        return QDir(getSysCallerKPath()).filePath("Wrapper/src/SysCaller.asm");
     }
     else
     {
-        return getSysCallerPath() + "/Wrapper/src/syscaller.asm";
+        return QDir(getSysCallerPath()).filePath("Wrapper/src/SysCaller.asm");
     }
 }
 
@@ -78,22 +65,22 @@ QString PathUtils::getDefaultSysFunctionsPath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return getDefaultPath() + "/sysFunctions_k.h";
+        return QDir(getDefaultPath()).filePath("SysKFunctions.h");
     }
     else
     {
-        return getDefaultPath() + "/sysFunctions.h";
+        return QDir(getDefaultPath()).filePath("SysFunctions.h");
     }
 }
 
 QString PathUtils::getDefaultSysCallerAsmPath()
 {
-    return getDefaultPath() + "/syscaller.asm";
+    return QDir(getDefaultPath()).filePath("SysCaller.asm");
 }
 
 QString PathUtils::getIniPath()
 {
-    return getProjectRoot() + "/SysCaller.ini";
+    return QDir(getProjectRoot()).filePath("SysCaller.ini");
 }
 
 QString PathUtils::findProjectRoot()
@@ -166,12 +153,21 @@ QString PathUtils::findProjectRoot()
         dir2.cdUp();
     }
 
-    QString hardcodedPath = "C:/Users/devil/source/repos/SysCaller";
-
-    if (QDir(hardcodedPath).exists() && isProjectRoot(hardcodedPath))
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString envPath = env.value("SYSCALLER_ROOT", "");
+    
+    if (!envPath.isEmpty())
     {
-        qDebug() << "Using Hardcoded Project Root:" << hardcodedPath;
-        return hardcodedPath;
+        QString cleanPath = QDir::cleanPath(envPath);
+        if (QDir(cleanPath).exists() && isProjectRoot(cleanPath))
+        {
+            qDebug() << "Using SYSCALLER_ROOT environment variable:" << cleanPath;
+            return cleanPath;
+        }
+        else
+        {
+            qWarning() << "SYSCALLER_ROOT environment variable set but path is invalid:" << cleanPath;
+        }
     }
 
     qWarning() << "Project Root not found, falling back to executable directory";
@@ -223,7 +219,7 @@ void PathUtils::debugPathDetection()
     qDebug() << "SysFunctions Path (Zw):" << getSysFunctionsPath(true);
     qDebug() << "INI Path:" << getIniPath();
     qDebug() << "SysCaller.ini Exists:" << QFile::exists(getIniPath());
-    qDebug() << "sysFunctions.h Exists:" << QFile::exists(getSysFunctionsPath(false));
-    qDebug() << "sysFunctions_k.h Exists:" << QFile::exists(getSysFunctionsPath(true));
+    qDebug() << "SysFunctions.h Exists:" << QFile::exists(getSysFunctionsPath(false));
+    qDebug() << "SysKFunctions.h Exists:" << QFile::exists(getSysFunctionsPath(true));
     qDebug() << "=== End PathUtils Debug ===";
-} 
+}

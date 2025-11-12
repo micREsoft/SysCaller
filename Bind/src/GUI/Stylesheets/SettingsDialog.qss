@@ -8,13 +8,38 @@ QTabWidget::pane {
     border-radius: 5px;
     background: #1E1E1E;
 }
+
+QTabWidget {
+    margin: 0px;
+    padding: 0px;
+}
+
+QTabBar {
+    alignment: left;
+    margin: 0px;
+    padding: 0px;
+    spacing: 0px;
+}
+
 QTabBar::tab {
     background: #333333;
     color: white;
     padding: 8px 20px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    margin: 0px;
+    margin-right: 2px;
 }
+
+QTabBar::tab:first {
+    margin-left: 0px;
+}
+
+QTabBar::tab:last {
+    margin-right: 0px;
+    border-top-right-radius: 0px;
+}
+
 QTabBar::tab:selected {
     background: #0b5394;
 }

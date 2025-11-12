@@ -1,6 +1,5 @@
-#include "include/GUI/Settings/Tabs/InlineObfuscationTab.h"
-#include <QVBoxLayout>
-#include <QLabel>
+#include <Core/Utils/Common.h>
+#include <GUI/Settings.h>
 
 InlineObfuscationTab::InlineObfuscationTab(QSettings* settings, QWidget* parent)
     : QWidget(parent)

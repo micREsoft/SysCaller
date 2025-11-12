@@ -1,19 +1,16 @@
 #pragma once
 
-#include <QString>
-#include <QStringList>
-#include <QMap>
-#include <QSettings>
 #include <QObject>
 #include <QList>
+#include <QMap>
 #include <QPair>
-#include <vector>
-#include <cstdint>
+#include <QSettings>
+#include <QString>
+#include <QStringList>
+#include <Core/Utils/Dependencies.h>
+#include <Core/Utils/Utils.h>
+#include <GUI/Themes/Colors.h>
 #include <pe-parse/parse.h>
-#include <functional>
-#include <optional>
-#include "include/GUI/Themes/Colors.h"
-#include "include/Core/Utils/Utils.h"
 
 class Verification : public QObject {
     Q_OBJECT
@@ -55,7 +52,7 @@ private:
         QString returnType;
         int parameterCount;
         QStringList errors;
-        QList<QPair<QString, QString>> typeDefinitions;  // type, source_file
+        QList<QPair<QString, QString>> typeDefinitions;  /* type, source_file */
     };
 
     class TypeDefinitionTracker {
@@ -92,4 +89,9 @@ private:
     uint64_t imageBase;
     QMap<QString, int> syscallNumbers;
     std::function<void(const QString&)> outputCallback;
+    
+    QStringList outputBuffer;
+    static constexpr int OUTPUT_BATCH_SIZE = 20;  /* flush buffer every 20 syscalls */
+    int processedCount;
+    void flushOutputBuffer();
 };

@@ -205,12 +205,17 @@ jobs:
           # Generate RCC file manually
           if (Test-Path $rccPath) {
             Write-Host "Generating RCC file..."
+            $rccInput = "src/Res/resources.qrc"
             $rccOutput = "GeneratedFiles/qrc_resources.cpp"
-            & $rccPath -name resources "resources.qrc" -o $rccOutput
-            if ($LASTEXITCODE -eq 0) {
-              Write-Host "Successfully generated RCC file: $rccOutput"
+            if (Test-Path $rccInput) {
+              & $rccPath -name resources $rccInput -o $rccOutput
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Successfully generated RCC file: $rccOutput"
+              } else {
+                Write-Host "RCC generation failed with exit code: $LASTEXITCODE"
+              }
             } else {
-              Write-Host "RCC generation failed with exit code: $LASTEXITCODE"
+              Write-Host "RCC input file not found: $rccInput"
             }
           } else {
             Write-Host "RCC tool not found, skipping resource compilation"
@@ -265,12 +270,12 @@ jobs:
         Write-Host "VcpkgRoot: $env:VcpkgRoot"
         Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
 
-        msbuild "Bind.sln" /p:Configuration=Debug /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot"
+        msbuild "../SysCaller.sln" /p:Configuration=Debug /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot" /t:Bind
 
     - name: Copy Vcpkg Dependencies (Debug)
       run: |
         Write-Host "Copying Vcpkg Dependencies for Debug Build..."
-        $outputDir = "x64/Debug"
+        $outputDir = "../Build/Bind/Debug"
         $vcpkgBin = "${{ github.workspace }}/vcpkg/installed/x64-windows/bin"
 
         # Copy Vcpkg Dependencies (Qt dependencies will be handled by windeployqt)
@@ -298,10 +303,10 @@ jobs:
             Get-ChildItem "GeneratedFiles" -Name | Where-Object { $_ -like "*qrc*" } | ForEach-Object { Write-Host "Found RCC file: $_" }
           }
 
-          & $windeployqt "x64/Debug/Bind.exe" --debug --no-compiler-runtime --no-opengl-sw --force
+          & $windeployqt "../Build/Bind/Debug/Bind.exe" --debug --no-compiler-runtime --no-opengl-sw --force
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Qt deployment completed successfully for Debug build"
-            Get-ChildItem "x64/Debug" -Name | Sort-Object
+            Get-ChildItem "../Build/Bind/Debug" -Name | Sort-Object
           } else {
             Write-Host "windeployqt failed with exit code: $LASTEXITCODE"
           }
@@ -317,12 +322,12 @@ jobs:
         Write-Host "VcpkgRoot: $env:VcpkgRoot"
         Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
 
-        msbuild "Bind.sln" /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot"
+        msbuild "../SysCaller.sln" /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot" /t:Bind
 
     - name: Copy Vcpkg Dependencies (Release)
       run: |
         Write-Host "Copying Vcpkg Dependencies for Release Build..."
-        $outputDir = "x64/Release"
+        $outputDir = "../Build/Bind/Release"
         $vcpkgBin = "${{ github.workspace }}/vcpkg/installed/x64-windows/bin"
 
         # Copy Vcpkg Dependencies (Qt dependencies will be handled by windeployqt)
@@ -345,10 +350,10 @@ jobs:
 
         if (Test-Path $windeployqt) {
           Write-Host "Running windeployqt on Release executable..."
-          & $windeployqt "x64/Release/Bind.exe" --release --no-compiler-runtime --no-opengl-sw --force
+          & $windeployqt "../Build/Bind/Release/Bind.exe" --release --no-compiler-runtime --no-opengl-sw --force
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Qt deployment completed successfully for Release build"
-            Get-ChildItem "x64/Release" -Name | Sort-Object
+            Get-ChildItem "../Build/Bind/Release" -Name | Sort-Object
           } else {
             Write-Host "windeployqt failed with exit code: $LASTEXITCODE"
           }
@@ -358,18 +363,18 @@ jobs:
 
     - name: Verify Executables Exist
       run: |
-        if (Test-Path "x64/Release/Bind.exe") {
+        if (Test-Path "../Build/Bind/Release/Bind.exe") {
           Write-Host "Bind.exe (Release) Built Successfully!"
-          Get-Item "x64/Release/Bind.exe" | Select-Object Name, Length, LastWriteTime
+          Get-Item "../Build/Bind/Release/Bind.exe" | Select-Object Name, Length, LastWriteTime
         } else {
           Write-Host "Bind.exe (Release) not found!"
           Get-ChildItem -Recurse -Name "*.exe" | ForEach-Object { Write-Host "Found: $_" }
           exit 1
         }
 
-        if (Test-Path "x64/Debug/Bind.exe") {
+        if (Test-Path "../Build/Bind/Debug/Bind.exe") {
           Write-Host "Bind.exe (Debug) Built Successfully!"
-          Get-Item "x64/Debug/Bind.exe" | Select-Object Name, Length, LastWriteTime
+          Get-Item "../Build/Bind/Debug/Bind.exe" | Select-Object Name, Length, LastWriteTime
         } else {
           Write-Host "Bind.exe (Debug) not found!"
         }
@@ -383,29 +388,29 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Bind-Release
-        path: Bind/x64/Release/
+        path: Build/Bind/Release/
         retention-days: 30
 
     - name: Upload Build Artifacts (Debug)
       uses: actions/upload-artifact@v4
       with:
         name: Bind-Debug
-        path: Bind/x64/Debug/
+        path: Build/Bind/Debug/
         retention-days: 30
         
     - name: Create Release Package
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
       run: |
-        $version = "v1.3.1-${{ github.run_number }}"
+        $version = "v1.3.2"
         $zipName = "Bind-$version.zip"
 
         New-Item -ItemType Directory -Path "release-package" -Force
 
-        Copy-Item "x64/Release/*" "release-package\" -Recurse
+        Copy-Item "../Build/Bind/Release/*" "release-package\" -Recurse
 
         # Create README
-        $version = "v1.3.1-${{ github.run_number }}"
-        $readmeText = "# SysCaller: Bind - v1.3.1`n`n"
+        $version = "v1.3.2"
+        $readmeText = "# SysCaller: Bind - v1.3.2`n`n"
         $readmeText += "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')`n"
         $readmeText += "Commit: ${{ github.sha }}`n"
         $readmeText += "Platform: Windows x64 (64-bit)`n"
@@ -430,7 +435,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Release-Package
-        path: Bind/Bind-v1.3.1-*.zip
+        path: Bind/Bind-v1.3.2.zip
         retention-days: 90
 
     - name: Create GitHub Release
@@ -440,10 +445,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v1.3.1-${{ github.run_number }}
-        release_name: "SysCaller: Bind - v1.3.1-${{ github.run_number }}"
+        tag_name: v1.3.2
+        release_name: "SysCaller: Bind - v1.3.2"
         body: |
-          ## SysCaller: Bind - v1.3.1-${{ github.run_number }}
+          ## SysCaller: Bind - v1.3.2
 
           **Build Date:** ${{ github.event.head_commit.timestamp }}
           **Commit:** ${{ github.sha }}
@@ -466,6 +471,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: Bind/Bind-v1.3.1-${{ github.run_number }}.zip
-        asset_name: Bind-v1.3.1-${{ github.run_number }}.zip
+        asset_path: Bind/Bind-v1.3.2.zip
+        asset_name: Bind-v1.3.2.zip
         asset_content_type: application/zip

@@ -1,6 +1,5 @@
-#include "include/Core/Obfuscation/Direct/ControlFlow/DirectControlFlow.h"
-#include <QRandomGenerator>
-#include <QDebug>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/QtDependencies.h>
 
 DirectObfuscation::ControlFlow::ControlFlow(QSettings* settings)
     : settings(settings)

@@ -1,7 +1,6 @@
-#include "include/GUI/Threads/ValidatorThread.h"
-#include "include/Core/Integrity/Validator/Validator.h"
-#include <QProcessEnvironment>
-#include <QDebug>
+#include <Core/Integrity/Integrity.h>
+#include <Core/Utils/Common.h>
+#include <GUI/Threads.h>
 
 ValidatorThread::ValidatorThread(QObject* parent)
     : QThread(parent)

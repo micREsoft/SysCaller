@@ -1,11 +1,5 @@
-#include "include/GUI/Settings/Tabs/IntegrityTab.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QApplication>
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
-#include <QRegExp>
-#include <QDebug>
+#include <Core/Utils/Common.h>
+#include <GUI/Settings.h>
 
 IntegrityTab::IntegrityTab(QSettings* settings, QWidget* parent)
     : QWidget(parent)

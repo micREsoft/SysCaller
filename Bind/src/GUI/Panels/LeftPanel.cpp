@@ -1,18 +1,8 @@
-#include "include/GUI/Panels/LeftPanel.h"
-#include "include/GUI/Bars/ProgressBar.h"
-#include "include/GUI/Buttons/BindButton.h"
-#include "include/GUI/Dialogs/ChangelogDialog.h"
-#include <cstdlib>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QListWidget>
-#include <QFileDialog>
-#include <QMenu>
-#include <QApplication>
-#include <QFontDatabase>
-#include <QPixmap>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
+#include <GUI/Buttons.h>
+#include <GUI/Dialogs.h>
+#include <GUI/Panels.h>
 
 LeftPanel::LeftPanel(QWidget* parent)
     : QFrame(parent)
@@ -33,7 +23,7 @@ LeftPanel::LeftPanel(QWidget* parent)
     topSection->setAlignment(Qt::AlignCenter);
 
     logoImage = new QLabel(this);
-    logoImage->setPixmap(QPixmap(":/src/Res/Icons/syscaller.png")
+    logoImage->setPixmap(QPixmap(":/Icons/syscaller.png")
                                .scaled(128, 128, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     logoImage->setFixedSize(128, 128);
     logoImage->setAlignment(Qt::AlignCenter);
@@ -52,12 +42,12 @@ LeftPanel::LeftPanel(QWidget* parent)
     logoLabel->setAlignment(Qt::AlignCenter);
     topSection->addWidget(logoLabel, 0, Qt::AlignCenter);
 
-    versionLabel = new QLabel("v1.3.1", this);
+    versionLabel = new QLabel(SYSCALLER_VERSION_STRING_FULL, this);
     versionLabel->setStyleSheet("color: #666666; font-size: 12px;");
     versionLabel->setAlignment(Qt::AlignCenter);
     versionLabel->setCursor(Qt::PointingHandCursor);
     versionLabel->setTextFormat(Qt::RichText);
-    versionLabel->setText("<a href='#' style='color: #666666; text-decoration: none;'>v1.3.1</a>");
+    versionLabel->setText(QString("<a href='#' style='color: #666666; text-decoration: none;'>%1</a>").arg(SYSCALLER_VERSION_STRING_FULL));
     topSection->addWidget(versionLabel, 0, Qt::AlignCenter);
 
     layout->addLayout(topSection);
@@ -166,9 +156,9 @@ LeftPanel::LeftPanel(QWidget* parent)
 
     validateBtn = new BindButton(
         " Validation Check",
-        ":/src/Res/Icons/validation.png",
+        ":/Icons/validation.png",
         "Bind Validation",
-        "Analyzes and updates syscall offsets in syscaller.asm by comparing against ntdll.dll. <br><br>"
+        "Analyzes and updates syscall offsets in SysCaller.asm by comparing against ntdll.dll. <br><br>"
         "• Disassembles ntdll.dll exports to extract syscall IDs and ensures correct mapping <br>"
         "• Updates or removes syscalls based on their presence in the current systems ntdll.dll"
     );
@@ -176,7 +166,7 @@ LeftPanel::LeftPanel(QWidget* parent)
 
     compatibilityBtn = new BindButton(
         " Compatibility Check",
-        ":/src/Res/Icons/compatibility.png",
+        ":/Icons/compatibility.png",
         "Bind Compatibility",
         "Performs compatibility analysis of syscalls against ntdll.dll: <br><br>"
         "• Detects duplicate syscall names and offsets <br>"
@@ -188,7 +178,7 @@ LeftPanel::LeftPanel(QWidget* parent)
 
     verifyBtn = new BindButton(
         " Verification Check",
-        ":/src/Res/Icons/verification.png",
+        ":/Icons/verification.png",
         "Bind Verification",
         "Performs comprehensive syscall verification: <br><br>"
         "• Validates return types (NTSTATUS, BOOL, HANDLE, etc.) <br>"
@@ -200,7 +190,7 @@ LeftPanel::LeftPanel(QWidget* parent)
 
     obfuscateBtn = new BindButton(
         " Obfuscation",
-        ":/src/Res/Icons/obfuscation.png",
+        ":/Icons/obfuscation.png",
         "Bind Obfuscation",
         "Obfuscates syscalls to enhance protection: <br><br>"
         "• Randomizes syscall names and offsets <br>"
@@ -212,7 +202,7 @@ LeftPanel::LeftPanel(QWidget* parent)
 
     settingsBtn = new BindButton(
         " Settings",
-        ":/src/Res/Icons/settings.png",
+        ":/Icons/settings.png",
         "Bind Settings",
         "Configure SysCaller project settings"
     );
@@ -258,13 +248,15 @@ LeftPanel::LeftPanel(QWidget* parent)
     connect(verifyBtn, &BindButton::clicked, this, &LeftPanel::verificationButtonClicked);
     connect(obfuscateBtn, &BindButton::clicked, this, &LeftPanel::obfuscationButtonClicked);
     connect(versionLabel, &QLabel::linkActivated, this, &LeftPanel::showChangelogDialog);
+
+    updateButtonStatesFromSettings();
 }
 
 void LeftPanel::browseDll()
 {
     QString dllPath = QFileDialog::getOpenFileName(
         this,
-        "Bind - v1.3.1",
+        SYSCALLER_WINDOW_TITLE,
         "",
         "DLL Files (*.dll);;All Files (*.*)"
     );
@@ -372,4 +364,56 @@ void LeftPanel::showChangelogDialog()
 {
     ChangelogDialog dialog(this);
     dialog.exec();
+}
+
+void LeftPanel::updateButtonStates()
+{
+    updateButtonStatesFromSettings();
+}
+
+void LeftPanel::updateButtonStatesFromSettings()
+{
+    QString iniPath = PathUtils::getIniPath();
+    QSettings settings(iniPath, QSettings::IniFormat);
+
+    bool indirectMode = settings.value("general/indirect_assembly", false).toBool();
+
+    if (indirectMode)
+    {
+        compatibilityBtn->setEnabled(false);
+        compatibilityBtn->setToolTip("<b>Bind Compatibility</b><br>"
+                                   "Performs compatibility analysis of syscalls against ntdll.dll: <br><br>"
+                                   "• Detects duplicate syscall names and offsets <br>"
+                                   "• Validates both Nt and Zw syscall variants <br>"
+                                   "• Verifies offset matches between implementation and DLL <br>"
+                                   "• Reports valid, invalid, and duplicate syscalls with detailed status<br><br>"
+                                   "<i>Disabled in Indirect Syscall Mode</i>");
+
+        verifyBtn->setEnabled(false);
+        verifyBtn->setToolTip("<b>Bind Verification</b><br>"
+                             "Performs comprehensive syscall verification: <br><br>"
+                             "• Validates return types (NTSTATUS, BOOL, HANDLE, etc.) <br>"
+                             "• Verifies parameter types against system headers <br>"
+                             "• Checks offset ranges (0x0000-0x0200) <br>"
+                             "• Traces type definitions in header files<br><br>"
+                             "<i>Disabled in Indirect Syscall Mode</i>");
+    }
+    else
+    {
+        compatibilityBtn->setEnabled(true);
+        compatibilityBtn->setToolTip("<b>Bind Compatibility</b><br>"
+                                    "Performs compatibility analysis of syscalls against ntdll.dll: <br><br>"
+                                    "• Detects duplicate syscall names and offsets <br>"
+                                    "• Validates both Nt and Zw syscall variants <br>"
+                                    "• Verifies offset matches between implementation and DLL <br>"
+                                    "• Reports valid, invalid, and duplicate syscalls with detailed status");
+
+        verifyBtn->setEnabled(true);
+        verifyBtn->setToolTip("<b>Bind Verification</b><br>"
+                             "Performs comprehensive syscall verification: <br><br>"
+                             "• Validates return types (NTSTATUS, BOOL, HANDLE, etc.) <br>"
+                             "• Verifies parameter types against system headers <br>"
+                             "• Checks offset ranges (0x0000-0x0200) <br>"
+                             "• Traces type definitions in header files");
+    }
 }

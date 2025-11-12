@@ -1,11 +1,6 @@
-#include "include/GUI/Threads/ObfuscationThread.h"
-#include "include/Core/Obfuscation/Obfuscation.h"
-#include "include/Core/Utils/PathUtils.h"
-#include "include/Core/Utils/Utils.h"
-#include <QDebug>
-#include <QSettings>
-#include <QDateTime>
-#include <QFileInfo>
+#include <Core/Obfuscation/Obfuscation.h>
+#include <Core/Utils/Common.h>
+#include <GUI/Threads.h>
 
 ObfuscationThread::ObfuscationThread(QObject* parent)
     : QThread(parent)

@@ -1,8 +1,6 @@
-#include "include/GUI/Dialogs/ConfirmationDialog.h"
-#include "include/GUI/Bars/SettingsTitleBar.h"
-#include <QApplication>
-#include <QFile>
-#include <QTextStream>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
+#include <GUI/Dialogs.h>
 
 ConfirmationDialog::ConfirmationDialog(QWidget* parent)
     : QDialog(parent)
@@ -64,38 +62,43 @@ void ConfirmationDialog::initUI(const QString& title)
     layout->addWidget(titleBar);
 
     QWidget* contentWidget = new QWidget();
-    contentWidget->setStyleSheet("QWidget { background: #1E1E1E; color: white; padding: 20px; }");
+    contentWidget->setObjectName("contentWidget");
     QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
-    contentLayout->setSpacing(20);
+    contentLayout->setContentsMargins(30, 30, 30, 30);
+    contentLayout->setSpacing(25);
 
     messageLabel = new QLabel();
     messageLabel->setWordWrap(true);
-    messageLabel->setAlignment(Qt::AlignCenter);
-    messageLabel->setStyleSheet("QLabel { color: white; font-size: 14px; padding: 10px; }");
+    messageLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    messageLabel->setTextFormat(Qt::RichText);
     contentLayout->addWidget(messageLabel);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout();
-    buttonLayout->setSpacing(10);
+    buttonLayout->setSpacing(12);
     buttonLayout->addStretch();
 
     yesButton = new QPushButton("Yes");
-    yesButton->setMinimumWidth(80);
+    yesButton->setObjectName("yesButton");
+    yesButton->setMinimumWidth(100);
     connect(yesButton, &QPushButton::clicked, this, &ConfirmationDialog::onYesClicked);
     buttonLayout->addWidget(yesButton);
 
     noButton = new QPushButton("No");
-    noButton->setMinimumWidth(80);
+    noButton->setObjectName("noButton");
+    noButton->setMinimumWidth(100);
     connect(noButton, &QPushButton::clicked, this, &ConfirmationDialog::onNoClicked);
     buttonLayout->addWidget(noButton);
 
     okButton = new QPushButton("OK");
-    okButton->setMinimumWidth(80);
+    okButton->setObjectName("yesButton");
+    okButton->setMinimumWidth(100);
     okButton->setVisible(false);
     connect(okButton, &QPushButton::clicked, this, &ConfirmationDialog::onOKClicked);
     buttonLayout->addWidget(okButton);
 
     cancelButton = new QPushButton("Cancel");
-    cancelButton->setMinimumWidth(80);
+    cancelButton->setObjectName("cancelButton");
+    cancelButton->setMinimumWidth(100);
     cancelButton->setVisible(false);
     connect(cancelButton, &QPushButton::clicked, this, &ConfirmationDialog::onCancelClicked);
     buttonLayout->addWidget(cancelButton);
@@ -106,7 +109,7 @@ void ConfirmationDialog::initUI(const QString& title)
 
 void ConfirmationDialog::setupStylesheet()
 {
-    QFile stylesheetFile(":/src/GUI/Stylesheets/ConfirmationDialog.qss");
+    QFile stylesheetFile(":/GUI/Stylesheets/ConfirmationDialog.qss");
 
     if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
     {

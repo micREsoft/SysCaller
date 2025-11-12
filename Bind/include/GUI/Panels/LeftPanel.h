@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QFrame>
 #include <QPoint>
 
@@ -33,11 +34,14 @@ private slots:
 public slots:
     void setProgressIndeterminate(bool indeterminate);
     void updateStatus(const QString& message);
+    void updateButtonStates();
 
 public:
     QStringList getDllPaths() const;
 
 private:
+    void updateButtonStatesFromSettings();
+
     QLabel* logoImage;
     QLabel* logoLabel;
     QLabel* versionLabel;
@@ -55,4 +59,4 @@ private:
     BindButton* verifyBtn;
     BindButton* obfuscateBtn;
     BindButton* settingsBtn;
-}; 
+};

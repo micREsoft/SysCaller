@@ -1,8 +1,8 @@
 #pragma once
 
+#include <QSettings>
 #include <QString>
 #include <QStringList>
-#include <QSettings>
 
 namespace IndirectObfuscation {
 

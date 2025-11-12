@@ -1,15 +1,7 @@
-#include "include/GUI/Dialogs/StubMapperDialog.h"
-#include "include/Core/Utils/PathUtils.h"
-#include "include/GUI/Bars/SettingsTitleBar.h"
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include <QFile>
-#include <QTextStream>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#include <QFont>
-#include <QPalette>
-#include <QApplication>
-#include <QMouseEvent>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
+#include <GUI/Dialogs.h>
 
 StubMapperDialog::StubMapperDialog(QWidget* parent)
     : QDialog(parent)
@@ -237,7 +229,7 @@ void StubMapperDialog::initUI()
 
 void StubMapperDialog::setupStylesheet()
 {
-    QFile stylesheetFile(":/src/GUI/Stylesheets/StubMapperDialog.qss");
+    QFile stylesheetFile(":/GUI/Stylesheets/StubMapperDialog.qss");
 
     if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
     {
@@ -283,7 +275,7 @@ void StubMapperDialog::loadSyscalls()
 
     if (selectedSyscalls.isEmpty())
     {
-        QString headerPath = PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/sysFunctions.h";
+        QString headerPath = PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/SysFunctions.h";
         QString syscallMode = settings->value("general/syscall_mode", "Nt").toString();
         QString syscallPrefix = (syscallMode == "Nt") ? "Sys" : "SysK";
 
@@ -555,7 +547,7 @@ void StubMapperDialog::validateCurrentSettings()
     }
     else
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "Please select a Syscall first.");
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, "Please select a Syscall first.");
     }
 }
 
@@ -596,7 +588,18 @@ void StubMapperDialog::saveSettings()
     }
 
     settings->setValue("stub_mapper/syscall_settings", QVariant::fromValue(syscallSettings));
-    QMessageBox::information(this, "Bind - v1.3.1", "Custom Syscall Settings have been saved successfully.");
+    settings->sync();
+    
+    if (settings->status() != QSettings::NoError)
+    {
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, 
+            QString("Settings saved but sync failed. Status: %1").arg(settings->status()));
+    }
+    else
+    {
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE, "Custom Syscall Settings have been saved successfully.");
+    }
+    
     accept();
 }
 
@@ -668,10 +671,10 @@ bool StubMapperDialog::validateStubSettings(const QMap<QString, QVariant>& setti
 
 void StubMapperDialog::showValidationError(const QString& message)
 {
-    QMessageBox::critical(this, "Bind - v1.3.1", message);
+    QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, message);
 }
 
 void StubMapperDialog::showValidationSuccess(const QString& message)
 {
-    QMessageBox::information(this, "Bind - v1.3.1", message);
+    QMessageBox::information(this, SYSCALLER_WINDOW_TITLE, message);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QString>
 #include <QRandomGenerator>
+#include <QString>
 
 namespace IndirectObfuscation {
 

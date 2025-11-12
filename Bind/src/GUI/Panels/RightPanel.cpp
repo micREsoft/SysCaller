@@ -1,7 +1,5 @@
-#include "include/GUI/Panels/RightPanel.h"
-#include "include/GUI/Panels/OutputPanel.h"
-#include <QVBoxLayout>
-#include <QLabel>
+#include <Core/Utils/Common.h>
+#include <GUI/Panels.h>
 
 RightPanel::RightPanel(QWidget* parent)
     : QFrame(parent)
@@ -34,4 +32,4 @@ void RightPanel::appendOutput(const QString& text)
 void RightPanel::clearOutput()
 {
     outputText->clearText();
-} 
+}

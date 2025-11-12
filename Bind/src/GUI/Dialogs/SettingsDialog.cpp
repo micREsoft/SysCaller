@@ -1,21 +1,7 @@
-#include "include/GUI/Dialogs/SettingsDialog.h"
-#include "include/GUI/Settings/Tabs/GeneralTab.h"
-#include "include/GUI/Settings/Tabs/ObfuscationTab.h"
-#include "include/GUI/Settings/Tabs/IndirectObfuscationTab.h"
-#include "include/GUI/Settings/Tabs/InlineObfuscationTab.h"
-#include "include/GUI/Settings/Tabs/IntegrityTab.h"
-#include "include/GUI/Settings/Tabs/ProfileTab.h"
-#include "include/GUI/Dialogs/StubMapperDialog.h"
-#include "include/GUI/Bars/SettingsTitleBar.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QApplication>
-#include <QDir>
-#include <QFile>
-#include <QMessageBox>
-#include <QMouseEvent>
-#include <QIcon>
-#include <QScrollArea>
-#include <QTextStream>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
+#include <GUI/Dialogs.h>
+#include <GUI/Settings.h>
 
 SettingsDialog::SettingsDialog(QWidget* parent)
     : QDialog(parent)
@@ -39,6 +25,8 @@ void SettingsDialog::initUI()
     layout->addWidget(titleBar);
 
     tabs = new QTabWidget();
+    tabs->setDocumentMode(false);
+    tabs->setUsesScrollButtons(false);
 
     QScrollArea* generalScrollArea = new QScrollArea();
     generalScrollArea->setWidgetResizable(true);
@@ -114,6 +102,15 @@ void SettingsDialog::initUI()
     }
 
     tabs->addTab(profileScrollArea, "Profile");
+    
+    QTabBar* tabBar = tabs->tabBar();
+    if (tabBar)
+    {
+        tabBar->setExpanding(true);
+        tabBar->setDrawBase(false);
+        tabBar->setUsesScrollButtons(false);
+    }
+    
     layout->addWidget(tabs);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout();
@@ -144,7 +141,7 @@ void SettingsDialog::initUI()
 
 void SettingsDialog::setupStylesheet()
 {
-    QFile stylesheetFile(":/src/GUI/Stylesheets/SettingsDialog.qss");
+    QFile stylesheetFile(":/GUI/Stylesheets/SettingsDialog.qss");
 
     if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
     {
@@ -186,6 +183,14 @@ void SettingsDialog::saveSettings()
 
     integrityTab->saveSettings();
     profileTab->saveSettings();
+    
+    settings->sync();
+    
+    if (settings->status() != QSettings::NoError)
+    {
+        qWarning() << "Failed to save settings. Status:" << settings->status();
+    }
+    
     accept();
 }
 
@@ -220,5 +225,23 @@ void SettingsDialog::mouseReleaseEvent(QMouseEvent* event)
     {
         m_dragging = false;
         event->accept();
+    }
+}
+
+void SettingsDialog::resizeEvent(QResizeEvent* event)
+{
+    QDialog::resizeEvent(event);
+    
+    if (tabs)
+    {
+        QTabBar* tabBar = tabs->tabBar();
+        if (tabBar)
+        {
+            int tabWidgetWidth = tabs->width();
+            if (tabWidgetWidth > 0)
+            {
+                tabBar->setMinimumWidth(tabWidgetWidth);
+            }
+        }
     }
 }

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <QDialog>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPushButton>
 #include <QMouseEvent>
+#include <QPushButton>
 #include <QSettings>
+#include <QVBoxLayout>
 
 class SettingsTitleBar;
 

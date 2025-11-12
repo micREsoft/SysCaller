@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QWidget>
 #include <QSettings>
+#include <QWidget>
 
 class InlineObfuscationTab : public QWidget {
     Q_OBJECT

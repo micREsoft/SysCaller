@@ -1,7 +1,5 @@
-#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
-#include <QDebug>
-#include <QRandomGenerator>
-#include <QStringList>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/QtDependencies.h>
 
 DirectObfuscation::JunkGenerator::JunkGenerator(QSettings* settings)
     : settings(settings)
@@ -14,10 +12,10 @@ void DirectObfuscation::JunkGenerator::setSettings(QSettings* settings)
 
 QString DirectObfuscation::JunkGenerator::generateJunkInstructions(int minInst, int maxInst, bool useAdvanced)
 {
-    // rcx, rdx, r8, r9 are function parameters, NEVER touch these!
-    // rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9, NEVER touch these!
-    // r10 is used for function pointer, NEVER touch this!
-    // so we can ONLY safely use: r11, r13, r14, r15, rax
+    /* rcx, rdx, r8, r9 are function parameters, NEVER touch these!
+       rbx, rsi, rdi, r12 are used to save rcx, rdx, r8, r9, NEVER touch these!
+       r10 is used for function pointer, NEVER touch this!
+       so we can ONLY safely use: r11, r13, r14, r15, rax */
     
     if (!settings)
     {

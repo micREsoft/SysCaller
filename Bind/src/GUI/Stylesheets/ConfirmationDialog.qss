@@ -1,29 +1,58 @@
 QDialog {
-    background: #252525;
-    color: white;
+    background: #1A1A1A;
     border-radius: 15px;
 }
+
+/* Content Area */
+QWidget#contentWidget {
+    background: #1E1E1E;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+/* Message Label */
+QLabel {
+    color: #E8E8E8;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    padding: 0px;
+}
+
+/* Buttons */
 QPushButton {
     background: #0b5394;
-    border: 2px solid #0b5394;
-    border-radius: 6px;
-    padding: 8px 15px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
     color: white;
     font-weight: bold;
-    transition: all 0.2s ease;
+    font-size: 13px;
+    min-width: 90px;
 }
+
 QPushButton:hover {
     background: #67abdb;
-    border: 2px solid #8bc4e6;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(103, 171, 219, 0.3);
 }
+
 QPushButton:pressed {
-    background: #094a7a;
-    border: 2px solid #0b5394;
-    transform: translateY(0px);
-    box-shadow: none;
+    background: #0A7AD1;
 }
-QLabel {
-    color: white;
+
+/* No/Cancel Button */
+QPushButton#noButton,
+QPushButton#cancelButton {
+    background: #333333;
+    color: #E0E0E0;
+}
+
+QPushButton#noButton:hover,
+QPushButton#cancelButton:hover {
+    background: #444444;
+    color: #FFFFFF;
+}
+
+QPushButton#noButton:pressed,
+QPushButton#cancelButton:pressed {
+    background: #2A2A2A;
 }

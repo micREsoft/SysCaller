@@ -1,10 +1,10 @@
 #pragma once
 
+#include <QMap>
+#include <QSet>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
-#include <QMap>
-#include <QSettings>
-#include <QSet>
 
 namespace DirectObfuscation {
 

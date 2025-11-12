@@ -1,4 +1,4 @@
-# SysCaller SDK v1.3.1
+# SysCaller SDK v1.3.2
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/243f7fe5-b461-460d-8c38-3858512e90de" alt="SysCaller Logo" width="400"/>
@@ -12,7 +12,7 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/Version-1.3.1-blue.svg)](https://github.com/micREsoft/SysCaller)
+[![Version](https://img.shields.io/badge/Version-1.3.2-blue.svg)](https://github.com/micREsoft/SysCaller)
 [![License](https://img.shields.io/badge/License-GPLv3-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2064--bit-lightgrey.svg)](https://github.com/micREsoft/SysCaller)
 [![C++](https://img.shields.io/badge/C%2B%2B-17%2B-blue.svg)](https://isocpp.org/)
@@ -53,7 +53,7 @@
 - **Dynamic Offset Resolution:** Automatically detects syscall IDs for compatibility across Windows 10/11 (x64).
 - **Obfuscation Layer:** Optional, randomized stub generation and anti pattern junk for stealth.
 - **Comprehensive GUI:** Validate, verify, and protect syscalls with a modern interface.
-- **Multi Language Ready:** Official bindings and examples for C, Rust, Python, and Go. Easily extendable to more languages.
+- **Multi Language Ready:** Official bindings and examples for C, C++, C#, Rust, Python, Go, Nim, LuaJIT, Java (JNA/JNI), Julia, and D. Easily extendable to more languages.
 - **Modular Build System:** Visual Studio (MASM) and CMake support.
 
 ---
@@ -69,8 +69,12 @@ SysCaller is now not just for C++! The SDK now provides official bindings and re
 - **Nim** ([Nim Example](Bindings/Examples/Nim/))
 - **Python** ([Python Example](Bindings/Examples/Python/))
 - **Go** ([Go Example](Bindings/Examples/GO/))
+- **LuaJIT** ([LuaJIT Example](Bindings/Examples/LuaJIT/))
+- **Java** ([Java/JNA Example](Bindings/Examples/Java/JNA/) | [Java/JNI Example](Bindings/Examples/Java/JNI/))
+- **Julia** ([Julia Example](Bindings/Examples/Julia/))
+- **D** ([D Example](Bindings/Examples/D/))
 
-Each example demonstrates direct DLL injection using the SysCaller API, with full source and build instructions in each language’s folder. These are bare minimum examples meant to show simple usage, now you can expand syscalls and methodology.
+Each example demonstrates direct DLL injection using the SysCaller API, with full source and build instructions in each language's folder. These are bare minimum examples meant to show simple usage, now you can expand syscalls and methodology.
 
 > Want to add support for another language? PRs and suggestions are welcome!
 
@@ -101,7 +105,11 @@ Each example demonstrates direct DLL injection using the SysCaller API, with ful
 SysCaller supports three build modes that you can configure via preprocessor definitions:
 
 - **`SYSCALLER_DIRECT`** (default): Fastest execution, syscall numbers resolved at compile time
-- **`SYSCALLER_INDIRECT`**: Runtime resolution via ntdll.dll analysis, more flexible across Windows versions  
+- **`SYSCALLER_INDIRECT`**: Runtime resolution via ntdll.dll analysis, more flexible across Windows versions. Supports multiple resolver methods:
+  - Memory Export (GetModuleHandle)
+  - PEB LDR Traversal (No WinAPI calls)
+  - Hashed Export (No string comparisons)
+  - Disk Mapped (Anti hook, reads from disk)  
 - **`SYSCALLER_INLINE`**: Assembly code embedded directly, most stealthy but larger binary size
 
 **Optional**: Add `SYSCALLER_BINDINGS` for multi language DLL support.
@@ -117,6 +125,25 @@ For detailed configuration instructions, see [BUILD_MODES.md](Wrapper/BUILD_MODE
 - Qt 5.12
 - [vcpkg](https://github.com/microsoft/vcpkg)
 - Install `cmark` and `pe-parse` via vcpkg
+
+### Environment Variable Configuration
+
+You can configure the SysCaller project root path using the `SYSCALLER_ROOT` environment variable:
+
+```sh
+# Windows Command Prompt
+set SYSCALLER_ROOT=C:\Path\To\SysCaller
+
+# PowerShell
+$env:SYSCALLER_ROOT = "C:\Path\To\SysCaller"
+```
+
+This is useful when:
+- Running Bind from a different location
+- Using a custom project structure
+- Deploying Bind in a portable configuration
+
+If not set, Bind will automatically detect the project root by searching for the `SysCaller` and `SysCallerK` directories.
 
 ### Quick Start (Visual Studio)
 
@@ -147,14 +174,17 @@ If you want to build Bind yourself:
 6. **Build the project** (Release | x64).
 
 ### CMake (Alternative)
-SysCaller v1.3 CMake Support:
+SysCaller v1.3.2 CMake Support:
 
 ```bash
 # Direct mode
 cmake -B build -S . -DSYSCALLER_BUILD_MODE=DIRECT
 
-# Indirect mode
-cmake -B build -S . -DSYSCALLER_BUILD_MODE=INDIRECT
+# Indirect mode with different resolver methods
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=INDIRECT -DSYSCALLER_RESOLVER_MEMORY_EXPORT=ON
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=INDIRECT -DSYSCALLER_RESOLVER_PEB_LDR=ON
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=INDIRECT -DSYSCALLER_RESOLVER_HASHED_EXPORT=ON
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=INDIRECT -DSYSCALLER_RESOLVER_DISK_MAPPED=ON
 
 # Inline asm mode
 cmake -B build -S . -DSYSCALLER_BUILD_MODE=INLINE
@@ -162,7 +192,8 @@ cmake -B build -S . -DSYSCALLER_BUILD_MODE=INLINE
 # As dynamic link library
 cmake -B build -S . -DBUILD_SHARED_LIBS=ON
 
-cmake -B build -S . \ -DSYSCALLER_BUILD_MODE=INDIRECT \ -DSYSCALLER_BINDINGS=ON \ -DBUILD_SHARED_LIBS=ON
+# Indirect mode with bindings and shared library (example with disk mapped resolver)
+cmake -B build -S . -DSYSCALLER_BUILD_MODE=INDIRECT -DSYSCALLER_RESOLVER_DISK_MAPPED=ON -DSYSCALLER_BINDINGS=ON -DBUILD_SHARED_LIBS=ON
 ```
 
 > **Note:** CMake script for Kernel mode does not exist, but it is planned.
@@ -171,7 +202,7 @@ cmake -B build -S . \ -DSYSCALLER_BUILD_MODE=INDIRECT \ -DSYSCALLER_BINDINGS=ON 
 
 ## How to Build and Use Bindings (All Languages)
 
-To use SysCaller from C, C++, Rust, Python, Go, or any other language that supports C bindings, follow these steps:
+To use SysCaller from C, C++, Rust, Python, Go, LuaJIT, Java, Julia, D, or any other language that supports C bindings, follow these steps:
 
 1. **Launch the Bind GUI:**
    - Run the Bind executable from the `Bind` directory (see Installation above).
@@ -204,17 +235,17 @@ To use SysCaller from C, C++, Rust, Python, Go, or any other language that suppo
    - Link against `SysCaller.lib` (user) or `SysCallerK.lib` (kernel)
 2. **Import the main header:**
    ```cpp
-   #include "syscaller.h"
+   #include "SysCaller.h"
    ```
 3. **Call syscalls directly:**
    ```cpp
-   // User mode example
+   /* User mode example */
    NTSTATUS status = SysAllocateVirtualMemory(
        processHandle, &baseAddress, 0, &regionSize,
        MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
    ```
    ```cpp
-   // Kernel mode example
+   /* Kernel mode example */
    NTSTATUS status = SysKAllocateVirtualMemory(
        ZwCurrentProcess(), &base, 0, &regionSize,
        MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
@@ -222,7 +253,7 @@ To use SysCaller from C, C++, Rust, Python, Go, or any other language that suppo
 
 #### Example: Write to Process Memory
 ```cpp
-#include "syscaller.h"
+#include "SysCaller.h"
 
 bool WriteToProcessMemory(HANDLE processHandle, PVOID targetAddress, PVOID data, SIZE_T size) {
     SIZE_T bytesWritten;

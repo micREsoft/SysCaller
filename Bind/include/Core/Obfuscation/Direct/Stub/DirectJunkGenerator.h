@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QString>
 #include <QSettings>
+#include <QString>
 
 namespace DirectObfuscation {
 

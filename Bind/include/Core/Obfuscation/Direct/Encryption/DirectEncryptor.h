@@ -1,20 +1,20 @@
 #pragma once
 
-#include <QString>
 #include <QMap>
-#include <QVariant>
-#include <QSettings>
 #include <QPair>
+#include <QSettings>
+#include <QString>
 #include <QStringList>
+#include <QVariant>
 
 namespace DirectObfuscation {
 
     enum class EncryptionMethod {
-        BasicXOR = 1,           // simple XOR encryption
-        MultiKeyXOR = 2,        // multi key XOR encryption
-        AddXORCombo = 3,        // addition + XOR combination
-        EnhancedXOR = 4,        // enhanced XOR with larger keys
-        OffsetShifting = 5      // offset shifting/masking
+        BasicXOR = 1,           /* simple XOR encryption */
+        MultiKeyXOR = 2,        /* multi key XOR encryption */
+        AddXORCombo = 3,        /* addition + XOR combination */
+        EnhancedXOR = 4,        /* enhanced XOR with larger keys */
+        OffsetShifting = 5      /* offset shifting/masking */
     };
 
     inline QString encryptionMethodToString(EncryptionMethod method) {
@@ -34,7 +34,7 @@ namespace DirectObfuscation {
         if (str.contains("add", Qt::CaseInsensitive) || str.contains("combo", Qt::CaseInsensitive)) return EncryptionMethod::AddXORCombo;
         if (str.contains("enhanced", Qt::CaseInsensitive)) return EncryptionMethod::EnhancedXOR;
         if (str.contains("offset", Qt::CaseInsensitive) || str.contains("shifting", Qt::CaseInsensitive)) return EncryptionMethod::OffsetShifting;
-        return EncryptionMethod::BasicXOR; // default
+        return EncryptionMethod::BasicXOR;
     }
 
     class Encryptor {

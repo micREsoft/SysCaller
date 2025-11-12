@@ -1,3 +1,0 @@
-#include "resource.h"
-
-IDI_ICON1 ICON "src\\Res\\Icons\\logo.ico" 

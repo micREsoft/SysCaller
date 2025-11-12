@@ -1,14 +1,6 @@
-#include "include/Core/Integrity/Validator/Validator.h"
-#include "include/Core/Utils/PathUtils.h"
-#include "include/Core/Utils/Utils.h"
-#include <QFile>
-#include <QDir>
-#include <QTextStream>
-#include <QRegularExpression>
-#include <QDebug>
-#include <QProcessEnvironment>
+#include <Core/Integrity/Integrity.h>
+#include <Core/Utils/Common.h>
 #include <pe-parse/parse.h>
-#include <cstring>
 
 Validator::Validator()
     : QObject(nullptr)
@@ -29,7 +21,7 @@ void Validator::outputProgress(const QString& message)
 
 int Validator::run(int argc, char* argv[])
 {
-    return runWithDllPaths(QStringList() << "C:\\Windows\\System32\\ntdll.dll");
+    return runWithDllPaths(QStringList() << Constants::DEFAULT_NTDLL_PATH);
 }
 
 int Validator::runWithDllPaths(const QStringList& dllPaths)
@@ -55,7 +47,7 @@ int Validator::runWithDllPaths(const QStringList& dllPaths)
 
     if (dllPathsToUse.isEmpty())
     {
-        dllPathsToUse << "C:\\Windows\\System32\\ntdll.dll";
+        dllPathsToUse << Constants::DEFAULT_NTDLL_PATH;
     }
 
     qDebug() << QString("Using DLL Paths: %1").arg(dllPathsToUse.join(", "));
@@ -72,8 +64,8 @@ int Validator::runWithDllPaths(const QStringList& dllPaths)
     if (!QFile::exists(mainDllPath))
     {
         qWarning() << "Primary DLL path does not exist:" << mainDllPath;
-        qWarning() << "Using default path: C:\\Windows\\System32\\ntdll.dll";
-        mainDllPath = "C:\\Windows\\System32\\ntdll.dll";
+        qWarning() << "Using default path:" << Constants::DEFAULT_NTDLL_PATH;
+        mainDllPath = Constants::DEFAULT_NTDLL_PATH;
 
         if (!QFile::exists(mainDllPath))
         {
@@ -320,7 +312,7 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
         scStubs[currentStub].end = lines.size() - 1;
     }
 
-    // extract content for each SC stub
+    /* extract content for each SC stub */
     for (auto it = scStubs.begin(); it != scStubs.end(); ++it)
     {
         int start = it.value().start;
@@ -377,12 +369,12 @@ void Validator::updateSyscalls(const QString& asmFile, const QMap<int, QMap<QStr
 
             if (inlineAssemblyMode && syscallName.startsWith("SysInline"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(9);
             }
             else if (indirectAssemblyMode && syscallName.startsWith("SysIndirect"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(11);
             }
 
@@ -747,12 +739,12 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
 
             if (inlineAssemblyMode && syscallName.startsWith("SysInline"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(9);
             }
             else if (indirectAssemblyMode && syscallName.startsWith("SysIndirect"))
             {
-                // convert back to Sys prefix for checking against selectedSyscalls
+                /* convert back to Sys prefix for checking against selectedSyscalls */
                 checkName = "Sys" + syscallName.mid(11);
             }
 
@@ -887,7 +879,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
                                   .arg(funcName) + Colors::ENDC());
             continue;
         }
-        // add non versioned functions for table 0
+        /* add non versioned functions for table 0 */
         if (syscallTables.contains(0))
         {
             QMap<QString, int> table0 = syscallTables[0];
@@ -926,7 +918,7 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
             }
         }
 
-        // add versioned functions for additional tables
+        /* add versioned functions for additional tables */
         for (int tableIdx = 1; tableIdx < numTables; ++tableIdx)
         {
             if (!syscallTables.contains(tableIdx))
@@ -986,17 +978,27 @@ void Validator::updateHeaderFile(const QMap<int, QMap<QString, int>>& syscallTab
     for (int i = qMax(0, updatedLines.size() - searchWindow); i < updatedLines.size(); ++i)
     {
         tail += updatedLines[i];
+        tail += "\n";
     }
 
-    QRegularExpression externCloseRegex(R"(#ifdef\s+__cplusplus[\s\S]*?\}\s*\n\s*#endif)");
+    QRegularExpression externCloseRegex(R"(#ifdef\s+__cplusplus[\s\S]*?\}\s*#endif)");
+    QRegularExpression externPartialCloseRegex(R"(#ifdef\s+__cplusplus[\s\S]*?\}\s*$)");
 
     if (!externCloseRegex.match(tail).hasMatch())
     {
-        updatedLines.append("");
-        updatedLines.append("#ifdef __cplusplus");
-        updatedLines.append("}");
-        updatedLines.append("#endif");
-        updatedLines.append("");
+        if (externPartialCloseRegex.match(tail).hasMatch())
+        {
+            updatedLines.append("#endif");
+            updatedLines.append("");
+        }
+        else
+        {
+            updatedLines.append("");
+            updatedLines.append("#ifdef __cplusplus");
+            updatedLines.append("}");
+            updatedLines.append("#endif");
+            updatedLines.append("");
+        }
     }
 
     int externOpenIdx = -1;
