@@ -275,7 +275,7 @@ jobs:
     - name: Copy Vcpkg Dependencies (Debug)
       run: |
         Write-Host "Copying Vcpkg Dependencies for Debug Build..."
-        $outputDir = "Build/Bind/Debug"
+        $outputDir = "../Build/Bind/Debug"
         $vcpkgBin = "${{ github.workspace }}/vcpkg/installed/x64-windows/bin"
 
         # Copy Vcpkg Dependencies (Qt dependencies will be handled by windeployqt)
@@ -303,10 +303,10 @@ jobs:
             Get-ChildItem "GeneratedFiles" -Name | Where-Object { $_ -like "*qrc*" } | ForEach-Object { Write-Host "Found RCC file: $_" }
           }
 
-          & $windeployqt "Build/Bind/Debug/Bind.exe" --debug --no-compiler-runtime --no-opengl-sw --force
+          & $windeployqt "../Build/Bind/Debug/Bind.exe" --debug --no-compiler-runtime --no-opengl-sw --force
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Qt deployment completed successfully for Debug build"
-            Get-ChildItem "Build/Bind/Debug" -Name | Sort-Object
+            Get-ChildItem "../Build/Bind/Debug" -Name | Sort-Object
           } else {
             Write-Host "windeployqt failed with exit code: $LASTEXITCODE"
           }
@@ -327,7 +327,7 @@ jobs:
     - name: Copy Vcpkg Dependencies (Release)
       run: |
         Write-Host "Copying Vcpkg Dependencies for Release Build..."
-        $outputDir = "Build/Bind/Release"
+        $outputDir = "../Build/Bind/Release"
         $vcpkgBin = "${{ github.workspace }}/vcpkg/installed/x64-windows/bin"
 
         # Copy Vcpkg Dependencies (Qt dependencies will be handled by windeployqt)
@@ -350,10 +350,10 @@ jobs:
 
         if (Test-Path $windeployqt) {
           Write-Host "Running windeployqt on Release executable..."
-          & $windeployqt "Build/Bind/Release/Bind.exe" --release --no-compiler-runtime --no-opengl-sw --force
+          & $windeployqt "../Build/Bind/Release/Bind.exe" --release --no-compiler-runtime --no-opengl-sw --force
           if ($LASTEXITCODE -eq 0) {
             Write-Host "Qt deployment completed successfully for Release build"
-            Get-ChildItem "Build/Bind/Release" -Name | Sort-Object
+            Get-ChildItem "../Build/Bind/Release" -Name | Sort-Object
           } else {
             Write-Host "windeployqt failed with exit code: $LASTEXITCODE"
           }
@@ -363,18 +363,18 @@ jobs:
 
     - name: Verify Executables Exist
       run: |
-        if (Test-Path "Build/Bind/Release/Bind.exe") {
+        if (Test-Path "../Build/Bind/Release/Bind.exe") {
           Write-Host "Bind.exe (Release) Built Successfully!"
-          Get-Item "Build/Bind/Release/Bind.exe" | Select-Object Name, Length, LastWriteTime
+          Get-Item "../Build/Bind/Release/Bind.exe" | Select-Object Name, Length, LastWriteTime
         } else {
           Write-Host "Bind.exe (Release) not found!"
           Get-ChildItem -Recurse -Name "*.exe" | ForEach-Object { Write-Host "Found: $_" }
           exit 1
         }
 
-        if (Test-Path "Build/Bind/Debug/Bind.exe") {
+        if (Test-Path "../Build/Bind/Debug/Bind.exe") {
           Write-Host "Bind.exe (Debug) Built Successfully!"
-          Get-Item "Build/Bind/Debug/Bind.exe" | Select-Object Name, Length, LastWriteTime
+          Get-Item "../Build/Bind/Debug/Bind.exe" | Select-Object Name, Length, LastWriteTime
         } else {
           Write-Host "Bind.exe (Debug) not found!"
         }
@@ -388,14 +388,14 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Bind-Release
-        path: Bind/Build/Bind/Release/
+        path: Build/Bind/Release/
         retention-days: 30
 
     - name: Upload Build Artifacts (Debug)
       uses: actions/upload-artifact@v4
       with:
         name: Bind-Debug
-        path: Bind/Build/Bind/Debug/
+        path: Build/Bind/Debug/
         retention-days: 30
         
     - name: Create Release Package
@@ -406,7 +406,7 @@ jobs:
 
         New-Item -ItemType Directory -Path "release-package" -Force
 
-        Copy-Item "Build/Bind/Release/*" "release-package\" -Recurse
+        Copy-Item "../Build/Bind/Release/*" "release-package\" -Recurse
 
         # Create README
         $version = "v1.3.2"
