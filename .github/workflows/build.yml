@@ -205,12 +205,17 @@ jobs:
           # Generate RCC file manually
           if (Test-Path $rccPath) {
             Write-Host "Generating RCC file..."
+            $rccInput = "src/Res/resources.qrc"
             $rccOutput = "GeneratedFiles/qrc_resources.cpp"
-            & $rccPath -name resources "resources.qrc" -o $rccOutput
-            if ($LASTEXITCODE -eq 0) {
-              Write-Host "Successfully generated RCC file: $rccOutput"
+            if (Test-Path $rccInput) {
+              & $rccPath -name resources $rccInput -o $rccOutput
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Successfully generated RCC file: $rccOutput"
+              } else {
+                Write-Host "RCC generation failed with exit code: $LASTEXITCODE"
+              }
             } else {
-              Write-Host "RCC generation failed with exit code: $LASTEXITCODE"
+              Write-Host "RCC input file not found: $rccInput"
             }
           } else {
             Write-Host "RCC tool not found, skipping resource compilation"
