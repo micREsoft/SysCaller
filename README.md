@@ -170,7 +170,7 @@ If you want to build Bind yourself:
    ```
 3. **Setup Qt 5.12 and ensure it's in your PATH.**
 4. **Generate MOC files** (Qt's meta object compiler, usually handled by CMake or qmake).
-5. **Open `Bind.sln` in Visual Studio.**
+5. **Open `SysCaller.sln` in Visual Studio.**
 6. **Build the project** (Release | x64).
 
 ### CMake (Alternative)
