@@ -270,7 +270,7 @@ jobs:
         Write-Host "VcpkgRoot: $env:VcpkgRoot"
         Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
 
-        msbuild "Bind.sln" /p:Configuration=Debug /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot"
+        msbuild "../SysCaller.sln" /p:Configuration=Debug /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot" /t:Bind
 
     - name: Copy Vcpkg Dependencies (Debug)
       run: |
@@ -322,7 +322,7 @@ jobs:
         Write-Host "VcpkgRoot: $env:VcpkgRoot"
         Write-Host "VCPKG_ROOT: $env:VCPKG_ROOT"
 
-        msbuild "Bind.sln" /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot"
+        msbuild "../SysCaller.sln" /p:Configuration=Release /p:Platform=x64 /p:VcpkgEnabled=true /p:VcpkgEnableManifest=true /p:VcpkgUseStatic=false /p:VcpkgTriplet=x64-windows /p:QTDIR="$env:QTDIR" /p:VcpkgRoot="$env:VcpkgRoot" /t:Bind
 
     - name: Copy Vcpkg Dependencies (Release)
       run: |
