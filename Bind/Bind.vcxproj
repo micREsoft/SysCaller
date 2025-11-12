@@ -157,8 +157,34 @@
     <ClCompile Include="src\GUI\Threads\CompatibilityThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ObfuscationThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ValidatorThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" />
     <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_RightPanel.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ChangelogDialog.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_HashCompareDialog.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ObfuscationSelectionDialog.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_StubMapperDialog.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_SettingsDialog.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ConfirmationDialog.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_GeneralTab.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ObfuscationTab.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_IntegrityTab.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ProfileTab.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_IndirectObfuscationTab.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_InlineObfuscationTab.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ValidatorThread.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_CompatibilityThread.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_VerificationThread.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_ObfuscationThread.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_Compatibility.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_Validator.cpp" />
+    <ClCompile Include="GeneratedFiles\moc_Verification.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\Core\Integrity\Compatibility\Compatibility.h">
