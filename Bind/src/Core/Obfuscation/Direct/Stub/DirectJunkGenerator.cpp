@@ -1,7 +1,5 @@
-#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
-#include <QDebug>
-#include <QRandomGenerator>
-#include <QStringList>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/QtDependencies.h>
 
 DirectObfuscation::JunkGenerator::JunkGenerator(QSettings* settings)
     : settings(settings)

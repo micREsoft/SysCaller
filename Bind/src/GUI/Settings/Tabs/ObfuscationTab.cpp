@@ -1,6 +1,6 @@
-#include "include/GUI/Settings/Tabs/ObfuscationTab.h"
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include <QFormLayout>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/Common.h>
+#include <GUI/Settings.h>
 
 ObfuscationTab::ObfuscationTab(QSettings* settings, QWidget* parent)
     : QWidget(parent)
@@ -175,4 +175,5 @@ void ObfuscationTab::saveSettings()
     settings->setValue("obfuscation/control_flow_indirect_jumps", indirectJumps->isChecked());
     settings->setValue("obfuscation/control_flow_conditional_branches", conditionalBranches->isChecked());
     settings->setValue("obfuscation/control_flow_complexity", controlFlowComplexity->value());
+    /* sync() is called by SettingsDialog::saveSettings() */
 }

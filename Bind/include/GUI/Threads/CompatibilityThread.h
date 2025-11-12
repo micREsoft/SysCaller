@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QThread>
-#include <QStringList>
 #include <QProcessEnvironment>
+#include <QStringList>
+#include <QThread>
 
 class CompatibilityThread : public QThread {
     Q_OBJECT
@@ -21,5 +21,4 @@ protected:
 
 private:
     QStringList dllPaths;
-    void setEnvironmentVariables();
-}; 
+};

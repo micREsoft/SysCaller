@@ -2,10 +2,10 @@
 
 #include <QDialog>
 #include <QMap>
+#include <QMouseEvent>
 #include <QString>
 #include <QStringList>
 #include <QVariant>
-#include <QMouseEvent>
 
 class SettingsTitleBar;
 

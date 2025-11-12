@@ -1,7 +1,5 @@
-#include "include/Core/Obfuscation/Indirect/ControlFlow/IndirectControlFlow.h"
-#include <QRandomGenerator>
-#include <QMap>
-#include <QStringList>
+#include <Core/Obfuscation/Indirect/Indirect.h>
+#include <Core/Utils/QtDependencies.h>
 
 IndirectObfuscation::ControlFlow::ControlFlow(QSettings* settings)
     : settings(settings)
@@ -10,7 +8,6 @@ IndirectObfuscation::ControlFlow::ControlFlow(QSettings* settings)
 QString IndirectObfuscation::ControlFlow::generateControlFlowObfuscation()
 {
     QString method = settings->value("obfuscation/indirect_control_flow_method", "random").toString();
-    int pattern;
 
     ControlFlowPattern flowPattern;
 

@@ -1,7 +1,5 @@
-#include "include/Core/Obfuscation/Indirect/Stub/IndirectStubGenerator.h"
-#include <QRandomGenerator>
-#include <QMap>
-#include <QStringList>
+#include <Core/Obfuscation/Indirect/Indirect.h>
+#include <Core/Utils/QtDependencies.h>
 
 IndirectObfuscation::StubGenerator::StubGenerator(QSettings* settings)
     : settings(settings)

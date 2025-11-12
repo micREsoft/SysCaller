@@ -1,7 +1,6 @@
 #include <Resolver/ResolverBase.h>
 #include <string>
 #include <unordered_map>
-#include <windows.h>
 
 /* shared global state */
 static std::unordered_map<std::string, DWORD> syscallCache;

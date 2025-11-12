@@ -1,16 +1,14 @@
 #pragma once
 
-#include <QString>
-#include <QStringList>
-#include <QSettings>
 #include <QObject>
 #include <QList>
-#include <functional>
-#include <vector>
-#include <cstdint>
+#include <QSettings>
+#include <QString>
+#include <QStringList>
+#include <Core/Utils/Dependencies.h>
+#include <Core/Utils/Utils.h>
+#include <GUI/Themes/Colors.h>
 #include <pe-parse/parse.h>
-#include "include/GUI/Themes/Colors.h"
-#include "include/Core/Utils/Utils.h"
 
 class Compatibility : public QObject {
     Q_OBJECT

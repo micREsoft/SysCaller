@@ -1,7 +1,7 @@
 #pragma once
-#include <syscaller.h>
-#include <Sys/sysTypes.h>
-#include <Sys/sysExternals.h>
+#include <SysCaller.h>
+#include <Sys/SysTypes.h>
+#include <Sys/SysExternals.h>
 
 #ifdef _WIN64 /* only compile on 64bit systems */
 

@@ -1,33 +1,6 @@
-#include "include/GUI/Dialogs/HashCompareDialog.h"
-#include "include/Core/Utils/PathUtils.h"
-#include "include/GUI/Bars/SettingsTitleBar.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QListWidget>
-#include <QTableWidget>
-#include <QPushButton>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QGroupBox>
-#include <QSplitter>
-#include <QLabel>
-#include <QHeaderView>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
-#include <QApplication>
-#include <QIcon>
-#include <QColor>
-#include <algorithm>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QRegExp>
-#include <QSet>
-#include <QFile>
-#include <QTextStream>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
+#include <GUI/Dialogs.h>
 
 HashCompareDialog::HashCompareDialog(QWidget* parent)
     : QDialog(parent)
@@ -52,7 +25,7 @@ void HashCompareDialog::initUI()
     topLayout->setContentsMargins(20, 10, 20, 10);
 
     refreshBtn = new QPushButton("Refresh");
-    refreshBtn->setIcon(QIcon(":/src/Res/Icons/refresh.png"));
+    refreshBtn->setIcon(QIcon(":/Icons/refresh.png"));
     connect(refreshBtn, &QPushButton::clicked, this, &HashCompareDialog::loadHashFiles);
     topLayout->addWidget(refreshBtn);
 
@@ -74,7 +47,7 @@ void HashCompareDialog::initUI()
     topLayout->addStretch();
 
     exportBtn = new QPushButton("Export Comparison");
-    exportBtn->setIcon(QIcon(":/src/Res/Icons/export.png"));
+    exportBtn->setIcon(QIcon(":/Icons/export.png"));
     connect(exportBtn, &QPushButton::clicked, this, &HashCompareDialog::exportComparison);
     exportBtn->setEnabled(false);
     topLayout->addWidget(exportBtn);
@@ -132,7 +105,7 @@ void HashCompareDialog::initUI()
 
 void HashCompareDialog::setupStylesheet()
 {
-    QFile stylesheetFile(":/src/GUI/Stylesheets/HashCompareDialog.qss");
+    QFile stylesheetFile(":/GUI/Stylesheets/HashCompareDialog.qss");
 
     if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
     {
@@ -316,13 +289,13 @@ void HashCompareDialog::compareSelected()
 
     if (selectedItems.size() < 1)
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "Please select at least one Hash File to view.");
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, "Please select at least one Hash File to view.");
         return;
     }
 
     if (selectedItems.size() > 5)
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "Please select at most 5 Hash Files to compare.");
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, "Please select at most 5 Hash Files to compare.");
         return;
     }
 
@@ -523,7 +496,7 @@ void HashCompareDialog::exportComparison()
 
     if (selectedItems.isEmpty())
     {
-        QMessageBox::warning(this, "Bind - v1.3.1", "Please select at least one Hash File to export.");
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, "Please select at least one Hash File to export.");
         return;
     }
 
@@ -541,7 +514,7 @@ void HashCompareDialog::exportComparison()
 
     QString exportPath = QFileDialog::getSaveFileName(
         this,
-        "Bind - v1.3.1",
+        SYSCALLER_WINDOW_TITLE,
         "",
         "CSV Files (*.csv);;HTML Files (*.html);;All Files (*.*)"
     );
@@ -571,12 +544,12 @@ void HashCompareDialog::exportComparison()
             exportAsCsv(exportPath, selectedFiles);
         }
 
-        QMessageBox::information(this, "Bind - v1.3.1",
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE,
                                QString("Hash Comparison exported successfully to:\n%1").arg(exportPath));
     }
     catch (...)
     {
-        QMessageBox::critical(this, "Bind - v1.3.1", "Failed to Export Comparison.");
+        QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, "Failed to Export Comparison.");
     }
 }
 
@@ -608,7 +581,7 @@ void HashCompareDialog::exportAsCsv(const QString& exportPath, const QStringList
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QMessageBox::critical(this, "Bind - v1.3.1", "Could not create Export File.");
+        QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, "Could not create Export File.");
         return;
     }
 
@@ -708,7 +681,7 @@ void HashCompareDialog::exportAsHtml(const QString& exportPath, const QStringLis
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QMessageBox::critical(this, "Bind - v1.3.1", "Could not create Export File.");
+        QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, "Could not create Export File.");
         return;
     }
 
@@ -718,7 +691,7 @@ void HashCompareDialog::exportAsHtml(const QString& exportPath, const QStringLis
     stream << "<!DOCTYPE html>\n";
     stream << "<html>\n<head>\n";
     stream << "<meta charset=\"UTF-8\">\n";
-    stream << "<title>Bind - Hash Comparison</title>\n";
+    stream << "<title>Hash Comparison</title>\n";
     stream << "<style>\n";
     stream << "body { font-family: Arial, sans-serif; margin: 20px; background-color: #f8f8f8; }\n";
     stream << "h1 { color: #0b5394; }\n";
@@ -733,7 +706,7 @@ void HashCompareDialog::exportAsHtml(const QString& exportPath, const QStringLis
     stream << ".method { font-style: italic; color: #666; }\n";
     stream << ".hash-type { font-weight: bold; color: #0b5394; }\n";
     stream << "</style>\n</head>\n<body>\n";
-    stream << "<h1>Bind - Hash Comparison</h1>\n";
+    stream << "<h1>Hash Comparison</h1>\n";
 
     QString firstTimestamp = fileData.value(selectedFiles.first())["timestamp"].toString();
 

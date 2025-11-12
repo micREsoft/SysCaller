@@ -25,7 +25,7 @@
 #pragma message("[SysCaller] Resolver: SKIPPED (not required for direct/inline)")
 #endif
 
-#include <syscaller.h>
+#include <SysCaller.h>
 
 /* empty function ensures this TU is compiled and processed */
 void SysCallerBuildInfo() {}

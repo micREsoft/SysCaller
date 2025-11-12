@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QString>
 #include <QMap>
-#include <QVariant>
-#include <QSettings>
 #include <QPair>
+#include <QSettings>
+#include <QString>
 #include <QStringList>
+#include <QVariant>
 
 namespace DirectObfuscation {
 

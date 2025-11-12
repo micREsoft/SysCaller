@@ -1,25 +1,25 @@
 #pragma once
 
+#include <QComboBox>
+#include <QCheckBox>
 #include <QDialog>
-#include <QVBoxLayout>
+#include <QFormLayout>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QGroupBox>
-#include <QFormLayout>
-#include <QSpinBox>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QPushButton>
-#include <QListWidget>
-#include <QSplitter>
-#include <QWidget>
-#include <QTabWidget>
-#include <QMessageBox>
 #include <QLineEdit>
-#include <QSettings>
+#include <QListWidget>
 #include <QMap>
-#include <QVariant>
+#include <QMessageBox>
 #include <QMouseEvent>
+#include <QPushButton>
+#include <QSettings>
+#include <QSplitter>
+#include <QSpinBox>
+#include <QTabWidget>
+#include <QVariant>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class SettingsTitleBar;
 

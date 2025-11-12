@@ -1,17 +1,17 @@
 #pragma once
 
-#include <QWidget>
-#include <QVBoxLayout>
+#include <QButtonGroup>
+#include <QCheckBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QGroupBox>
+#include <QMenu>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
-#include <QButtonGroup>
-#include <QCheckBox>
-#include <QMessageBox>
-#include <QMenu>
 #include <QSettings>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class GeneralTab : public QWidget {
     Q_OBJECT
@@ -27,10 +27,10 @@ private slots:
     void restoreBackup(const QString& timestamp);
     void openHashCompare();
     void onModeChanged();
-    void onAssemblyModeChanged();
 
 private:
     void initUI();
+    bool validateSettings();
     QString formatTimestamp(const QString& timestamp);
     QString getIniPath();
     bool isFileLocked(const QString& filePath);

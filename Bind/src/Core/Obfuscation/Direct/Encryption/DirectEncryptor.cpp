@@ -1,6 +1,5 @@
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include <QRandomGenerator>
-#include <QDebug>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/QtDependencies.h>
 
 DirectObfuscation::Encryptor::Encryptor(QSettings* settings)
     : settings(settings)

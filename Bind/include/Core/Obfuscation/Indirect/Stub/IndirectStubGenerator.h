@@ -1,9 +1,9 @@
 #pragma once
 
+#include <QSettings>
 #include <QString>
 #include <QStringList>
-#include <QSettings>
-#include <functional>
+#include <Core/Utils/Dependencies.h>
 
 namespace IndirectObfuscation {
 

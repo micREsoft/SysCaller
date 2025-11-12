@@ -1,16 +1,7 @@
-#include "include/Core/Obfuscation/IndirectObfuscation.h"
-#include "include/Core/Obfuscation/Indirect/Stub/IndirectStubGenerator.h"
-#include "include/Core/Obfuscation/Indirect/Stub/IndirectJunkGenerator.h"
-#include "include/Core/Obfuscation/Indirect/ControlFlow/IndirectControlFlow.h"
-#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QFile>
-#include <QTextStream>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#include <QDebug>
-#include <QRandomGenerator>
-#include <QDir>
+#include <Core/Obfuscation/IndirectObfuscation.h>
+#include <Core/Obfuscation/Indirect/Indirect.h>
+#include <Core/Obfuscation/Shared/Shared.h>
+#include <Core/Utils/Common.h>
 
 IndirectObfuscationManager::IndirectObfuscationManager(QSettings* settings)
     : settings(settings)
@@ -49,12 +40,12 @@ bool IndirectObfuscationManager::generateIndirectObfuscation()
     bool isKernel = settings->value("general/syscall_mode", "Nt").toString() == "Zw";
 
     QString asmPath = isKernel ?
-                      PathUtils::getSysCallerKPath() + "/Wrapper/src/syscaller.asm" :
-                      PathUtils::getSysCallerPath() + "/Wrapper/src/syscaller.asm";
+                      PathUtils::getSysCallerKPath() + "/Wrapper/src/SysCaller.asm" :
+                      PathUtils::getSysCallerPath() + "/Wrapper/src/SysCaller.asm";
 
     QString headerPath = isKernel ?
-                         PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/sysFunctions_k.h" :
-                         PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/sysFunctions.h";
+                         PathUtils::getSysCallerKPath() + "/Wrapper/SysK/SysKFunctions.h" :
+                         PathUtils::getSysCallerPath() + "/Wrapper/Sys/SysFunctions.h";
 
     return processIndirectAssemblyFile(asmPath, headerPath);
 }
@@ -78,7 +69,7 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
     QString indirectPrefix = getIndirectPrefix();
     QMap<QString, QStringList> indirectStubs;
     QSet<QString> usedNames;
-    QMap<QString, QString> syscallMap; // original -> obfuscated
+    QMap<QString, QString> syscallMap; /* original -> obfuscated */
 
     QStringList currentStub;
     QString currentSyscall;
@@ -141,7 +132,7 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
         QByteArray pendingEncBytes;
         int pendingPlainLen = 0;
         quint8 pendingKey = 0;
-        bool encAdjustActive = false; // when true, convert next add rsp,32 to add rsp,64
+        bool encAdjustActive = false; /* when true, convert next add rsp,32 to add rsp,64 */
 
         for (const QString& line : it.value())
         {
@@ -212,22 +203,22 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
                     }
                 }
 
-                // if we have pending enc string and see shadow space reservation,
-                // emit the build+decrypt into shadow space
+                /* if we have pending enc string and see shadow space reservation,
+                   emit the build+decrypt into shadow space */
                 if (pendingEncString && line.trimmed().startsWith("sub rsp, 32"))
                 {
-                    // replace with sub rsp, 64 to allocate extra 32 bytes (shadow + our buffer)
+                    /* replace with sub rsp, 64 to allocate extra 32 bytes (shadow + our buffer) */
                     obfuscatedStub << "    sub rsp, 64";
                     encAdjustActive = true;
 
-                    // now emit write+decrypt sequence using only rax, rcx, r11, r8b;
-                    // buffer base is [rsp+20h]
+                    /* now emit write+decrypt sequence using only rax, rcx, r11, r8b;
+                       buffer base is [rsp+20h] */
                     obfuscatedStub << "    ; Build decrypted resolver string in shadow space";
                     int lblId = QRandomGenerator::global()->bounded(1000, 999999);
                     QString loopLbl = QString("dec_loop_cf_%1").arg(lblId);
                     QString doneLbl = QString("dec_done_cf_%1").arg(lblId);
 
-                    // write encrypted qwords into [rsp+off]
+                    /* write encrypted qwords into [rsp+off] */
                     for (int off = 0; off < 32; off += 8)
                     {
                         quint64 q = 0;
@@ -278,7 +269,7 @@ bool IndirectObfuscationManager::processIndirectAssemblyFile(const QString& asmP
                     obfuscatedStub << "    jmp " + loopLbl;
                     obfuscatedStub << doneLbl + ":";
 
-                    obfuscatedStub << "    lea rcx, [rsp+20h]"; // rcx = decrypted buffer out of callee home space
+                    obfuscatedStub << "    lea rcx, [rsp+20h]"; /* rcx = decrypted buffer out of callee home space */
 
                     pendingEncString = false;
                     pendingEncBytes.clear();
@@ -497,7 +488,7 @@ bool IndirectObfuscationManager::updateIndirectHeaderFile(const QString& headerP
             continue;
         }
 
-        // preserve c++ guards and extern blocks
+        /* preserve c++ guards and extern blocks */
         if (line.contains("#ifdef __cplusplus") || line.contains("extern \"C\"") ||
             line.trimmed() == "{" || line.trimmed() == "}" || line.contains("#endif"))
         {
@@ -548,7 +539,7 @@ bool IndirectObfuscationManager::updateIndirectHeaderFile(const QString& headerP
         }
     }
     newHeaderContent << "";
-    newHeaderContent << "// Syscall Name Mappings (Indirect)";
+    newHeaderContent << "/* Syscall Name Mappings (Indirect) */";
 
     for (auto it = syscallMap.begin(); it != syscallMap.end(); ++it)
     {

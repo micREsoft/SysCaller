@@ -6,8 +6,6 @@ Released: **July 29, 2025**
 
 ## **What's New?**
 
----
-
 - Rewrote the entire BuildTools/GUI from Python (PyQt) to native C++ using Qt improving performance, stability maintainability, and integration with the core SDK.
 - Added support for any programming language with C bindings, making SysCaller accessible across a wider ecosystem.
 - The BuildTools has been officially renamed to **Bind**, reflecting its role in connecting your project with SysCaller using clean GUI based binding, wrapping, and obfuscation features.

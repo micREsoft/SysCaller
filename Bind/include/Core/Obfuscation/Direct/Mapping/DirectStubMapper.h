@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QSettings>
 #include <QMap>
-#include <QString>
-#include <QVariant>
-#include <QSet>
 #include <QPair>
+#include <QSet>
+#include <QSettings>
+#include <QString>
 #include <QStringList>
-#include "include/GUI/Themes/Colors.h"
+#include <QVariant>
+#include <GUI/Themes/Colors.h>
 
 namespace DirectObfuscation {
 

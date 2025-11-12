@@ -1,19 +1,12 @@
-#include "include/GUI/Dialogs/ObfuscationSelectionDialog.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QIcon>
-#include <QFont>
-#include <QApplication>
-#include <QFile>
-#include <QTextStream>
+#include <Core/Utils/Common.h>
+#include <GUI/Dialogs.h>
+#include <GUI/Bars.h>
 
 ObfuscationSelectionDialog::ObfuscationSelectionDialog(QWidget* parent)
     : QDialog(parent)
     , selection(Cancelled)
 {
-    setWindowTitle("Bind - v1.3.2");
+    setWindowTitle(SYSCALLER_WINDOW_TITLE);
     setFixedSize(450, 300);
     setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -23,7 +16,7 @@ ObfuscationSelectionDialog::ObfuscationSelectionDialog(QWidget* parent)
 
 void ObfuscationSelectionDialog::setupStylesheet()
 {
-    QFile stylesheetFile(":/src/GUI/Stylesheets/ObfuscationSelectionDialog.qss");
+    QFile stylesheetFile(":/GUI/Stylesheets/ObfuscationSelectionDialog.qss");
 
     if (stylesheetFile.open(QFile::ReadOnly | QFile::Text))
     {
@@ -37,43 +30,54 @@ void ObfuscationSelectionDialog::setupStylesheet()
 void ObfuscationSelectionDialog::initUI()
 {
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(30, 30, 30, 30);
-    mainLayout->setSpacing(20);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
 
-    titleLabel = new QLabel("Obfuscation Selection");
-    titleLabel->setObjectName("title");
-    titleLabel->setAlignment(Qt::AlignCenter);
-    mainLayout->addWidget(titleLabel);
+    SettingsTitleBar* titleBar = new SettingsTitleBar("Obfuscation Selection", this);
+    connect(titleBar, &SettingsTitleBar::closeClicked, this, &ObfuscationSelectionDialog::onCancelClicked);
+    mainLayout->addWidget(titleBar);
+
+    QWidget* contentWidget = new QWidget();
+    contentWidget->setObjectName("contentWidget");
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(30, 30, 30, 30);
+    contentLayout->setSpacing(25);
 
     descriptionLabel = new QLabel("Choose the Obfuscation Method you want to use for Syscall Generation:");
     descriptionLabel->setObjectName("description");
-    descriptionLabel->setAlignment(Qt::AlignCenter);
+    descriptionLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     descriptionLabel->setWordWrap(true);
-    mainLayout->addWidget(descriptionLabel);
+    contentLayout->addWidget(descriptionLabel);
 
     QVBoxLayout* buttonLayout = new QVBoxLayout();
-    buttonLayout->setSpacing(15);
+    buttonLayout->setSpacing(12);
 
     normalObfuscationButton = new QPushButton("Normal Obfuscation");
     normalObfuscationButton->setToolTip("Runs w/ Obfuscation configured from the Obfuscation Settings for all Syscalls.");
+    normalObfuscationButton->setMinimumHeight(45);
     connect(normalObfuscationButton, &QPushButton::clicked, this, &ObfuscationSelectionDialog::onNormalObfuscationClicked);
     buttonLayout->addWidget(normalObfuscationButton);
 
     stubMapperButton = new QPushButton("Stub Mapper");
     stubMapperButton->setToolTip("Runs w/ Obfuscation configured from Stub Mapper for specially configured Syscalls.");
+    stubMapperButton->setMinimumHeight(45);
     connect(stubMapperButton, &QPushButton::clicked, this, &ObfuscationSelectionDialog::onStubMapperClicked);
     buttonLayout->addWidget(stubMapperButton);
-    mainLayout->addLayout(buttonLayout);
+    contentLayout->addLayout(buttonLayout);
+
+    contentLayout->addStretch();
 
     QHBoxLayout* cancelLayout = new QHBoxLayout();
     cancelLayout->addStretch();
 
     cancelButton = new QPushButton("Cancel");
     cancelButton->setObjectName("cancel");
-    cancelButton->setFixedWidth(100);
+    cancelButton->setMinimumWidth(100);
     connect(cancelButton, &QPushButton::clicked, this, &ObfuscationSelectionDialog::onCancelClicked);
     cancelLayout->addWidget(cancelButton);
-    mainLayout->addLayout(cancelLayout);
+    contentLayout->addLayout(cancelLayout);
+
+    mainLayout->addWidget(contentWidget);
 }
 
 void ObfuscationSelectionDialog::onNormalObfuscationClicked()

@@ -1,9 +1,6 @@
-#include "include/Core/Obfuscation/Direct/Stub/DirectStubGenerator.h"
-#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
-#include <QRandomGenerator>
-#include <QDebug>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include "Core/Obfuscation/Shared/Shared.h"
+#include <Core/Utils/QtDependencies.h>
 
 DirectObfuscation::StubGenerator::StubGenerator(QSettings* settings)
     : settings(settings)

@@ -1,9 +1,5 @@
-#include "include/GUI/Bars/TitleBar.h"
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QToolButton>
-#include <QStyle>
-#include <QApplication>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
 
 TitleBar::TitleBar(QWidget* parent)
     : QFrame(parent)

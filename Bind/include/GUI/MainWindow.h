@@ -1,7 +1,10 @@
 #pragma once
 
+#include <QDebug>
 #include <QMainWindow>
 #include <QPoint>
+#include <QThread>
+#include <Core/Utils/Constants.h>
 
 class TitleBar;
 class LeftPanel;
@@ -37,6 +40,33 @@ protected:
 
 private:
     void saveAllSettings();
+    void cleanupThread(QThread*& thread);
+    template<typename ThreadType>
+    void cleanupThreadHelper(ThreadType*& thread)
+    {
+        if (!thread)
+        {
+            return;
+        }
+
+        QThread* qthread = static_cast<QThread*>(thread);
+        if (qthread->isRunning())
+        {
+            qthread->requestInterruption();
+            qthread->quit();
+            
+            if (!qthread->wait(Constants::THREAD_TERMINATION_TIMEOUT_MS))
+            {
+                qWarning() << "Thread did not terminate in time, forcing termination";
+                qthread->terminate();
+                qthread->wait(Constants::THREAD_FORCE_TERMINATION_TIMEOUT_MS);
+            }
+        }
+
+        qthread->deleteLater();
+        thread = nullptr;
+    }
+    bool validateDllPaths(const QStringList& paths, QString& errorMessage);
 
     TitleBar* titleBar;
     LeftPanel* leftPanel;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QString>
 #include <QDir>
 #include <QFileInfo>
-#include <QVariantMap>
 #include <QPair>
+#include <QString>
+#include <QVariantMap>
 
 class PathUtils {
 public:

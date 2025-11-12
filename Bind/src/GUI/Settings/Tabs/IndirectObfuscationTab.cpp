@@ -1,7 +1,5 @@
-#include "include/GUI/Settings/Tabs/IndirectObfuscationTab.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
+#include <Core/Utils/Common.h>
+#include <GUI/Settings.h>
 
 IndirectObfuscationTab::IndirectObfuscationTab(QSettings* settings, QWidget* parent)
     : QWidget(parent)
@@ -151,5 +149,4 @@ void IndirectObfuscationTab::saveSettings()
 }
 
 void IndirectObfuscationTab::loadSettings()
-{
-}
+{}

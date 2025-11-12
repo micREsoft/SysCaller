@@ -1,5 +1,5 @@
-#include "include/GUI/Threads/VerificationThread.h"
-#include <QDebug>
+#include <Core/Utils/Common.h>
+#include <GUI/Threads.h>
 
 VerificationThread::VerificationThread(QObject* parent)
     : QThread(parent)

@@ -1,6 +1,6 @@
 #pragma once
 #ifndef SYSCALLER_BUILD_CONFIG
-#error "Do not include syscaller_config.h directly, use syscaller.h instead"
+#error "Do not include SysCallerConfig.h directly, use SysCaller.h instead"
 #endif
 
 /*
@@ -20,7 +20,7 @@
 
 /*
  * Optional: Uncomment if building for multi language bindings
- * This will include dllmain.cpp in the build
+ * This will include DllMain.cpp in the build
  */
 // #define SYSCALLER_BINDINGS
 

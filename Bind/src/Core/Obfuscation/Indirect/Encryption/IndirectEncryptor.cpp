@@ -1,5 +1,5 @@
-#include "include/Core/Obfuscation/Indirect/Encryption/IndirectEncryptor.h"
-#include <QRandomGenerator>
+#include <Core/Obfuscation/Indirect/Indirect.h>
+#include <Core/Utils/QtDependencies.h>
 
 QString IndirectObfuscation::Encryptor::generateEncryptedSyscallNumbers()
 {

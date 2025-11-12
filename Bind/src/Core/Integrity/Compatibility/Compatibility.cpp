@@ -1,13 +1,6 @@
-#include "include/Core/Integrity/Compatibility/Compatibility.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QFile>
-#include <QDir>
-#include <QTextStream>
-#include <QRegularExpression>
-#include <QDebug>
-#include <QProcessEnvironment>
+#include <Core/Integrity/Integrity.h>
+#include <Core/Utils/Common.h>
 #include <pe-parse/parse.h>
-#include <cstring>
 
 Compatibility::Compatibility()
     : QObject(nullptr)
@@ -28,7 +21,7 @@ void Compatibility::outputProgress(const QString& message)
 
 int Compatibility::run(int argc, char* argv[])
 {
-    return runWithDllPaths(QStringList() << "C:\\Windows\\System32\\ntdll.dll");
+    return runWithDllPaths(QStringList() << Constants::DEFAULT_NTDLL_PATH);
 }
 
 int Compatibility::runWithDllPaths(const QStringList& dllPaths)
@@ -51,7 +44,7 @@ int Compatibility::runWithDllPaths(const QStringList& dllPaths)
 
     if (dllPathsToUse.isEmpty())
     {
-        dllPathsToUse << "C:\\Windows\\System32\\ntdll.dll";
+        dllPathsToUse << Constants::DEFAULT_NTDLL_PATH;
     }
 
     qDebug() << QString("Using DLL Paths: %1").arg(dllPathsToUse.join(", "));
@@ -283,7 +276,7 @@ void Compatibility::validateSyscalls(const QString& asmFile, const QStringList& 
     QString modeDisplay = isZwMode ? "Zw" : "Nt";
 
     QList<SyscallInfo> syscalls = readSyscalls(asmFile);
-    outputProgress(Colors::BOLD() + QString("Found %1 Syscalls in syscaller.asm")
+    outputProgress(Colors::BOLD() + QString("Found %1 Syscalls in SysCaller.asm")
                           .arg(syscalls.size()) + Colors::ENDC());
 
     for (int i = 0; i < qMin(3, syscalls.size()); ++i)
@@ -298,7 +291,7 @@ void Compatibility::validateSyscalls(const QString& asmFile, const QStringList& 
 
     if (dllPathsToUse.isEmpty())
     {
-        dllPathsToUse << "C:\\Windows\\System32\\ntdll.dll";
+        dllPathsToUse << Constants::DEFAULT_NTDLL_PATH;
     }
 
     QString mainDllPath = dllPathsToUse.first();

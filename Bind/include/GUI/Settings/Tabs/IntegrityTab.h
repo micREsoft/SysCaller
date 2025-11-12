@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QWidget>
-#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QGroupBox>
-#include <QPushButton>
-#include <QListWidget>
 #include <QLineEdit>
-#include <QCheckBox>
+#include <QListWidget>
+#include <QPushButton>
 #include <QSettings>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class IntegrityTab : public QWidget {
     Q_OBJECT

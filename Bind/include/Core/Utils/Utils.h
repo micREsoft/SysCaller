@@ -1,11 +1,10 @@
 #pragma once
 
-#include <QString>
-#include <QMap>
-#include <QVariantMap>
 #include <QPair>
-#include <vector>
-#include <cstdint>
+#include <QMap>
+#include <QString>
+#include <QVariantMap>
+#include <Core/Utils/Dependencies.h>
 #include <pe-parse/parse.h>
 
 class SyscallExtractor {

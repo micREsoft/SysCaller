@@ -1,26 +1,9 @@
-#include "include/GUI/MainWindow.h"
-#include "include/GUI/Bars/TitleBar.h"
-#include "include/GUI/Panels/LeftPanel.h"
-#include "include/GUI/Panels/RightPanel.h"
-#include "include/GUI/Panels/OutputPanel.h"
-#include "include/GUI/Bars/StatusBar.h"
-#include "include/GUI/Dialogs/SettingsDialog.h"
-#include "include/GUI/Threads/ValidatorThread.h"
-#include "include/GUI/Threads/CompatibilityThread.h"
-#include "include/GUI/Threads/VerificationThread.h"
-#include "include/GUI/Threads/ObfuscationThread.h"
-#include "include/Core/Utils/PathUtils.h"
-#include "include/GUI/Dialogs/ObfuscationSelectionDialog.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QWidget>
-#include <QMouseEvent>
-#include <QApplication>
-#include <QFontDatabase>
-#include <QStyleFactory>
-#include <QCloseEvent>
-#include <QMessageBox>
-#include <QSettings>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
+#include <GUI/MainWindow.h>
+#include <GUI/Dialogs.h>
+#include <GUI/Panels.h>
+#include <GUI/Threads.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     , verificationThread(nullptr)
     , obfuscationThread(nullptr)
 {
-    setWindowTitle("Bind - v1.3.2");
+    setWindowTitle(SYSCALLER_WINDOW_TITLE);
     setMinimumSize(1400, 900);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -81,33 +64,34 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (validatorThread)
+    cleanupThreadHelper(validatorThread);
+    cleanupThreadHelper(compatibilityThread);
+    cleanupThreadHelper(verificationThread);
+    cleanupThreadHelper(obfuscationThread);
+}
+
+void MainWindow::cleanupThread(QThread*& thread)
+{
+    if (!thread)
     {
-        validatorThread->quit();
-        validatorThread->wait();
-        delete validatorThread;
+        return;
     }
 
-    if (compatibilityThread)
+    if (thread->isRunning())
     {
-        compatibilityThread->quit();
-        compatibilityThread->wait();
-        delete compatibilityThread;
+        thread->requestInterruption();
+        thread->quit();
+        
+        if (!thread->wait(Constants::THREAD_TERMINATION_TIMEOUT_MS))
+        {
+            qWarning() << "Thread did not terminate in time, forcing termination";
+            thread->terminate();
+            thread->wait(Constants::THREAD_FORCE_TERMINATION_TIMEOUT_MS);
+        }
     }
 
-    if (verificationThread)
-    {
-        verificationThread->quit();
-        verificationThread->wait();
-        delete verificationThread;
-    }
-
-    if (obfuscationThread)
-    {
-        obfuscationThread->quit();
-        obfuscationThread->wait();
-        delete obfuscationThread;
-    }
+    thread->deleteLater();
+    thread = nullptr;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* event)
@@ -131,7 +115,10 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event)
 void MainWindow::showSettings()
 {
     SettingsDialog dialog(this);
-    dialog.exec();
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        leftPanel->updateButtonStates();
+    }
 }
 
 void MainWindow::saveAllSettings()
@@ -139,9 +126,20 @@ void MainWindow::saveAllSettings()
     try
     {
         QSettings settings(PathUtils::getIniPath(), QSettings::IniFormat);
+        settings.sync();
+        
+        if (settings.status() != QSettings::NoError)
+        {
+            qWarning() << "Failed to save settings. Status:" << settings.status();
+        }
+    }
+    catch (const std::exception& e)
+    {
+        qWarning() << "Exception while saving settings:" << e.what();
     }
     catch (...)
     {
+        qWarning() << "Unknown exception while saving settings";
     }
 }
 
@@ -149,15 +147,16 @@ void MainWindow::runValidation()
 {
     if (validatorThread && validatorThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.2", "Validation Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE, "Validation Check is already running. Please wait for it to complete.");
         return;
     }
 
     QStringList dllPaths = leftPanel->getDllPaths();
-
-    if (dllPaths.isEmpty())
+    QString errorMessage;
+    
+    if (!validateDllPaths(dllPaths, errorMessage))
     {
-        QMessageBox::warning(this, "Bind - v1.3.2", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, errorMessage);
         return;
     }
 
@@ -197,7 +196,7 @@ void MainWindow::runValidation()
         {
             leftPanel->updateStatus("Validation Failed!");
             statusBar->updateStatus("Validation Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.2", message);
+            QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, message);
         }
 
         validatorThread->deleteLater();
@@ -234,15 +233,16 @@ void MainWindow::runCompatibility()
 {
     if (compatibilityThread && compatibilityThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.2", "Compatibility Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE, "Compatibility Check is already running. Please wait for it to complete.");
         return;
     }
 
     QStringList dllPaths = leftPanel->getDllPaths();
-
-    if (dllPaths.isEmpty())
+    QString errorMessage;
+    
+    if (!validateDllPaths(dllPaths, errorMessage))
     {
-        QMessageBox::warning(this, "Bind - v1.3.2", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, errorMessage);
         return;
     }
 
@@ -282,7 +282,7 @@ void MainWindow::runCompatibility()
         {
             leftPanel->updateStatus("Compatibility Failed!");
             statusBar->updateStatus("Compatibility Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.2", message);
+            QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, message);
         }
 
         compatibilityThread->deleteLater();
@@ -296,15 +296,16 @@ void MainWindow::runVerification()
 {
     if (verificationThread && verificationThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.2", "Verification Check is already running. Please wait for it to complete.");
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE, "Verification Check is already running. Please wait for it to complete.");
         return;
     }
 
     QStringList dllPaths = leftPanel->getDllPaths();
-
-    if (dllPaths.isEmpty())
+    QString errorMessage;
+    
+    if (!validateDllPaths(dllPaths, errorMessage))
     {
-        QMessageBox::warning(this, "Bind - v1.3.2", "No DLL Paths specified. Please add at least one NTDLL path.");
+        QMessageBox::warning(this, SYSCALLER_WINDOW_TITLE, errorMessage);
         return;
     }
 
@@ -351,7 +352,7 @@ void MainWindow::runVerification()
         {
             leftPanel->updateStatus("Verification Failed!");
             statusBar->updateStatus("Verification Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.2", message);
+            QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, message);
         }
 
         verificationThread->deleteLater();
@@ -365,7 +366,7 @@ void MainWindow::runObfuscation()
 {
     if (obfuscationThread && obfuscationThread->isRunning())
     {
-        QMessageBox::information(this, "Bind - v1.3.2", "Syscall Obfuscation is already running. Please wait for it to complete.");
+        QMessageBox::information(this, SYSCALLER_WINDOW_TITLE, "Syscall Obfuscation is already running. Please wait for it to complete.");
         return;
     }
 
@@ -388,6 +389,12 @@ void MainWindow::runObfuscation()
         settings.setValue("obfuscation/force_normal", true);
         settings.setValue("obfuscation/force_stub_mapper", false);
         settings.setValue("obfuscation/last_method", "normal");
+        settings.sync();
+        
+        if (settings.status() != QSettings::NoError)
+        {
+            qWarning() << "Failed to save obfuscation settings. Status:" << settings.status();
+        }
     }
     else if (selection == ObfuscationSelectionDialog::StubMapper)
     {
@@ -396,6 +403,12 @@ void MainWindow::runObfuscation()
         settings.setValue("obfuscation/force_normal", false);
         settings.setValue("obfuscation/force_stub_mapper", true);
         settings.setValue("obfuscation/last_method", "stub_mapper");
+        settings.sync();
+        
+        if (settings.status() != QSettings::NoError)
+        {
+            qWarning() << "Failed to save obfuscation settings. Status:" << settings.status();
+        }
     }
     else
     {
@@ -437,12 +450,13 @@ void MainWindow::runObfuscation()
         {
             leftPanel->updateStatus("Obfuscation Failed!");
             statusBar->updateStatus("Obfuscation Failed!");
-            QMessageBox::critical(this, "Bind - v1.3.2", message);
+            QMessageBox::critical(this, SYSCALLER_WINDOW_TITLE, message);
         }
 
         QSettings settings(PathUtils::getIniPath(), QSettings::IniFormat);
         settings.remove("obfuscation/force_normal");
         settings.remove("obfuscation/force_stub_mapper");
+        settings.sync();
 
         obfuscationThread->deleteLater();
         obfuscationThread = nullptr;
@@ -451,5 +465,68 @@ void MainWindow::runObfuscation()
     obfuscationThread->start();
 }
 
+bool MainWindow::validateDllPaths(const QStringList& paths, QString& errorMessage)
+{
+    if (paths.isEmpty())
+    {
+        errorMessage = "No DLL Paths specified. Please add at least one NTDLL path.";
+        return false;
+    }
+
+    for (const QString& path : paths)
+    {
+        if (path.isEmpty())
+        {
+            errorMessage = "One or more DLL paths are empty.";
+            return false;
+        }
+
+        if (path.length() > Constants::MAX_FILE_PATH_LENGTH)
+        {
+            errorMessage = QString("DLL path exceeds maximum length (%1 characters): %2")
+                          .arg(Constants::MAX_FILE_PATH_LENGTH)
+                          .arg(path);
+            return false;
+        }
+
+        QFileInfo fileInfo(path);
+        if (!fileInfo.exists())
+        {
+            errorMessage = QString("DLL file does not exist: %1").arg(path);
+            return false;
+        }
+
+        if (!fileInfo.isFile())
+        {
+            errorMessage = QString("Path is not a file: %1").arg(path);
+            return false;
+        }
+
+        if (!fileInfo.isReadable())
+        {
+            errorMessage = QString("DLL file is not readable: %1").arg(path);
+            return false;
+        }
+
+        QString suffix = fileInfo.suffix().toLower();
+        if (suffix != "dll")
+        {
+            errorMessage = QString("File is not a DLL: %1").arg(path);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
-{}
+{
+    saveAllSettings();
+    
+    cleanupThreadHelper(validatorThread);
+    cleanupThreadHelper(compatibilityThread);
+    cleanupThreadHelper(verificationThread);
+    cleanupThreadHelper(obfuscationThread);
+    
+    event->accept();
+}

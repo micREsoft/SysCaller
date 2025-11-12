@@ -1,9 +1,5 @@
-#include "include/GUI/Bars/SettingsTitleBar.h"
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QToolButton>
-#include <QStyle>
-#include <QApplication>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
 
 SettingsTitleBar::SettingsTitleBar(QWidget* parent)
     : QFrame(parent)

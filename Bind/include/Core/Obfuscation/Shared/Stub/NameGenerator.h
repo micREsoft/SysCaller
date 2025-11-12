@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QString>
 #include <QSet>
 #include <QSettings>
+#include <QString>
 
 namespace SharedObfuscation {
 

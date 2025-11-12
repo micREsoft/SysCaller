@@ -1,17 +1,6 @@
-#include "include/Core/Obfuscation/Direct/Mapping/DirectStubMapper.h"
-#include "include/Core/Obfuscation/Direct/Stub/DirectJunkGenerator.h"
-#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include "include/Core/Obfuscation/Direct/Stub/DirectStubGenerator.h"
-#include "include/Core/Obfuscation/Direct/ControlFlow/DirectControlFlow.h"
-#include "include/Core/Utils/PathUtils.h"
-#include <QFile>
-#include <QTextStream>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#include <QDebug>
-#include <QRandomGenerator>
-#include <QDir>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Obfuscation/Shared/Shared.h>
+#include <Core/Utils/Common.h>
 
 DirectObfuscation::StubMapper::StubMapper(QSettings* settings)
     : settings(settings)
@@ -62,11 +51,11 @@ QString DirectObfuscation::StubMapper::getAsmFilePath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return PathUtils::getSysCallerKPath() + "/Wrapper/src/syscaller.asm";
+        return PathUtils::getSysCallerKPath() + "/Wrapper/src/SysCaller.asm";
     }
     else
     {
-        return PathUtils::getSysCallerPath() + "/Wrapper/src/syscaller.asm";
+        return PathUtils::getSysCallerPath() + "/Wrapper/src/SysCaller.asm";
     }
 }
 
@@ -74,11 +63,11 @@ QString DirectObfuscation::StubMapper::getHeaderFilePath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/sysFunctions_k.h";
+        return PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/SysKFunctions.h";
     }
     else
     {
-        return PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/sysFunctions.h";
+        return PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/SysFunctions.h";
     }
 }
 

@@ -1,7 +1,5 @@
-#include "include/Core/Obfuscation/Shared/Stub/NameGenerator.h"
-#include <QRandomGenerator>
-#include <QDebug>
-#include <QtMath>
+#include <Core/Obfuscation/Shared/Shared.h>
+#include <Core/Utils/QtDependencies.h>
 
 SharedObfuscation::NameGenerator::NameGenerator(QSettings* settings)
     : settings(settings)

@@ -1,41 +1,56 @@
 ObfuscationSelectionDialog {
-    background: #252525;
-    border: 2px solid #333333;
+    background: #1A1A1A;
     border-radius: 15px;
 }
-QLabel {
-    color: white;
+
+/* Content Area */
+QWidget#contentWidget {
+    background: #1E1E1E;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
-QLabel#title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #0077d4;
-    padding: 10px;
-}
+
+/* Description Label */
 QLabel#description {
+    color: #E8E8E8;
     font-size: 14px;
-    color: #cccccc;
-    padding: 10px;
+    font-weight: 400;
+    line-height: 1.6;
+    padding: 0px;
 }
+
+/* Primary Action Buttons */
 QPushButton {
     background: #0b5394;
     border: none;
     border-radius: 8px;
-    padding: 12px 20px;
+    padding: 12px 24px;
     color: white;
     font-weight: bold;
     font-size: 14px;
-    min-width: 120px;
+    text-align: left;
 }
+
 QPushButton:hover {
     background: #67abdb;
 }
+
 QPushButton:pressed {
-    background: #004578;
+    background: #0A7AD1;
 }
+
+/* Cancel Button */
 QPushButton#cancel {
-    background: #555555;
+    background: #333333;
+    color: #E0E0E0;
+    text-align: center;
 }
+
 QPushButton#cancel:hover {
-    background: #777777;
+    background: #444444;
+    color: #FFFFFF;
+}
+
+QPushButton#cancel:pressed {
+    background: #2A2A2A;
 }

@@ -6,8 +6,6 @@ Released: **March 5, 2025**
 
 ## **What's New?**
 
----
-
 - Introduced validation, verification, & compatibility checks for all stubs.
 - Added an obfuscation engine for crafted stubs.
 - Early work began on manual stub crafting logic (WIP).

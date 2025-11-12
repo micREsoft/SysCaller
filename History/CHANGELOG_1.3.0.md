@@ -6,8 +6,6 @@ Released: **September 3, 2025**
 
 ## **What's New?**
 
----
-
 - Added comprehensive support for Direct, Inline, and Indirect assembly modes
 - Added general tab support with assembly mode selection
 - Improved validation system supporting all three modes

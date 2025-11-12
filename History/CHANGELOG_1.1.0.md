@@ -6,8 +6,6 @@ Released: **July 22, 2025**
 
 ## **What's New?**
 
----
-
 - Added support for kernel mode / `Zw` syscalls.
 - You can now build in debug mode with full support.
 - Support for switching and managing syscall tables.

@@ -1,6 +1,5 @@
-#include "include/GUI/Bars/StatusBar.h"
-#include <QHBoxLayout>
-#include <QLabel>
+#include <Core/Utils/Common.h>
+#include <GUI/Bars.h>
 
 StatusBar::StatusBar(QWidget* parent)
     : QFrame(parent)
@@ -15,8 +14,11 @@ StatusBar::StatusBar(QWidget* parent)
     auto* layout = new QHBoxLayout(this);
     layout->setContentsMargins(20, 0, 20, 0);
 
-    statusIcon = new QLabel("⏺", this);
-    statusIcon->setStyleSheet("color: #666666; font-size: 16px;");
+    statusIcon = new QLabel(this);
+    statusIcon->setFixedSize(16, 16);
+    statusIcon->setScaledContents(true);
+    QPixmap recordPixmap(":/Icons/record.png");
+    statusIcon->setPixmap(recordPixmap.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     layout->addWidget(statusIcon);
 
@@ -42,29 +44,33 @@ void StatusBar::updateStatus(const QString& message, const QString& statusType)
 {
     statusMsg->setText(message);
 
-    QString icon, color;
+    QString iconPath;
+    QString color;
 
     if (statusType == "working")
     {
-        icon = "⏳";
+        iconPath = ":/Icons/hourglass.png";
         color = "#FFA500"; /* orange */
     }
     else if (statusType == "success")
     {
-        icon = "✅";
+        iconPath = ":/Icons/green.png";
         color = "#00FF00"; /* green */
     }
     else if (statusType == "error")
     {
-        icon = "❌";
+        iconPath = ":/Icons/xmark.png";
         color = "#FF0000"; /* red */
     }
     else
     {
-        icon = "⏺";
+        iconPath = ":/Icons/record.png";
         color = "#666666"; /* gray */
     }
 
-    statusIcon->setText(icon);
-    statusIcon->setStyleSheet(QString("color: %1; font-size: 16px;").arg(color));
+    QPixmap pixmap(iconPath);
+    if (!pixmap.isNull())
+    {
+        statusIcon->setPixmap(pixmap.scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
 }

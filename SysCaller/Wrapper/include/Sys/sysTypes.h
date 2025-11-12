@@ -1,8 +1,8 @@
 #pragma once
 
-#include <syscaller.h>
-#include <Sys/sysExternals.h>
-#include <Sys/sysConstants.h>
+#include <SysCaller.h>
+#include <Sys/SysExternals.h>
+#include <Sys/SysConstants.h>
 
 // #define USE_PISID  /* Uncomment this line to use PISID instead of PSID */
 #define USE_DYNAMIC_ARRAY  /* Uncomment this line to use dynamic array */

@@ -49,8 +49,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(ProjectDir)Wrapper\build\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ShortProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)Build\SysCallerK\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\SysCallerK\int\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Build\SysCallerK\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)Build\SysCallerK\int\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -80,7 +84,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_KERNEL_MODE;KERNEL_MODE=1;NT_INST=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_KERNEL_MODE;KERNEL_MODE=1;NT_INST=0;_AMD64_;AMD64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.26100.0\km;$(ProjectDir)Wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -99,19 +103,19 @@
     </MASM>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Wrapper\include\syscaller_k.h" />
-    <ClInclude Include="Wrapper\include\SysK\sysConstants_k.h" />
-    <ClInclude Include="Wrapper\include\SysK\sysExternals_k.h" />
-    <ClInclude Include="Wrapper\include\SysK\sysFunctions_k.h" />
-    <ClInclude Include="Wrapper\include\SysK\sysTypes_k.h" />
+    <ClInclude Include="Wrapper\include\SysCallerK.h" />
+    <ClInclude Include="Wrapper\include\SysK\SysKConstants.h" />
+    <ClInclude Include="Wrapper\include\SysK\SysKExternals.h" />
+    <ClInclude Include="Wrapper\include\SysK\SysKFunctions.h" />
+    <ClInclude Include="Wrapper\include\SysK\SysKTypes.h" />
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="Wrapper\src\syscaller.asm">
+    <MASM Include="Wrapper\src\SysCaller.asm">
       <PreprocessorDefinitions>_KERNEL_MODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </MASM>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Wrapper\src\dummy.c" />
+    <ClCompile Include="Wrapper\src\Dummy.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QThread>
-#include <QStringList>
 #include <QObject>
-#include <functional>
-#include "include/Core/Integrity/Verification/Verification.h"
+#include <QStringList>
+#include <QThread>
+#include <Core/Integrity/Integrity.h>
+#include <Core/Utils/Dependencies.h>
 
 class VerificationThread : public QThread {
     Q_OBJECT

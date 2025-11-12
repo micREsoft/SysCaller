@@ -1,10 +1,10 @@
 #pragma once
 
+#include <QMap>
+#include <QRandomGenerator>
 #include <QSettings>
 #include <QString>
 #include <QStringList>
-#include <QRandomGenerator>
-#include <QMap>
 
 namespace IndirectObfuscation {
 

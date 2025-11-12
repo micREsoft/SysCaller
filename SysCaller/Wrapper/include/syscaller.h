@@ -18,7 +18,7 @@
  /*
  * SysCaller Build Configuration
  * 
- * Define one of these macros in syscaller_config.h:
+ * Define one of these macros in SysCallerConfig.h:
  * - SYSCALLER_DIRECT   : Direct syscalls (default if none specified)
  * - SYSCALLER_INDIRECT : Indirect syscalls with runtime resolution
  * - SYSCALLER_INLINE   : Inline ASM syscalls
@@ -36,7 +36,7 @@
  */
 
 #define SYSCALLER_BUILD_CONFIG
-#include <syscaller_config.h>
+#include <SysCallerConfig.h>
 #undef SYSCALLER_BUILD_CONFIG
 
 #if !defined(SYSCALLER_DIRECT) && !defined(SYSCALLER_INDIRECT) && !defined(SYSCALLER_INLINE)
@@ -74,9 +74,9 @@
 #include <vector>
 #include <fstream>
 
-#include <Sys/sysTypes.h>
-#include <Sys/sysExternals.h>
-#include <Sys/sysFunctions.h>
+#include <Sys/SysTypes.h>
+#include <Sys/SysExternals.h>
+#include <Sys/SysFunctions.h>
 
 #if defined(SYSCALLER_INDIRECT)
 

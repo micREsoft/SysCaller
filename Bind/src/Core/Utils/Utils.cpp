@@ -1,20 +1,6 @@
-#include "include/Core/Utils/Utils.h"
-#include "include/Core/Utils/PathUtils.h"
-#include "include/Core/Obfuscation/Obfuscation.h"
-#include "include/Core/Obfuscation/Direct/Encryption/DirectEncryptor.h"
-#include <QDebug>
-#include <QByteArray>
-#include <cstring>
-#include <QFile>
-#include <QCryptographicHash>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QRegularExpression>
-#include <QRegularExpressionMatch>
-#include <QDateTime>
-#include <QDir>
-#include <QSettings>
+#include <Core/Obfuscation/Obfuscation.h>
+#include <Core/Obfuscation/Direct/Direct.h>
+#include <Core/Utils/Common.h>
 
 QMap<QString, int> SyscallExtractor::getSyscallsFromDll(const QString& dllPath)
 {
@@ -62,7 +48,7 @@ QMap<QString, int> SyscallExtractor::getSyscallsFromDll(const QString& dllPath)
 
         try
         {
-            funcName = QString::fromUtf8(fn.c_str(), fn.length());
+            funcName = QString::fromUtf8(fn.c_str(), static_cast<int>(fn.length()));
         }
         catch (...)
         {

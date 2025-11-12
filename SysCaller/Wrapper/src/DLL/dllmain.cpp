@@ -22,5 +22,5 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
 #else
 /* not in bindings mode file compiles to nothing */
-#pragma message("SysCaller: dllmain.cpp skipped (SYSCALLER_BINDINGS not defined)")
+#pragma message("SysCaller: DllMain.cpp skipped (SYSCALLER_BINDINGS not defined)")
 #endif

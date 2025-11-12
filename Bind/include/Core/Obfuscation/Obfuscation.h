@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QString>
-#include <QStringList>
 #include <QMap>
 #include <QSet>
-#include <functional>
 #include <QSettings>
-#include "include/GUI/Themes/Colors.h"
+#include <QString>
+#include <QStringList>
+#include <Core/Utils/Dependencies.h>
+#include <GUI/Themes/Colors.h>
 
 enum class ObfuscationMode {
     Normal = 0,

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QThread>
 #include <QStringList>
-#include <functional>
+#include <QThread>
+#include <Core/Utils/Dependencies.h>
 
 class ObfuscationThread : public QThread {
     Q_OBJECT
@@ -21,4 +21,4 @@ protected:
 
 private:
     std::function<void(const QString&)> outputCallback;
-}; 
+};

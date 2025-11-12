@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QGroupBox>
-#include <QPushButton>
-#include <QSpinBox>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QHBoxLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
 #include <QSettings>
+#include <QSpinBox>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class ObfuscationTab : public QWidget {
     Q_OBJECT

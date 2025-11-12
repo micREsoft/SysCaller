@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QDialog>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 class ObfuscationSelectionDialog : public QDialog {
     Q_OBJECT
@@ -30,7 +30,6 @@ private:
     void initUI();
 
     Selection selection;
-    QLabel* titleLabel;
     QLabel* descriptionLabel;
     QPushButton* normalObfuscationButton;
     QPushButton* stubMapperButton;

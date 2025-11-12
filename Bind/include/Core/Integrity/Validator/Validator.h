@@ -1,18 +1,16 @@
 #pragma once
 
-#include <QString>
-#include <QStringList>
+#include <QObject>
 #include <QMap>
 #include <QSet>
-#include <QVector>
 #include <QSettings>
-#include <QObject>
-#include <vector>
-#include <cstdint>
+#include <QString>
+#include <QStringList>
+#include <QVector>
+#include <Core/Utils/Dependencies.h>
+#include <Core/Utils/Utils.h>
+#include <GUI/Themes/Colors.h>
 #include <pe-parse/parse.h>
-#include <functional>
-#include "include/GUI/Themes/Colors.h"
-#include "include/Core/Utils/Utils.h"
 
 class Validator : public QObject {
     Q_OBJECT

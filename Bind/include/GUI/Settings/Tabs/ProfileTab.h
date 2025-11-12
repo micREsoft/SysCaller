@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QWidget>
-#include <QVBoxLayout>
+#include <QApplication>
+#include <QFileDialog>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPushButton>
-#include <QFileDialog>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QSettings>
-#include <QApplication>
+#include <QVBoxLayout>
+#include <QWidget>
 
 class ProfileTab : public QWidget {
     Q_OBJECT
