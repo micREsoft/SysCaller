@@ -436,22 +436,6 @@ jobs:
 
         Copy-Item "../Build/Bind/Release/*" "release-package\" -Recurse
 
-        # Create README
-        $version = "v1.3.2"
-        $readmeText = "# SysCaller: Bind - v1.3.2`n`n"
-        $readmeText += "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')`n"
-        $readmeText += "Commit: ${{ github.sha }}`n"
-        $readmeText += "Platform: Windows x64 (64-bit)`n"
-        $readmeText += "Version: $version`n`n"
-        $readmeText += "## Installation`n"
-        $readmeText += "1. Download Bind.exe`n"
-        $readmeText += "2. Run the executable`n`n"
-        $readmeText += "## Requirements`n"
-        $readmeText += "- Windows 10 or later`n"
-        $readmeText += "- Visual C++ Redistributable (if not already installed)`n"
-        $readmeText += "- Qt5 runtime libraries (if not already installed)"
-        $readmeText | Out-File -FilePath "release-package\README.txt" -Encoding UTF8
-
         # Create the zip file
         Compress-Archive -Path "release-package\*" -DestinationPath $zipName -Force
 
@@ -474,23 +458,13 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: v1.3.2
-        release_name: "SysCaller: Bind - v1.3.2"
+        release_name: "SysCaller: Bind v1.3.2"
         body: |
-          ## SysCaller: Bind - v1.3.2
+          ## SysCaller: Bind v1.3.2
 
           **Build Date:** ${{ github.event.head_commit.timestamp }}
           **Commit:** ${{ github.sha }}
           **Platform:** Windows x64 (64-bit)
-
-          ## Installation
-          1. Download Bind.zip
-          2. Replace the downloaded Bind directory with the one in SysCaller
-          3. Extract the zip & run the Bind.exe
-
-          ## Requirements
-          - Windows 10 or later
-          - Visual C++ Redistributable (if not already installed)
-          - Qt5 runtime libraries (if not already installed)
 
     - name: Upload Release Asset
       if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
