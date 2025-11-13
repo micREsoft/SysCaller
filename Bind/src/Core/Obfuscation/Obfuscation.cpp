@@ -62,11 +62,11 @@ QString Obfuscation::getHeaderFilePath(bool isKernelMode)
 {
     if (isKernelMode)
     {
-        return PathUtils::getSysCallerKPath() + "/Wrapper/SysK/SysKFunctions.h";
+        return PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/SysKFunctions.h";
     }
     else
     {
-        return PathUtils::getSysCallerPath() + "/Wrapper/Sys/SysFunctions.h";
+        return PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/SysFunctions.h";
     }
 }
 
