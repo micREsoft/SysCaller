@@ -208,14 +208,42 @@ jobs:
             $rccInput = "src/Res/resources.qrc"
             $rccOutput = "GeneratedFiles/qrc_resources.cpp"
             if (Test-Path $rccInput) {
+              Write-Host "RCC Input: $rccInput"
+              Write-Host "RCC Output: $rccOutput"
+              Write-Host "Current directory: $(Get-Location)"
+              
+              Write-Host "Verifying resource files..."
+              $qrcContent = Get-Content $rccInput -Raw
+              if ($qrcContent -match '<file>(.*?)</file>') {
+                $resourceFiles = [regex]::Matches($qrcContent, '<file>(.*?)</file>') | ForEach-Object { $_.Groups[1].Value }
+                $qrcDir = Split-Path (Resolve-Path $rccInput) -Parent
+                foreach ($resFile in $resourceFiles) {
+                  $fullPath = Join-Path $qrcDir $resFile
+                  $fullPath = [System.IO.Path]::GetFullPath($fullPath)
+                  if (Test-Path $fullPath) {
+                    Write-Host "  Found: $resFile"
+                  } else {
+                    Write-Host "  WARNING: Missing resource file: $resFile (expected at: $fullPath)"
+                  }
+                }
+              }
+              
               & $rccPath -name resources $rccInput -o $rccOutput
               if ($LASTEXITCODE -eq 0) {
                 Write-Host "Successfully generated RCC file: $rccOutput"
+                if (Test-Path $rccOutput) {
+                  $fileSize = (Get-Item $rccOutput).Length
+                  Write-Host "RCC file size: $fileSize bytes"
+                }
               } else {
                 Write-Host "RCC generation failed with exit code: $LASTEXITCODE"
+                Write-Host "RCC command: $rccPath -name resources $rccInput -o $rccOutput"
               }
             } else {
               Write-Host "RCC input file not found: $rccInput"
+              Write-Host "Current directory: $(Get-Location)"
+              Write-Host "Files in current directory:"
+              Get-ChildItem -Recurse -Filter "resources.qrc" | ForEach-Object { Write-Host "  Found: $($_.FullName)" }
             }
           } else {
             Write-Host "RCC tool not found, skipping resource compilation"
