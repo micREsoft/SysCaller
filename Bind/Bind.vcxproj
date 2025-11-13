@@ -185,6 +185,7 @@
     <ClCompile Include="GeneratedFiles\moc_Compatibility.cpp" />
     <ClCompile Include="GeneratedFiles\moc_Validator.cpp" />
     <ClCompile Include="GeneratedFiles\moc_Verification.cpp" />
+    <ClCompile Include="GeneratedFiles\qrc_resources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\Core\Integrity\Compatibility\Compatibility.h">
