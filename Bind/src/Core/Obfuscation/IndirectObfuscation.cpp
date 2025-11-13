@@ -44,8 +44,8 @@ bool IndirectObfuscationManager::generateIndirectObfuscation()
                       PathUtils::getSysCallerPath() + "/Wrapper/src/SysCaller.asm";
 
     QString headerPath = isKernel ?
-                         PathUtils::getSysCallerKPath() + "/Wrapper/SysK/SysKFunctions.h" :
-                         PathUtils::getSysCallerPath() + "/Wrapper/Sys/SysFunctions.h";
+                         PathUtils::getSysCallerKPath() + "/Wrapper/include/SysK/SysKFunctions.h" :
+                         PathUtils::getSysCallerPath() + "/Wrapper/include/Sys/SysFunctions.h";
 
     return processIndirectAssemblyFile(asmPath, headerPath);
 }
