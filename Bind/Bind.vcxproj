@@ -157,35 +157,36 @@
     <ClCompile Include="src\GUI\Threads\CompatibilityThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ObfuscationThread.cpp" />
     <ClCompile Include="src\GUI\Threads\ValidatorThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_RightPanel.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ChangelogDialog.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_HashCompareDialog.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ObfuscationSelectionDialog.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_StubMapperDialog.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_SettingsDialog.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ConfirmationDialog.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_GeneralTab.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ObfuscationTab.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_IntegrityTab.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ProfileTab.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_IndirectObfuscationTab.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_InlineObfuscationTab.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ValidatorThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_CompatibilityThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_VerificationThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_ObfuscationThread.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_Compatibility.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_Validator.cpp" />
-    <ClCompile Include="GeneratedFiles\moc_Verification.cpp" />
-    <ClCompile Include="GeneratedFiles\qrc_resources.cpp" />
+    <!-- MOC and RCC files, QtMsBuild should add these automatically, but we include them explicitly for CI compatibility -->
+    <ClCompile Include="GeneratedFiles\moc_MainWindow.cpp" Condition="Exists('GeneratedFiles\moc_MainWindow.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ProgressBar.cpp" Condition="Exists('GeneratedFiles\moc_ProgressBar.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_StatusBar.cpp" Condition="Exists('GeneratedFiles\moc_StatusBar.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_TitleBar.cpp" Condition="Exists('GeneratedFiles\moc_TitleBar.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_SettingsTitleBar.cpp" Condition="Exists('GeneratedFiles\moc_SettingsTitleBar.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_BindButton.cpp" Condition="Exists('GeneratedFiles\moc_BindButton.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_LeftPanel.cpp" Condition="Exists('GeneratedFiles\moc_LeftPanel.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_OutputPanel.cpp" Condition="Exists('GeneratedFiles\moc_OutputPanel.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_RightPanel.cpp" Condition="Exists('GeneratedFiles\moc_RightPanel.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ChangelogDialog.cpp" Condition="Exists('GeneratedFiles\moc_ChangelogDialog.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_HashCompareDialog.cpp" Condition="Exists('GeneratedFiles\moc_HashCompareDialog.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ObfuscationSelectionDialog.cpp" Condition="Exists('GeneratedFiles\moc_ObfuscationSelectionDialog.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_StubMapperDialog.cpp" Condition="Exists('GeneratedFiles\moc_StubMapperDialog.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_SettingsDialog.cpp" Condition="Exists('GeneratedFiles\moc_SettingsDialog.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ConfirmationDialog.cpp" Condition="Exists('GeneratedFiles\moc_ConfirmationDialog.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_GeneralTab.cpp" Condition="Exists('GeneratedFiles\moc_GeneralTab.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ObfuscationTab.cpp" Condition="Exists('GeneratedFiles\moc_ObfuscationTab.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_IntegrityTab.cpp" Condition="Exists('GeneratedFiles\moc_IntegrityTab.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ProfileTab.cpp" Condition="Exists('GeneratedFiles\moc_ProfileTab.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_IndirectObfuscationTab.cpp" Condition="Exists('GeneratedFiles\moc_IndirectObfuscationTab.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_InlineObfuscationTab.cpp" Condition="Exists('GeneratedFiles\moc_InlineObfuscationTab.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ValidatorThread.cpp" Condition="Exists('GeneratedFiles\moc_ValidatorThread.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_CompatibilityThread.cpp" Condition="Exists('GeneratedFiles\moc_CompatibilityThread.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_VerificationThread.cpp" Condition="Exists('GeneratedFiles\moc_VerificationThread.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_ObfuscationThread.cpp" Condition="Exists('GeneratedFiles\moc_ObfuscationThread.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_Compatibility.cpp" Condition="Exists('GeneratedFiles\moc_Compatibility.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_Validator.cpp" Condition="Exists('GeneratedFiles\moc_Validator.cpp')" />
+    <ClCompile Include="GeneratedFiles\moc_Verification.cpp" Condition="Exists('GeneratedFiles\moc_Verification.cpp')" />
+    <ClCompile Include="GeneratedFiles\qrc_resources.cpp" Condition="Exists('GeneratedFiles\qrc_resources.cpp')" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\Core\Integrity\Compatibility\Compatibility.h">
